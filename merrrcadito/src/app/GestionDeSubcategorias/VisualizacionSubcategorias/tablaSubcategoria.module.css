@@ -1,0 +1,70 @@
+.completePage{
+    background-color: #235E69;
+}
+
+.container{
+    margin-top: 100px;
+}
+.table{
+    width: 80%;
+    border-collapse: collapse; /* ✅ Elimina espacios entre celdas */
+    border-radius: 30px;
+    overflow: hidden; /* ✅ Para que el border-radius funcione */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* ✅ Sombra para profundidad */
+    background: white;
+    margin: 0 auto; /* ✅ Centrar tabla */
+    min-height: 0;
+}
+
+.tableHeader{
+    background: #2c3e50; /* ✅ Color de fondo del header */
+    color: white;
+}
+
+.table th{
+    padding: 20px 30px; /* ✅ Espaciado interno */
+    text-align: left;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.table td{
+    padding: 15px 30px; /* ✅ Espaciado interno */
+    border-bottom: 1px solid #e9ecef; /* ✅ Líneas separadoras */
+    text-align: left;
+}
+
+/* ✅ Efecto hover para filas */
+.table tbody tr:hover{
+    background: #f8f9fa;
+}
+
+/* ✅ Última fila sin borde inferior */
+.table tbody tr:last-child td{
+    border-bottom: none;
+}
+
+/* ✅ Diseño para botones de acciones */
+.acciones{
+    display: flex;
+    gap: 10px; /* ✅ Espacio entre botones */
+}
+
+.btnAccion{
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.btnEditar:hover{
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.btnEliminar:hover{
+    background: #ffebee;
+    color: #d32f2f;
+}
