@@ -4,23 +4,32 @@ import styles from './MenuDesplegableSub.module.css'
 import { useState } from 'react';
 
 
+interface varTypeMenu{
+    nombreMenu: string;
+    form: string;
+    back: string;
+    casa: string;
+}
 
-export default function DesplegarMenu(){
+{/*Los href tambien pueden ser props UwU */}
+
+export default function Menu({nombreMenu, form, back, casa }:varTypeMenu){
 
     const [menuOpen, setMenuOpen] = useState(false);
+
 
     return(
         <>
             <div className={styles.container}>
                 <div className={styles.navbar}>
-                    <div className="#">Subcategoria en Productos</div>
+                    <div className="#">{nombreMenu}</div>
                     <ul className={styles.navbarul}>
                         <li><Link href="/GestionDeSubcategorias/NuevaSubcategoria">
-                            <div className={styles.navegador}>Nueva Subcategoria</div>
+                            <div className={styles.navegador}>{form}</div>
                             </Link>
                         </li>
-                        <li><div className={styles.navegador}>Atras</div></li>
-                        <li><div className={styles.navegador}>Home</div></li>
+                        <li><div className={styles.navegador}>{back}</div></li>
+                        <li><div className={styles.navegador}>{casa}</div></li>
                     </ul>
                     <div className={styles.toggleMenuBtn} onClick={() => setMenuOpen(!menuOpen)}>
                         <i className="bi bi-list"></i>
@@ -28,13 +37,15 @@ export default function DesplegarMenu(){
                 </div>
             </div>
 
+             {/*Menu desplegable para celular */}
+
                 <div className={`${styles.dropMenu} ${menuOpen ? styles.open : ''}`}>
                      <li><Link href="/GestionDeSubcategorias/NuevaSubcategoria">
-                            <div className={styles.navegador}>Nueva Subcategoria</div>
+                            <div className={styles.navegador}>{form}</div>
                             </Link>
                         </li>
-                        <li><div className={styles.navegador}>Atras</div></li>
-                        <li><div className={styles.navegador}>Home</div></li>   
+                        <li><div className={styles.navegador}>{back}</div></li>
+                        <li><div className={styles.navegador}>{casa}</div></li>   
                 </div>
             
         </>

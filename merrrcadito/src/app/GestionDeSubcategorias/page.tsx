@@ -1,14 +1,17 @@
 'use client'
 import styles from './VisualizacionSubcategorias/tablaSubcategoria.module.css'
 import VisualizarSubcategorias from './VisualizacionSubcategorias/tablaSubcategorias';
-import DesplegarMenu from '../Components/MenuDesplegableSubcategoria';
+import Menu from '../Components/MenuDesplegableSubcategoria';
 
 export default function Subcategorias(){
 
     return(
         <>
          <div>
-            <DesplegarMenu />
+            <Menu nombreMenu='Subcategorias en Productos'
+                   form='Nueva Subcategoria'
+                   back='Atras'
+                   casa='Home'/>
             <VisualizarSubcategorias />
          </div>
         </>

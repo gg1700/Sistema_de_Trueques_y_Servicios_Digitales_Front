@@ -120,6 +120,7 @@ export default function FormSubcategoria(){
                 <select name="categoria" value={form.categoria} onChange={handleChange} className={`${styles.inputSubcategory} ${error.categoria ? styles.inputError : ''
                 }`}>
                     <option>Si es pan</option>
+                    <option>No es pan</option>
                 </select>
                 {error.categoria && (<span className={styles.messageErrorInput}>{error.categoria}</span>)}
             </div>
