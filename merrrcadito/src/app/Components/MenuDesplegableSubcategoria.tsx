@@ -24,7 +24,7 @@ export default function Menu({nombreMenu, form, back, casa }:varTypeMenu){
                 <div className={styles.navbar}>
                     <div className="#">{nombreMenu}</div>
                     <ul className={styles.navbarul}>
-                        <li><Link href="/GestionDeSubcategorias/NuevaSubcategoria">
+                        <li><Link href="/admin/GestionDeSubcategorias/NuevaSubcategoria">
                             <div className={styles.navegador}>{form}</div>
                             </Link>
                         </li>

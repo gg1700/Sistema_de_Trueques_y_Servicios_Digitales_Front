@@ -1,5 +1,5 @@
 'use client'
-import VisualizarSubcategorias from './VisualizacionSubcategorias/tablaSubcategorias';
+import VisualizarSubcategorias from '@/app/admin/GestionDeSubcategorias/VisualizacionSubcategorias/tablaSubcategorias';
 import Menu from '../../Components/MenuDesplegableSubcategoria';
 
 export default function Subcategorias(){

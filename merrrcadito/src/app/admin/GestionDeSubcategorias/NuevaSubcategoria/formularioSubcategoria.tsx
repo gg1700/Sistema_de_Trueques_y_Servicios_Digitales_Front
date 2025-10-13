@@ -107,7 +107,7 @@ export default function FormSubcategoria(){
             imagen:""
         });
 
-        router.push('/GestionDeSubcategorias');
+        router.push('admin/GestionDeSubcategorias');
     }
 
     return(

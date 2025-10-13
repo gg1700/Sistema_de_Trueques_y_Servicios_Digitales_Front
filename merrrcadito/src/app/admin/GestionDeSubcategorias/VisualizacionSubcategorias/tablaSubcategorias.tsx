@@ -1,9 +1,9 @@
 'use client'
 import { useState } from 'react';
 import Link from 'next/link';
-import styles from './tablaSubcategoria.module.css'
-import ModalEliminar from '../EliminacionSubcategoria/eliminacionSubcategoria';
-
+import styles from './tablaSubcategoria.module.css';
+import ModalEliminar from '@/app/admin/GestionDeSubcategorias/EliminacionSubcategoria/eliminacionSubcategoria';
+import FormSubcategoria from '@/app/admin/GestionDeSubcategorias/NuevaSubcategoria/formularioSubcategoria';
 
 export default function VisualizarSubcategorias(){
     const dataSubcategoria=[
@@ -12,6 +12,7 @@ export default function VisualizarSubcategorias(){
     ];
 
     const [modalEliminar, setModalEliminar]=useState(false);
+    const [modalEditar, setModalEditar]=useState(false);
 
     function abrirModalEliminar() {
         setModalEliminar(true);
@@ -19,6 +20,14 @@ export default function VisualizarSubcategorias(){
 
     function cerrarModalEliminar() {
         setModalEliminar(false);
+    }
+
+     function abrirModalEditar() {
+        setModalEditar(true);
+    }
+
+    function cerrarModalEditaar() {
+        setModalEditar(false);
     }
 
     const [data,setData]= useState(dataSubcategoria);
@@ -55,9 +64,18 @@ export default function VisualizarSubcategorias(){
             </table>
         </div>
            {modalEliminar && (
-                <ModalEliminar 
-                    onCancelar={cerrarModalEliminar}
-                />
+                <ModalEliminar  onCancelar={cerrarModalEliminar}>
+                    <h3 className={styles.modalHeader}>Eliminar Subcategoria Seleccionada</h3>
+                    <p>¿Está seguro de eliminar ésta subcategoria?</p>
+                    <button className={styles.botonEliminar}>Si, eliminar</button>
+                    <button className={styles.botonCancelar} onClick={cerrarModalEliminar}>Cancelar</button>
+                </ModalEliminar>
+            )}
+
+            {modalEditar && (
+                <ModalEliminar onCancelar={cerrarModalEditaar}>
+                    <FormSubcategoria />
+                </ModalEliminar>
             )}
         </div>
     );
