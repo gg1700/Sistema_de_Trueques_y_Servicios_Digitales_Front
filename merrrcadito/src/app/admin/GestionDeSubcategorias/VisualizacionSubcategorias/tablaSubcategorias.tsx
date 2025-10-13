@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import styles from './tablaSubcategoria.module.css'
+import ModalEliminar from '../EliminacionSubcategoria/eliminacionSubcategoria';
 
 
 export default function VisualizarSubcategorias(){
@@ -9,6 +10,16 @@ export default function VisualizarSubcategorias(){
         {id:234,nombre:"Electronicos",descripcion:"jijijijajajaja",fechaRegistro:"20/20/20"},
         {id:200,nombre:"Textiles",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"}
     ];
+
+    const [modalEliminar, setModalEliminar]=useState(false);
+
+    function abrirModalEliminar() {
+        setModalEliminar(true);
+    }
+
+    function cerrarModalEliminar() {
+        setModalEliminar(false);
+    }
 
     const [data,setData]= useState(dataSubcategoria);
     return(
@@ -33,7 +44,7 @@ export default function VisualizarSubcategorias(){
                                     <button className={`${styles.btnAccion} ${styles.btnEditar}`}>
                                         <i className="bi bi-pencil-square"></i>
                                     </button>
-                                    <button className={`${styles.btnAccion} ${styles.btnEliminar}`}>
+                                    <button className={`${styles.btnAccion} ${styles.btnEliminar}`} onClick={() => abrirModalEliminar()}>
                                         <i className="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -43,6 +54,11 @@ export default function VisualizarSubcategorias(){
                 </tbody>
             </table>
         </div>
+           {modalEliminar && (
+                <ModalEliminar 
+                    onCancelar={cerrarModalEliminar}
+                />
+            )}
         </div>
     );
 }
