@@ -151,6 +151,7 @@ export default function FormSubcategoria(){
             {/*Boton guardar*/}
             <button type="submit" className={styles.buttonRegSub}>Registrar Subcategoria</button>
             {/*Boton cancelar*/}
+            
             <button onClick={returnBack} className={styles.buttonBack}>Cancelar</button>
          </form>
         </div>

@@ -26,7 +26,7 @@ export default function VisualizarSubcategorias(){
         setModalEditar(true);
     }
 
-    function cerrarModalEditaar() {
+    function cerrarModalEditar() {
         setModalEditar(false);
     }
 
@@ -50,7 +50,7 @@ export default function VisualizarSubcategorias(){
                             <td>{subcategoria.nombre}</td>
                             <td>
                                 <div className={styles.acciones}>
-                                    <button className={`${styles.btnAccion} ${styles.btnEditar}`}>
+                                    <button className={`${styles.btnAccion} ${styles.btnEditar}`} onClick={()=> abrirModalEditar()}>
                                         <i className="bi bi-pencil-square"></i>
                                     </button>
                                     <button className={`${styles.btnAccion} ${styles.btnEliminar}`} onClick={() => abrirModalEliminar()}>
@@ -73,7 +73,7 @@ export default function VisualizarSubcategorias(){
             )}
 
             {modalEditar && (
-                <ModalEliminar onCancelar={cerrarModalEditaar}>
+                <ModalEliminar onCancelar={cerrarModalEditar}>
                     <FormSubcategoria />
                 </ModalEliminar>
             )}
