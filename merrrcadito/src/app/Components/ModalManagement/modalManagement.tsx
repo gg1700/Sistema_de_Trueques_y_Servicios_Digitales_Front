@@ -1,9 +1,6 @@
+import styles from './modalManagement.module.css'
 
-import styles from './eliminacionSubcategoriaCSS.module.css'
-
-
-
-export default function ModalEliminar({onCancelar, children}:any){
+export default function ModalManagement({onCancelar, children}:any){
     return(
         <div className={styles.modalContainer}>
             <div className={styles.modalBody}>

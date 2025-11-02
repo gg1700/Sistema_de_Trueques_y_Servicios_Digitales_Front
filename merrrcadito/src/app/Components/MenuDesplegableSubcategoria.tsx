@@ -24,7 +24,7 @@ export default function Menu({nombreMenu, form, back, casa }:varTypeMenu){
                 <div className={styles.navbar}>
                     <div className="#">{nombreMenu}</div>
                     <ul className={styles.navbarul}>
-                        <li><Link href="/admin/GestionDeSubcategorias/NuevaSubcategoria">
+                        <li><Link href="/admin/GestionDeSubcategorias/NewSubcategory">
                             <div className={styles.navegador}>{form}</div>
                             </Link>
                         </li>
@@ -40,7 +40,7 @@ export default function Menu({nombreMenu, form, back, casa }:varTypeMenu){
              {/*Menu desplegable para celular */}
 
                 <div className={`${styles.dropMenu} ${menuOpen ? styles.open : ''}`}>
-                     <li><Link href="/GestionDeSubcategorias/NuevaSubcategoria">
+                     <li><Link href="/GestionDeSubcategorias/NewSubcategory">
                             <div className={styles.navegador}>{form}</div>
                             </Link>
                         </li>

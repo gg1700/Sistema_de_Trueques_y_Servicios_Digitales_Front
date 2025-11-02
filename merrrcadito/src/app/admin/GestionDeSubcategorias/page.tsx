@@ -1,6 +1,6 @@
 'use client'
-import VisualizarSubcategorias from '@/app/admin/GestionDeSubcategorias/VisualizacionSubcategorias/tablaSubcategorias';
 import Menu from '../../Components/MenuDesplegableSubcategoria';
+import ViewSubcategories from './ViewSubcategories/tableSubcategory';
 
 export default function Subcategorias(){
 
@@ -11,7 +11,7 @@ export default function Subcategorias(){
                    form='Nueva Subcategoria'
                    back='Atras'
                    casa='Home'/>
-            <VisualizarSubcategorias />
+            <ViewSubcategories />
          </div>
         </>
     );
