@@ -40,7 +40,7 @@ export default function Menu({nombreMenu, form, back, casa }:varTypeMenu){
              {/*Menu desplegable para celular */}
 
                 <div className={`${styles.dropMenu} ${menuOpen ? styles.open : ''}`}>
-                     <li><Link href="/GestionDeSubcategorias/NewSubcategory">
+                     <li><Link href="/admin/GestionDeSubcategorias/NewSubcategory">
                             <div className={styles.navegador}>{form}</div>
                             </Link>
                         </li>

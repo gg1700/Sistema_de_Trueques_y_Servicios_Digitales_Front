@@ -17,11 +17,12 @@ export default function UpdateSubcategory({subcategoryCod, onSubmit, onCancel}:U
   const handleActualizar = async (formData: any) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log("Actualizando:", formData);
-    
-    return new Response(JSON.stringify({ 
+    const response= new Response(JSON.stringify({ 
       success: true, 
       message: "Subcategoría actualizada" 
     }), { status: 200 });
+    onSubmit();
+    return response;
   }
     return (
 

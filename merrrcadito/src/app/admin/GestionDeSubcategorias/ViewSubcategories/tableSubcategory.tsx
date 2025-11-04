@@ -15,13 +15,18 @@ interface Subcategoria {
 
 export default function ViewSubcategories(){
     const dataSubcategoria=[
-        {cod:234,nombre:"Electronicos",descripcion:"jijijijajajaja",fechaRegistro:"20/20/20"},
-        {cod:200,nombre:"Textiles",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"}
+        {cod:234,nombre:"Ropa Varon",descripcion:"jijijijajajaja",fechaRegistro:"20/20/20"},
+        {cod:201,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
+        {cod:202,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
+        {cod:203,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
+        {cod:220,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
+        {cod:210,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
     ];
 
     const [deleteModal, setDeleteModal]=useState(false);
     const [updateModal, setUpdateModal]=useState(false);
     const [subcategoriaSeleccionada, setSubcategoriaSeleccionada] = useState<Subcategoria | null>(null);
+    const [data,setData]= useState(dataSubcategoria);
 
     function abrirModalEliminar(subcategoria:Subcategoria) {
         setSubcategoriaSeleccionada(subcategoria);
@@ -39,10 +44,9 @@ export default function ViewSubcategories(){
     }
 
     function cerrarModalEditar() {
+        setSubcategoriaSeleccionada(null);
         setUpdateModal(false);
     }
-
-    const [data,setData]= useState(dataSubcategoria);
 
     const handleEliminacionExitosa = () => {
         if (subcategoriaSeleccionada) {
@@ -57,36 +61,36 @@ export default function ViewSubcategories(){
 
     return(
         <div>
-        <div className={styles.container}>
-            {/*Tabla de visualizacion de cada subcategoria*/}
-            <table className={styles.table}>
-                <thead>
-                    <tr className={styles.tableHeader}>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map(subcategoria => (
-                        <tr key={subcategoria.cod}>
-                            <td>{subcategoria.cod}</td>
-                            <td>{subcategoria.nombre}</td>
-                            <td>
+           <div>
+               <hr className={styles.hrCard}/>
+           </div>
+           <div className={styles.mainContainer}>
+             <div className={styles.subcategoryContainer}>
+                   {data.map(subcategory => 
+                        <div key={subcategory.cod} className={styles.subcategoryCard}>
+                            <div className={styles.cardContent}>
+                                <div className={styles.textContent}>
+                                    <h3 className={styles.subcategoryName}>{subcategory.nombre}</h3>
+                                    <p className={styles.subcategoryDescription}>{subcategory.descripcion}</p>
+                                </div>
                                 <div className={styles.acciones}>
-                                    <button className={`${styles.btnAccion} ${styles.btnEditar}`} onClick={()=> abrirModalEditar(subcategoria)}>
+                                    <button className={styles.btnAccion} onClick={() => abrirModalEditar(subcategory)}>
                                         <i className="bi bi-pencil-square"></i>
                                     </button>
-                                    <button className={`${styles.btnAccion} ${styles.btnEliminar}`} onClick={() => abrirModalEliminar(subcategoria)}>
+                                    <button className={styles.btnAccion} onClick={() => abrirModalEliminar(subcategory)}>
                                         <i className="bi bi-trash"></i>
                                     </button>
                                 </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                            </div>
+                        </div>
+                   )}
+             </div>
+           </div>
+
+           <div>
+                <hr className={styles.hrCard2}/>
+           </div>
+
            {deleteModal && subcategoriaSeleccionada && (
                 <ModalManagement  onCancelar={cerrarModalEliminar}>
                     <DeleteSubcategory 

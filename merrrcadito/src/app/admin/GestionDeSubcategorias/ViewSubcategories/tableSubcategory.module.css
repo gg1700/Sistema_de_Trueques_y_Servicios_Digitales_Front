@@ -1,70 +1,80 @@
-.completePage{
-    background-color: #235E69;
-}
-
-.container{
-    margin-top: 100px;
-}
-.table{
-    width: 80%;
-    border-collapse: collapse; /* ✅ Elimina espacios entre celdas */
-    border-radius: 30px;
-    overflow: hidden; /* ✅ Para que el border-radius funcione */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* ✅ Sombra para profundidad */
-    background: white;
-    margin: 0 auto; /* ✅ Centrar tabla */
-    min-height: 0;
-}
-
-.tableHeader{
-    background: #2c3e50; /* ✅ Color de fondo del header */
-    color: white;
-}
-
-.table th{
-    padding: 20px 30px; /* ✅ Espaciado interno */
-    text-align: left;
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-
-.table td{
-    padding: 15px 30px; /* ✅ Espaciado interno */
-    border-bottom: 1px solid #e9ecef; /* ✅ Líneas separadoras */
-    text-align: left;
-}
-
-/* ✅ Efecto hover para filas */
-.table tbody tr:hover{
-    background: #f8f9fa;
-}
-
-/* ✅ Última fila sin borde inferior */
-.table tbody tr:last-child td{
-    border-bottom: none;
-}
-
-/* ✅ Diseño para botones de acciones */
-.acciones{
-    display: flex;
-    gap: 10px; /* ✅ Espacio entre botones */
-}
-
-.btnAccion{
-    background: none;
+.hrCard {
     border: none;
-    cursor: pointer;
-    padding: 8px;
+    border-top: 10px solid #000;     
+    margin: 130px 500px 0 500px;                  
+    width: calc(100% - 1000px);
+    border-radius: 20px;
+}
+
+.hrCard2 {
+    border: none;
+    border-top: 10px solid #000;     
+    margin: 70px 500px 0 500px;                  
+    width: calc(100% - 1000px);
+    border-radius: 20px;
+}
+
+.mainContainer {
+    height: 300px;
+    overflow-y: auto; 
+    margin: 0 500px;
+}
+
+.subcategoryContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.subcategoryCard {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+/* ESTO ES LO NUEVO QUE AGREGÉ */
+.cardContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.textContent {
+    flex: 1;
+}
+
+.subcategoryName {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.subcategoryDescription {
+    margin: 0 0 8px 0;
+    color: #666;
+}
+
+.acciones {
+    display: flex;
+    gap: 10px;
+    /* QUITÉ el margin-top: 15px; porque ya no van debajo */
+}
+
+.btnAccion {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    transition: background 0.3s;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: transparent;
+    color: #333;
+    transition: all 0.3s;
 }
 
-.btnEditar:hover{
-    background: #e3f2fd;
-    color: #1976d2;
-}
-
-.btnEliminar:hover{
-    background: #ffebee;
-    color: #d32f2f;
+.btnAccion:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
 }

@@ -84,7 +84,6 @@ export default function FormSubcategory({
                 .then(response => {
                     if (response.ok) {
                         console.log(isEditing ? "Actualizado correctamente" : "Creado correctamente");
-                        router.back();
                     }
                 })
                 .catch(error => {
