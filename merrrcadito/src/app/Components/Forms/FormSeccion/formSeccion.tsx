@@ -1,50 +1,51 @@
 'use client'
-import styles from './formSubcategory.module.css';
+import styles from './formSeccion.module.css';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; 
 
-interface FormSubcategoryProps {
-  initialData?: {
-    categoria: string;
+interface FormProps {
+    type?: 'categoria' | 'subcategoria';
+    initialData?: {
+    seccion: string;
     nombre: string;
     descripcion: string;
     imagen?: File | null;
   };
-  onSubmit: (formData: any) => Promise<Response>;
-  onCancel:() => void;
+  onSubmit: (formData: any) => void;
+  onCancel?:() => void;
   isEditing?: boolean;
-  subcategoryId?: string;
+  id?: number;
 }
 
-export default function FormSubcategory({ 
+export default function FormSeccion({ 
+  type='subcategoria',
   initialData, 
   onSubmit,
   onCancel, 
   isEditing = false,
-  subcategoryId 
-}: FormSubcategoryProps) {
+}: FormProps) {
 
+
+
+    const router = useRouter();
     const [form, setForm] = useState({
-        categoria: "",
+        seccion: "",
         nombre: "",
         descripcion: "",
         imagen: null as File | null 
     });
 
     const [error, setErrors] = useState({
-        categoria: "",
+        seccion: "",
         nombre: "",
         descripcion: "",
         imagen: ""
     });
 
-    const router = useRouter();
-
-  
     useEffect(() => {
         if (initialData) {
             setForm({
-                categoria: initialData.categoria || "",
+                seccion: initialData.seccion || "",
                 nombre: initialData.nombre || "",
                 descripcion: initialData.descripcion || "",
                 imagen: initialData.imagen || null
@@ -80,15 +81,7 @@ export default function FormSubcategory({
         e.preventDefault();
         
         if(validateForm()){
-            onSubmit(form)
-                .then(response => {
-                    if (response.ok) {
-                        console.log(isEditing ? "Actualizado correctamente" : "Creado correctamente");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
+            onSubmit(form);  
         } else {
             console.log("Form INCORRECTO");
         }
@@ -96,18 +89,18 @@ export default function FormSubcategory({
 
     function validateForm(){
         const newErrors = {
-            categoria: "",
+            seccion: "",
             nombre: "",
             descripcion: "",
             imagen: ""
         };
 
-        if(!form.categoria){
-            newErrors.categoria = "Seleccione una categoria";
+        if(!form.seccion){
+            newErrors.seccion = "Debe seleccionar "+(type==='subcategoria'? 'una categoria': 'un tipo');
         }
 
         if(!form.nombre.trim()){
-            newErrors.nombre = "El nombre de la subcategoria es obligatorio";
+            newErrors.nombre = "El nombre de la" +(type==='subcategoria'? 'Subcategoria': 'Categoria')+ " es obligatorio";
         } else if(form.nombre.length <= 2){
             newErrors.nombre = "NO puede ser menos de 3 caracteres";
         }
@@ -128,14 +121,14 @@ export default function FormSubcategory({
 
     function handleCancel(){
         setForm({
-            categoria: "",
+            seccion: "",
             nombre: "",
             descripcion: "",
             imagen: null 
         });
 
         setErrors({
-            categoria: "",
+            seccion: "",
             nombre: "",
             descripcion: "",
             imagen: ""
@@ -143,8 +136,6 @@ export default function FormSubcategory({
 
         if (onCancel) {
             onCancel();  
-        }else{
-            router.back();
         }
     }
 
@@ -152,27 +143,27 @@ export default function FormSubcategory({
         <div className={styles.formConteiner}>
          <form className={styles.formBody} onSubmit={handleSubmit}>
             <div className={styles.formGroup}>
-                <label htmlFor="categoria" className={styles.formLabel}>Categoria</label>
+                <label htmlFor="seccion" className={styles.formLabel}>Categoria</label>
                 <select 
-                    name="categoria" 
-                    value={form.categoria} 
+                    name="seccion" 
+                    value={form.seccion} 
                     onChange={handleChange} 
-                    className={`${styles.inputSubcategory} ${error.categoria ? styles.inputError : ''}`}
+                    className={`${styles.input} ${error.seccion ? styles.inputError : ''}`}
                 >
-                    <option value="">Seleccione una categoría</option>
+                    <option value="">Seleccione {type==='subcategoria'? 'una categoria' : 'un tipo'}</option>
                     <option value="Si es pan">Si es pan</option>
                     <option value="No es pan">No es pan</option>
                 </select>
-                {error.categoria && (<span className={styles.messageErrorInput}>{error.categoria}</span>)}
+                {error.seccion && (<span className={styles.messageErrorInput}>{error.seccion}</span>)}
             </div>
 
             <div className={styles.formGroup}>
-                <label htmlFor="nombre" className={styles.formLabel}>Nombre de la Subcategoria</label>
+                <label htmlFor="nombre" className={styles.formLabel}>Nombre</label>
                 <input 
                     type="text" 
                     name="nombre" 
                     value={form.nombre} 
-                    className={`${styles.inputSubcategory} ${error.nombre ? styles.inputError : ''}`} 
+                    className={`${styles.input} ${error.nombre ? styles.inputError : ''}`} 
                     onChange={handleChange}
                 />
                 {error.nombre && (<span className={styles.messageErrorInput}>{error.nombre}</span>)}
@@ -183,7 +174,7 @@ export default function FormSubcategory({
                 <textarea 
                     name="descripcion" 
                     value={form.descripcion} 
-                    className={`${styles.inputSubcategory} ${error.descripcion ? styles.inputError : ''}`} 
+                    className={`${styles.input} ${error.descripcion ? styles.inputError : ''}`} 
                     onChange={handleChange}
                 />
                 {error.descripcion && (<span className={styles.messageErrorInput}>{error.descripcion}</span>)}
@@ -194,14 +185,14 @@ export default function FormSubcategory({
                 <input 
                     type="file" 
                     name="imagen"  
-                    className={`${styles.inputSubcategory} ${error.imagen ? styles.inputError : ''}`} 
+                    className={`${styles.input} ${error.imagen ? styles.inputError : ''}`} 
                     onChange={handleFileChange}
                 />
                 {error.imagen && (<span className={styles.messageErrorInput}>{error.imagen}</span>)}
             </div>
 
-            <button type="submit" className={styles.buttonRegSub}>
-                {isEditing ? 'Actualizar' : 'Registrar'} Subcategoria
+            <button type="submit" className={styles.buttonAction}>
+                {isEditing ? 'Actualizar' : 'Registrar'} {type==='subcategoria'? 'Subcategoria': 'Categoria'}
             </button>
             
             <button type="button" onClick={handleCancel} className={styles.buttonBack}>

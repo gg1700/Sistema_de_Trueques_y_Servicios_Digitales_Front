@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styles from  './deleteSubcategory.module.css'
+import DeleteSeccion from '../../GestionDeSecciones/DeleteSeccionComponent/deleteSeccion'; // Importar el componente reutilizable
 
 interface DeleteSubcategoryProps {
   subcategoryCod: number;
@@ -8,30 +8,29 @@ interface DeleteSubcategoryProps {
   onCancel: () => void;
 }
 
-export default function DeleteSubcategory({subcategoryCod, subcategoryName, onSuccess, onCancel}:DeleteSubcategoryProps){
+export default function DeleteSubcategory({
+  subcategoryCod, 
+  subcategoryName, 
+  onSuccess, 
+  onCancel
+}: DeleteSubcategoryProps){
     
-    const [remove, setRemove] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleDelete = () => {
-        setRemove(true);
-        //LLAMA SP
-        console.log("Subcategoria eliminada");
+    const handleConfirmDelete = () => {
+        setIsLoading(true);
+
+        console.log("Llamando SP para subcategoría:", subcategoryCod);
         onSuccess();
-        setRemove(false);
+        setIsLoading(false);
     }
          
     return (
-    <>
-      <div className={styles.modalContent}>
-       <div className={styles.modalHeader}>
-          <h2>Está seguro que desea eliminar <strong>{subcategoryName}</strong>?</h2>
-       </div>
-       <div className={styles.modalActions}>
-          <button onClick={handleDelete} className = {styles.buttonEliSub}>{remove ? 'Eliminando...' : 'Si, eliminar'}</button>
-          <button type ="button" onClick={onCancel} className={styles.buttonCancel}>Cancelar</button>
-       </div>
-      </div>
-    </>
+      <DeleteSeccion 
+        type="subcategoria"
+        seccionName={subcategoryName}
+        onConfirm={handleConfirmDelete}
+        onCancel={onCancel}
+      />
     );
-
 }

@@ -1,7 +1,9 @@
-import FormSubcategory from './formSubcategory'
+
+import NewSubcategory from './newSubcategory';
+
 
 export default function MostrarFormulario(){
     return(
-        <FormSubcategory />
+        <NewSubcategory />
     );
 }

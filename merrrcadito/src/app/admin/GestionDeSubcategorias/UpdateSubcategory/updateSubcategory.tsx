@@ -1,4 +1,4 @@
-import FormSubcategory from "../NewSubcategory/formSubcategory";
+import FormSeccion from "../../../Components/Forms/FormSeccion/formSeccion";
 import { useState } from "react";
 
 
@@ -28,8 +28,9 @@ export default function UpdateSubcategory({subcategoryCod, onSubmit, onCancel}:U
 
       <>
         
-          <FormSubcategory 
-              initialData={{categoria:"No es pan",nombre:"Ropa varon",descripcion:"Dime que estas orgulloso de mi shifu dimelo",imagen:null}}
+          <FormSeccion 
+              type={'subcategoria'}
+              initialData={{seccion:"No es pan",nombre:"Ropa varon",descripcion:"Dime que estas orgulloso de mi shifu dimelo",imagen:null}}
               onSubmit={handleActualizar}
               onCancel={onCancel}
               isEditing={true}
