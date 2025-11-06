@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import DeleteSeccion from '../../GestionDeSecciones/DeleteSeccionComponent/deleteSeccion'; // Importar el componente reutilizable
+import DeleteSeccion from '../../DeleteSeccionComponent/deleteSeccion'; // Importar el componente reutilizable
 
 interface DeleteSubcategoryProps {
-  subcategoryCod: number;
-  subcategoryName: string; 
+  categoryCod: number;
+  categoryName: string; 
   onSuccess: () => void; 
   onCancel: () => void;
 }
 
 export default function DeleteSubcategory({
-  subcategoryCod, 
-  subcategoryName, 
+  categoryCod, 
+  categoryName, 
   onSuccess, 
   onCancel
 }: DeleteSubcategoryProps){
@@ -20,15 +20,15 @@ export default function DeleteSubcategory({
     const handleConfirmDelete = () => {
         setIsLoading(true);
 
-        console.log("Llamando SP para subcategoría:", subcategoryCod);
+        console.log("Llamando SP para categoría:", categoryCod);
         onSuccess();
         setIsLoading(false);
     }
          
     return (
       <DeleteSeccion 
-        type="subcategoria"
-        seccionName={subcategoryName}
+        type="categoria"
+        seccionName={categoryName}
         onConfirm={handleConfirmDelete}
         onCancel={onCancel}
       />

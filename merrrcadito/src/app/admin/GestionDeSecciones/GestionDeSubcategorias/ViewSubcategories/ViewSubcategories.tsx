@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import ViewSecciones from '../../GestionDeSecciones/ViewSeccionComponent/ViewSeccion'; // El componente genérico
+import ViewSecciones from '../../ViewSeccionComponent/ViewSeccion'; // El componente genérico
 import UpdateSubcategory from '../UpdateSubcategory/updateSubcategory';
 import DeleteSubcategory from '../DeleteSubcategory/deleteSubcategory';
 import NewSubcategory from '../NewSubcategory/newSubcategory';

@@ -1,5 +1,5 @@
 'use client'
-import Menu from '../../Components/MenuDesplegableSubcategoria';
+import Menu from '../../../Components/MenuDesplegableSubcategoria';
 import ViewSubcategories from './ViewSubcategories/ViewSubcategories';
 
 export default function Subcategorias(){

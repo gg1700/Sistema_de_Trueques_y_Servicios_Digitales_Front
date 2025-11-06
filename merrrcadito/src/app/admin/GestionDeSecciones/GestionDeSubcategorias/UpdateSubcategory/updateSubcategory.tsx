@@ -1,4 +1,4 @@
-import FormSeccion from "../../../Components/Forms/FormSeccion/formSeccion";
+import FormSeccion from '../../../../Components/Forms/FormSeccion/formSeccion';
 import { useState } from "react";
 
 
