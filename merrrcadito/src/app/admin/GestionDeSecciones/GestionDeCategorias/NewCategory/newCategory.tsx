@@ -1,4 +1,4 @@
-import FormSeccion from "@/app/Components/Forms/FormSeccion/formSeccion";
+import FormSeccion from "@/app/Components/Organisms/Forms/FormSeccion/formSeccion";
 
 
 
@@ -11,6 +11,11 @@ interface NewCategoryProps {
 
 export default function NewCategory({onSubmit, onCancel}:NewCategoryProps){
 
+    const dataTypes=[
+        {value:"1", label:"Producto"},
+        {value: "2", label: "Servicio"}
+    ]
+
     const handleSubmit = async (formData: any) => {
         const adaptedFormData = {
         tipo: formData.seccion,
@@ -21,9 +26,11 @@ export default function NewCategory({onSubmit, onCancel}:NewCategoryProps){
 
     return(
         <FormSeccion 
-            type={'categoria'}
+            type={'category'}
             onSubmit={handleSubmit}
+            onCancel={onCancel}
             isEditing={false}
+            selectOptions={dataTypes}
         />
     );
 }

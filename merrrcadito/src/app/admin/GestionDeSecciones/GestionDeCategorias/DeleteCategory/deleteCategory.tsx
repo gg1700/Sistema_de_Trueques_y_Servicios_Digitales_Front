@@ -1,19 +1,21 @@
 import { useState } from 'react';
-import DeleteSeccion from '../../DeleteSeccionComponent/deleteSeccion'; // Importar el componente reutilizable
+import DeleteSeccion from '../../../../Components/Organisms/DeleteSeccionComponent/deleteSeccion'; 
 
-interface DeleteSubcategoryProps {
+interface DeleteCategoryProps {
   categoryCod: number;
   categoryName: string; 
   onSuccess: () => void; 
   onCancel: () => void;
 }
 
-export default function DeleteSubcategory({
+export default function DeleteCategory({
   categoryCod, 
   categoryName, 
   onSuccess, 
   onCancel
-}: DeleteSubcategoryProps){
+}: DeleteCategoryProps){
+
+  console.log("1. DeleteCategory recibió:", { categoryCod, categoryName });
     
     const [isLoading, setIsLoading] = useState(false);
 
@@ -27,7 +29,7 @@ export default function DeleteSubcategory({
          
     return (
       <DeleteSeccion 
-        type="categoria"
+        type="category"
         seccionName={categoryName}
         onConfirm={handleConfirmDelete}
         onCancel={onCancel}

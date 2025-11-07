@@ -1,8 +1,9 @@
 'use client'
 import { useState } from 'react';
 import styles from './ViewSeccion.module.css'; 
-import ModalManagement from '@/app/Components/ModalManagement/modalManagement';
-import AccordionForm from '../../../Components/Forms/AccordionForm'
+import ModalManagement from '@/app/Components/Organisms/ModalManagement/modalManagement';
+import AccordionForm from '../../../Components/Organisms/Forms/AccordionForm'
+import DeleteSeccion from '../../../Components/Organisms/DeleteSeccionComponent/deleteSeccion';
 
 interface Seccion {
   cod: number;
@@ -12,7 +13,7 @@ interface Seccion {
 }
 
 interface ViewSeccionesProps {
-  tipo: 'subcategoria' | 'categoria';
+  type: 'subcategory' | 'category';
   datos: Seccion[];
   componenteUpdate: React.ComponentType<any>;
   componenteDelete: React.ComponentType<any>;
@@ -24,7 +25,7 @@ interface ViewSeccionesProps {
 }
 
 export default function ViewSecciones({
-  tipo,
+  type,
   datos,
   componenteUpdate: UpdateComponent,
   componenteDelete: DeleteComponent,
@@ -47,6 +48,7 @@ export default function ViewSecciones({
     }
 
     function cerrarModalEliminar() {
+        console.log("0. Sección seleccionada:", seccionSeleccionada);
         setSeccionSeleccionada(null);
         setDeleteModal(false);
     }
@@ -114,9 +116,15 @@ export default function ViewSecciones({
            {deleteModal && seccionSeleccionada && (
                 <ModalManagement onCancelar={cerrarModalEliminar}>
                     <DeleteComponent 
-                        {...(tipo === 'subcategoria' 
-                            ? { subcategoryCod: seccionSeleccionada.cod, subcategoryName: seccionSeleccionada.nombre }
-                            : { categoryCod: seccionSeleccionada.cod, categoryName: seccionSeleccionada.nombre }
+                        {...(type === 'subcategory' 
+                            ? { 
+                                subcategoryCod: seccionSeleccionada.cod,
+                                subcategoryName: seccionSeleccionada.nombre 
+                            }
+                            : { 
+                                categoryCod: seccionSeleccionada.cod,
+                                categoryName: seccionSeleccionada.nombre 
+                            }
                         )}
                         onSuccess={handleEliminacionExitosa}
                         onCancel={cerrarModalEliminar}
@@ -127,9 +135,9 @@ export default function ViewSecciones({
             {updateModal && seccionSeleccionada &&(
                 <ModalManagement onCancelar={cerrarModalEditar}>
                     <UpdateComponent 
-                        {...(tipo === 'subcategoria' 
-                            ? { subcategoryCod: seccionSeleccionada.cod }
-                            : { categoryCod: seccionSeleccionada.cod }
+                        {...(type === 'subcategory' 
+                            ? { subcategoryCod: seccionSeleccionada.cod, subcategoryName: seccionSeleccionada.nombre }
+                            : { categoryCod: seccionSeleccionada.cod, categoryName: seccionSeleccionada.nombre }
                         )}
                         onSubmit={handleActualizacionExitosa}
                         onCancel={cerrarModalEditar}

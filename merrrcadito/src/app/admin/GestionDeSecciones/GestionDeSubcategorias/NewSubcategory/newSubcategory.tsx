@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation';
-import FormSeccion from '@/app/Components/Forms/FormSeccion/formSeccion';
+import FormSeccion from '@/app/Components/Organisms/Forms/FormSeccion/formSeccion';
 
 interface NewSubcategoryProps {
   onSubmit?: () => void;
@@ -12,6 +12,17 @@ export default function NewSubcategory(
 ) {
   const router = useRouter();
 
+  const dataCategories=[
+    {codCat:1,nombreCat:"Textil"},
+    {codCat:2,nombreCat:"Casa"},
+    {codCat:3,nombreCat:"Limpieza"}
+  ];
+
+  const selectOptions = dataCategories.map(cat => ({
+    value: cat.codCat.toString(),  
+    label: cat.nombreCat
+  }));
+
   const handleSubmit = async (formData: any) => {
     const adaptedFormData = {
       categoria: formData.seccion,
@@ -19,6 +30,10 @@ export default function NewSubcategory(
       descripcion: formData.descripcion,
       imagen: formData.imagen
     };
+
+    if (onSubmit) {
+      onSubmit();
+    }
     
     console.log("Creando subcategoría:", adaptedFormData);
     return new Response(JSON.stringify({ success: true }), { status: 200 });
@@ -26,10 +41,12 @@ export default function NewSubcategory(
 
   return(
     <FormSeccion 
-      type={'subcategoria'}
+      type={'subcategory'}
       initialData={undefined}
       onSubmit={handleSubmit}
+      onCancel={onCancel}
       isEditing={false}
+      selectOptions={selectOptions}
     />
   );
 }

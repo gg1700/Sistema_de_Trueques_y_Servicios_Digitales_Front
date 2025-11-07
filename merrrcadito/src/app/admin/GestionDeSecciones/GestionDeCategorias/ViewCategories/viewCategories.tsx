@@ -1,6 +1,6 @@
-import ViewSecciones from "../../ViewSeccionComponent/ViewSeccion";
+import ViewSecciones from "../../../../Components/Organisms/ViewSeccionComponent/ViewSeccion";
 import { useState } from 'react';
-import DeleteCategory from '../../DeleteSeccionComponent/deleteSeccion';
+import DeleteCategory from '../DeleteCategory/deleteCategory';
 import UpdateCategory from '../UpdateCategory/updateCateory';
 import NewCategory from "../NewCategory/newCategory";
 
@@ -25,7 +25,7 @@ export default function ViewCategory(){
 
     return(
         <ViewSecciones 
-            tipo="categoria"
+            type='category'
             datos={data}
             componenteUpdate={UpdateCategory}
             componenteDelete={DeleteCategory}

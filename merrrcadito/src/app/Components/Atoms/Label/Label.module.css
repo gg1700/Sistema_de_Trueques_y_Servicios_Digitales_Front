@@ -1,0 +1,12 @@
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 14px;
+  font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.required {
+  color: #cb2431;
+}

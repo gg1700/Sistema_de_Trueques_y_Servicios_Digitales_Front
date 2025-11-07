@@ -11,7 +11,7 @@ export default function Subcategorias(){
                    form='Nueva Subcategoria'
                    back='Atras'
                    casa='Home'/>
-            <ViewSubcategories />
+            <ViewSubcategories/>
          </div>
         </>
     );

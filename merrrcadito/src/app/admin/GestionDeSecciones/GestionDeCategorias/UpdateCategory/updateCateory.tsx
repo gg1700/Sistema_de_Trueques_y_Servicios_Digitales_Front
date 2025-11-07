@@ -1,4 +1,4 @@
-import FormSeccion from '../../../../Components/Forms/FormSeccion/formSeccion';
+import FormSeccion from '../../../../Components/Organisms/Forms/FormSeccion/formSeccion';
 import { useState } from "react";
 
 
@@ -11,6 +11,12 @@ interface UpdateSubcategoryProps{
 export default function UpdateSubcategory({subcategoryCod, onSubmit, onCancel}:UpdateSubcategoryProps){
 
   const [initialData, setInitialData] = useState(null);
+
+
+  const dataType=[
+    {value: "1",label:"Producto"},
+    {value:"2",label:"Servicio"}
+  ]
 
   //CREAR FUNCION QUE DEVUELVA LOS DATOS DE LA CATEGORIA CARGADA
 
@@ -29,11 +35,12 @@ export default function UpdateSubcategory({subcategoryCod, onSubmit, onCancel}:U
       <>
         
           <FormSeccion 
-              type={'categoria'}
-              initialData={{seccion:"Producto",nombre:"Textil",descripcion:"Dime que estas orgulloso de mi shifu dimelo",imagen:null}}
+              type={'category'}
+              initialData={{seccion:"1",nombre:"Textil",descripcion:"Dime que estas orgulloso de mi shifu dimelo",imagen:null}}
               onSubmit={handleActualizar}
               onCancel={onCancel}
               isEditing={true}
+              selectOptions={dataType}
           />
       </>
     );
