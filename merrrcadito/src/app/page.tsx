@@ -1,5 +1,5 @@
 
-import MenuDesplegable from './Components/MenuDesplegable'
+import MenuDesplegable from '../Components/MenuDesplegable'
 
 export default function paginaPrincipal(){
   return(

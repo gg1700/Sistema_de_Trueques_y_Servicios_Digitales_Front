@@ -1,4 +1,4 @@
-import ViewSecciones from "../../../../Components/Organisms/ViewSeccionComponent/ViewSeccion";
+import ViewSecciones from "../../../../../Components/Organisms/ViewSeccionComponent/ViewSeccion";
 import { useState } from 'react';
 import DeleteCategory from '../DeleteCategory/deleteCategory';
 import UpdateCategory from '../UpdateCategory/updateCateory';

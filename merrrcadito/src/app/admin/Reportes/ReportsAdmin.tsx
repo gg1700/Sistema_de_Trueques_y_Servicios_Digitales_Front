@@ -1,7 +1,7 @@
 'use client'
-import Accordion from '@/app/Components/Accordion';
+import Accordion from '@/Components/Accordion';
 import styles from './reportsAdmin.module.css'
-import BarDiagram from '@/app/Components/Diagrams/BarDiagram'
+import BarDiagram from '@/Components/Diagrams/BarDiagram'
 
 export default function ReportsAdmin() {
     const items=[

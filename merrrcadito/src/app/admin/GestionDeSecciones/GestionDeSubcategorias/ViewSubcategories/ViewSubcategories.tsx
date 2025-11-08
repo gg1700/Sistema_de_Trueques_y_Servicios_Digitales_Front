@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import ViewSecciones from '../../../../Components/Organisms/ViewSeccionComponent/ViewSeccion'; // El componente genérico
+import {ViewSeccion} from '@/Components/Organisms'; // El componente genérico
 import UpdateSubcategory from '../UpdateSubcategory/updateSubcategory';
 import DeleteSubcategory from '../DeleteSubcategory/deleteSubcategory';
 import NewSubcategory from '../NewSubcategory/newSubcategory';
@@ -29,7 +29,7 @@ export default function ViewSubcategories(){
     };
 
     return(
-        <ViewSecciones 
+        <ViewSeccion
             type='subcategory'
             datos={data}
             componenteUpdate={UpdateSubcategory}
