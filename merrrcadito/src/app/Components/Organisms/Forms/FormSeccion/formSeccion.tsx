@@ -2,13 +2,8 @@
 import styles from './formSeccion.module.css';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; 
-import FormField from '../../../Molecules/FormField/FormField';
-import SelectInput from '../../../Atoms/Input/SelectInput/SelectInput';
-import GenericInput from '../../../Atoms/Input/GenericInput/GenericInput';
-import AreaInput from '../../../Atoms/Input/AreaInput/AreaInput';
-import FileInput from '../../../Atoms/Input/FileInput/FileInput'
-import ButtonForm from '@/app/Components/Atoms/ButtonForm/ButtonForm';
-import ButtonCancel from '@/app/Components/Atoms/ButtonCancel/ButtonCancel';
+import {FormField} from '../../../Molecules';
+import {SelectInput, GenericInput, AreaInput, FileInput, ButtonForm, ButtonCancel} from '../../../Atoms';
 
 
 interface FormProps {

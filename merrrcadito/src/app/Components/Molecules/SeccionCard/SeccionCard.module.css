@@ -1,0 +1,64 @@
+.seccionCard {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    margin-bottom: 0;
+}
+
+.cardContent {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.contentMain {
+    flex: 1;
+    min-width: 0;
+    width: 100%; 
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 16px;
+}
+
+.seccionName {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    flex: 1;
+}
+
+.acciones {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.seccionDescription {
+    margin: 0;
+    color: #666;
+    line-height: 1.4;
+    font-size: 14px;
+}
+
+.imageContainer {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    background-size: cover; /* Ajusta la imagen al contenedor */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat;
+}
+
+.image {
+    display: none; /* Oculta la img normal */
+}

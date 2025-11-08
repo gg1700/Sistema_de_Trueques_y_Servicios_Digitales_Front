@@ -1,18 +1,14 @@
 'use client'
-import Menu from '../../../Components/MenuDesplegableSubcategoria';
+import AdminLayout from '@/app/Components/Templates/ManagementLayout/AdminLayout';
 import ViewCategories from './ViewCategories/viewCategories';
 
-export default function Subcategorias(){
+export default function Categorias(){
 
     return(
         <>
-         <div>
-            <Menu nombreMenu='Categorias en productos y servicios'
-                   form='Nueva Categoria'
-                   back='Atras'
-                   casa='Home'/>
+         <AdminLayout pageTitle='Gestion de Secciones' pageSubtitle='Categorias'>
             <ViewCategories />
-         </div>
+         </AdminLayout>
         </>
     );
 }

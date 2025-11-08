@@ -1,5 +1,5 @@
 import styles from './FormField.module.css';
-import Label from '../../Atoms/Label/Label';
+import {Label} from '../../Atoms';
 
 interface FormFieldProps {
   htmlFor: string;

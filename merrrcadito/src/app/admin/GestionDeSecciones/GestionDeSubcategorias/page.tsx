@@ -1,4 +1,5 @@
 'use client'
+import AdminLayout from '@/app/Components/Templates/ManagementLayout/AdminLayout';
 import Menu from '../../../Components/MenuDesplegableSubcategoria';
 import ViewSubcategories from './ViewSubcategories/ViewSubcategories';
 
@@ -7,11 +8,9 @@ export default function Subcategorias(){
     return(
         <>
          <div>
-            <Menu nombreMenu='Subcategorias en Productos'
-                   form='Nueva Subcategoria'
-                   back='Atras'
-                   casa='Home'/>
-            <ViewSubcategories/>
+            <AdminLayout pageTitle='Gestion de Secciones' pageSubtitle='Subcategorias'>
+                <ViewSubcategories/>
+            </AdminLayout>
          </div>
         </>
     );

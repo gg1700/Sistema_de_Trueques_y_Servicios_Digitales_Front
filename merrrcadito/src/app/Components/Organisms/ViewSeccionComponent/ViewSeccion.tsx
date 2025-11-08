@@ -1,15 +1,12 @@
 'use client'
 import { useState } from 'react';
-import styles from './ViewSeccion.module.css'; 
-import ModalManagement from '@/app/Components/Organisms/ModalManagement/modalManagement';
-import AccordionForm from '../../../Components/Organisms/Forms/AccordionForm'
-import DeleteSeccion from '../../../Components/Organisms/DeleteSeccionComponent/deleteSeccion';
+import {SeccionList, AccordionForm, ModalManagement} from '../../Organisms';
 
 interface Seccion {
   cod: number;
   nombre: string;
   descripcion: string;
-  fechaRegistro: string;
+  imagen: string;
 }
 
 interface ViewSeccionesProps {
@@ -83,36 +80,12 @@ export default function ViewSecciones({
 
     return(
         <div>
-           <div>
-               <hr className={styles.hrCard}/>
-           </div>
-           <div className={styles.mainContainer}>
-             <div className={styles.seccionContainer}>
-                   {data.map(seccion => 
-                        <div key={seccion.cod} className={styles.seccionCard}>
-                            <div className={styles.cardContent}>
-                                <div className={styles.textContent}>
-                                    <h3 className={styles.seccionName}>{seccion.nombre}</h3>
-                                    <p className={styles.seccionDescription}>{seccion.descripcion}</p>
-                                </div>
-                                <div className={styles.acciones}>
-                                    <button className={styles.btnAccion} onClick={() => abrirModalEditar(seccion)}>
-                                        <i className="bi bi-pencil-square"></i>
-                                    </button>
-                                    <button className={styles.btnAccion} onClick={() => abrirModalEliminar(seccion)}>
-                                        <i className="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                   )}
-             </div>
-           </div>
-
-           <div>
-                <hr className={styles.hrCard2}/>
-           </div>
-
+           <SeccionList
+                data={data}
+                onEdit={abrirModalEditar}
+                onDelete={abrirModalEliminar}
+                type={type}
+           ></SeccionList>
            {deleteModal && seccionSeleccionada && (
                 <ModalManagement onCancelar={cerrarModalEliminar}>
                     <DeleteComponent 
@@ -149,8 +122,6 @@ export default function ViewSecciones({
                 isOpen={isAccordionOpen}
                 onToggle={() => setIsAccordionOpen(!isAccordionOpen)}
                 triggerText={triggerText}
-                openTriggerText="▲ Ocultar Formulario" 
-                closedTriggerText="▼ Mostrar Formulario"
             >
                 <NewComponent 
                     onSubmit={handleCreacionExitosa}

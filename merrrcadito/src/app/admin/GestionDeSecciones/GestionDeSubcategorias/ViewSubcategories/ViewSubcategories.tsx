@@ -9,17 +9,17 @@ interface Subcategoria {
   cod: number;
   nombre: string;
   descripcion: string;
-  fechaRegistro: string;
+  imagen: string;
 }
 
 export default function ViewSubcategories(){
     const dataSubcategoria = [
-        {cod:234,nombre:"Ropa Varon",descripcion:"jijijijajajaja",fechaRegistro:"20/20/20"},
-        {cod:201,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
-        {cod:202,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
-        {cod:203,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
-        {cod:220,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
-        {cod:210,nombre:"Ropa mujer",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
+        {cod:234,nombre:"Ropa Varon",descripcion:"jijijijajajaja",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:201,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:202,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:203,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:220,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:210,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
     ];
 
     const [data, setData] = useState(dataSubcategoria);
@@ -35,7 +35,7 @@ export default function ViewSubcategories(){
             componenteUpdate={UpdateSubcategory}
             componenteDelete={DeleteSubcategory}
             componenteNuevo={NewSubcategory}
-            triggerText="Agregar Nueva Subcategoría"
+            triggerText="Nueva Subcategoría"
             onEliminacionExitosa={handleEliminacionExitosa}
         />
     );

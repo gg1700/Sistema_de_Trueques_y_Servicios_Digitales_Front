@@ -15,23 +15,16 @@ interface AccordionFormProps {
 export default function AccordionForm({ 
   children, 
   triggerText, 
-  openTriggerText,
-  closedTriggerText,
   isOpen,
   onToggle
 }: AccordionFormProps) {
-
-  const displayText = isOpen 
-    ? (openTriggerText || `▲ ${triggerText}`) 
-    : (closedTriggerText || `▼ ${triggerText}`);
-
   return(
     <div className={styles.accordionContainer}>
       <button 
         className={styles.accordionTrigger}
         onClick={onToggle}
       >
-        {displayText}
+        {triggerText} 
       </button>
       
       {isOpen && (

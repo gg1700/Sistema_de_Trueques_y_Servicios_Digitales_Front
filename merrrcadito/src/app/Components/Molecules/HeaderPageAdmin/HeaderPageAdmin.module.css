@@ -1,0 +1,28 @@
+.headerPageAdmin {
+    background-color: #40E0D0;
+    color: white;
+    padding: 30px 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    gap: 80px; 
+}
+
+.headerContent {
+    display: flex;
+    align-items: baseline; 
+    gap: 100px; 
+    margin-left: 100px;
+}
+
+.hamburgerSpace {
+    width: 40px;
+    height: 40px;
+}
+
+.headerActions {
+    margin-left: auto; /* ← Mágico! Empuja esto todo a la derecha */
+    display: flex;
+    gap: 15px;
+}

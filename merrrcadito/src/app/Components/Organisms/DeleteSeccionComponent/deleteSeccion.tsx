@@ -1,6 +1,5 @@
 import styles from './deleteSeccion.module.css'
-import ButtonForm from '../../Atoms/ButtonForm/ButtonForm'
-import ButtonCancel from '../../Atoms/ButtonCancel/ButtonCancel'
+import {ButtonForm, ButtonCancel} from '../../Atoms'
 
 interface DeleteSeccionProps{
     type: 'subcategory' | 'category';

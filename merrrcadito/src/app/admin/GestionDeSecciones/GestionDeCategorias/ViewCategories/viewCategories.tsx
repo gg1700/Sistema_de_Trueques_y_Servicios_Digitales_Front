@@ -8,17 +8,17 @@ interface Categoria {
   tipo: number;
   nombre: string;
   descripcion: string;
-  fechaRegistro: string;
+  imagen: string;
 }
 
 export default function ViewCategory(){
     const dataSubcategoria = [
-        {cod:211,nombre:"Textil",descripcion:"jijijijajajaja",fechaRegistro:"20/20/20"},
-        {cod:241,nombre:"Tenocologia",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
-        {cod:262,nombre:"Tecnologia",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
-        {cod:273,nombre:"Tecnologia",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
-        {cod:230,nombre:"Tecnologia",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
-        {cod:290,nombre:"Tecnologia",descripcion:"vivaOrurococa",fechaRegistro:"21/21/21"},
+        {cod:211,nombre:"Textil",descripcion:"jijijijajajaja",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:241,nombre:"Tenocologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:262,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:273,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:230,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
+        {cod:290,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
     ];
 
     const [data, setData] = useState(dataSubcategoria);
@@ -29,7 +29,7 @@ export default function ViewCategory(){
             datos={data}
             componenteUpdate={UpdateCategory}
             componenteDelete={DeleteCategory}
-            triggerText="Agregar Nueva Categoría"
+            triggerText="Nueva Categoría"
             componenteNuevo={NewCategory}
         />
     );

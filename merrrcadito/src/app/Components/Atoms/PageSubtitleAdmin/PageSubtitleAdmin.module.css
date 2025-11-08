@@ -1,0 +1,8 @@
+.pageSubtitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 400;
+    opacity: 0.9;
+    color: inherit; /* Hereda el color del contenedor padre */
+    line-height: 1.3;
+}
