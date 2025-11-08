@@ -1,0 +1,28 @@
+.hrCard {
+   border: none;
+   border-top: 10px solid #000;     
+   margin: 130px 500px 0 500px;                  
+   width: calc(100% - 1000px);
+   border-radius: 20px;
+}
+
+.hrCard2 {
+   border: none;
+    border-top: 10px solid #000;     
+    margin: 70px 500px 0 500px;                  
+    width: calc(100% - 1000px);
+    border-radius: 20px;
+}
+
+.mainContainer {
+   height: 300px;
+   overflow-y: auto; 
+   margin: 0 500px;
+}
+
+.seccionContainer {
+ display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}

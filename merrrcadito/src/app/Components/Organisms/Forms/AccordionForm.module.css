@@ -1,0 +1,53 @@
+
+.accordionContainer {
+    margin: 20px 500px 0 500px; /* Mismo margen que SeccionList */
+    width: calc(100% - 1000px);
+}
+
+.accordionTrigger {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #235E69; 
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.accordionTrigger:hover {
+    background-color: #0056b3; /* Color hover similar a los botones */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.accordionTrigger:active {
+    transform: translateY(0);
+}
+
+.accordionContent {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    margin-top: -1px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

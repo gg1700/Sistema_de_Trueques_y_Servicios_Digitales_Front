@@ -1,0 +1,78 @@
+.hrCard {
+    border: none;
+    border-top: 10px solid #000;     
+    margin: 130px 500px 0 500px;                  
+    width: calc(100% - 1000px);
+    border-radius: 20px;
+}
+
+.hrCard2 {
+    border: none;
+    border-top: 10px solid #000;     
+    margin: 70px 500px 0 500px;                  
+    width: calc(100% - 1000px);
+    border-radius: 20px;
+}
+
+.mainContainer {
+    height: 300px;
+    overflow-y: auto; 
+    margin: 0 500px;
+}
+
+.seccionContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.seccionCard {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.cardContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.textContent {
+    flex: 1;
+}
+
+.seccionName {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.seccionDescription {
+    margin: 0 0 8px 0;
+    color: #666;
+}
+
+.acciones {
+    display: flex;
+    gap: 10px;
+}
+
+.btnAccion {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: transparent;
+    color: #333;
+    transition: all 0.3s;
+}
+
+.btnAccion:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
+}
