@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import DeleteSeccion from '../../../../Components/Organisms/DeleteSeccionComponent/deleteSeccion'; 
+import {DeleteSeccion} from '@/Components/Organisms'; 
 
 interface DeleteSubcategoryProps {
   subcategoryCod: number;

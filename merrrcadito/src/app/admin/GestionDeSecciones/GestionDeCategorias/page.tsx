@@ -1,5 +1,5 @@
 'use client'
-import AdminLayout from '@/app/Components/Templates/ManagementLayout/AdminLayout';
+import {AdminLayout} from '@/Components/Templates';
 import ViewCategories from './ViewCategories/viewCategories';
 
 export default function Categorias(){

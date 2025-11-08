@@ -1,6 +1,5 @@
 'use client'
-import AdminLayout from '@/app/Components/Templates/ManagementLayout/AdminLayout';
-import Menu from '../../../Components/MenuDesplegableSubcategoria';
+import {AdminLayout} from '@/Components/Templates';
 import ViewSubcategories from './ViewSubcategories/ViewSubcategories';
 
 export default function Subcategorias(){

@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation';
-import FormSeccion from '@/app/Components/Organisms/Forms/FormSeccion/formSeccion';
+import {FormSeccion} from '@/Components/Organisms';
 
 interface NewSubcategoryProps {
   onSubmit?: () => void;

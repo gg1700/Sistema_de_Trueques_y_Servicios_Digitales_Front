@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react';
-import {SeccionList, AccordionForm, ModalManagement} from '../../Organisms';
+import {SeccionList, AccordionForm, ModalManagement} from '..';
 
 interface Seccion {
   cod: number;
