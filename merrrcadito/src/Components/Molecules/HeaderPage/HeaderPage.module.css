@@ -1,12 +1,13 @@
-.headerPageAdmin {
+.headerPage {
     background-color: #40E0D0;
     color: white;
-    padding: 30px 40px;
+    padding: 25px 40px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    min-height: 100px;
+    min-height: 80px;
     display: flex;
     align-items: center;
     gap: 80px; 
+    margin-left: 290px;
 }
 
 .headerContent {
@@ -22,7 +23,7 @@
 }
 
 .headerActions {
-    margin-left: auto; /* ← Mágico! Empuja esto todo a la derecha */
+    margin-left: auto; 
     display: flex;
     gap: 15px;
 }

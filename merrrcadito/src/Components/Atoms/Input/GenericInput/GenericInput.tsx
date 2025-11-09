@@ -17,7 +17,7 @@ export default function GenericInput({
   onChange,
   placeholder,
   disabled = false,
-  error = false
+  error = false,
 }: InputProps) {
   return (
     <input

@@ -1,0 +1,17 @@
+.userLayout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #00A182; 
+}
+
+.mainArea {
+    margin-left: 290px;
+    flex: 1;
+    background-color: #00A182;
+    min-height: 100vh;
+}
+
+.content {
+    padding: 30px 40px;
+    min-height: calc(100vh - 80px); 
+}
