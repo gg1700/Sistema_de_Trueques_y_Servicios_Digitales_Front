@@ -8,3 +8,5 @@ export {default as SelectInput} from './Input/SelectInput/SelectInput';
 export {default as Label} from './Label/Label';
 export {default as PageSubtitleAdmin} from './PageSubtitleAdmin/PageSubtitleAdmin';
 export {default as PageTitleAdmin} from './PageTitleAdmin/PageTitleAdmin';
+export {default as ProfileInput} from './Input/ProfileInput/ProfileInput';
+export {default as ButtonNav} from './Buttons/ButtonNav/ButtonNav'

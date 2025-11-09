@@ -1,0 +1,33 @@
+.profileInput {
+    width: 100%;
+    border: none;
+    border-bottom: 10px solid #160C28;
+    padding: 10px 0;
+    font-size: 16px;
+    background: transparent;
+    transition: border-color 0.3s ease;
+    outline: none;
+}
+
+.profileInput:focus {
+    outline: none;
+    border-color: #40E0D0; 
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(64, 224, 208, 0.1);
+}
+
+.profileInput:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+.profileInput[type="date"] {
+    cursor: pointer;
+}
+
+.profileInput[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+}

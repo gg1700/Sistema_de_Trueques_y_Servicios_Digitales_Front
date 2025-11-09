@@ -3,7 +3,7 @@ import styles from './ButtonForm.module.css'
 interface ButtonFormProps{
     type: 'submit' | 'cancel' | 'delete'
     action: 'register' | 'delete' | 'update'
-    entity: 'category' | 'subcategory'
+    entity: 'category' | 'subcategory' | 'user'
     disabled?: boolean
     onClick?: () => void
 
@@ -28,6 +28,7 @@ export default function ButtonForm({
         const entities = {
         category: 'Categoría',
         subcategory: 'Subcategoría',
+        user: 'Usuario'
         };
 
         if(type=='cancel'){

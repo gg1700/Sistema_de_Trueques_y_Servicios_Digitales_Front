@@ -4,7 +4,7 @@ import {Label} from '../../Atoms';
 interface FormFieldProps {
   htmlFor: string;
   label: string;
-  error: string,
+  error?: string,
   children: React.ReactNode;
   required?: boolean;
 }

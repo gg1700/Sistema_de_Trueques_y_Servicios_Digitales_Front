@@ -1,3 +1,4 @@
+'use client'
 import styles from './FileInput.module.css';
 import { useState, useRef } from 'react';
 
