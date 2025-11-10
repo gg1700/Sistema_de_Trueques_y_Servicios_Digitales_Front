@@ -1,9 +1,9 @@
 'use client'
 import styles from './formSeccion.module.css';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; 
 import {FormField} from '../../../Molecules';
 import {SelectInput, GenericInput, AreaInput, FileInput, ButtonForm, ButtonCancel} from '../../../Atoms';
+import { CommunValidators, SeccionValidators, ValidateField } from '@/Utils/FormValidation';
 
 
 interface FormProps {
@@ -33,9 +33,6 @@ export default function FormSeccion({
   isEditing = false,
 }: FormProps) {
 
-
-
-    const router = useRouter();
     const [form, setForm] = useState({
         seccion: "",
         nombre: "",
@@ -100,7 +97,7 @@ export default function FormSeccion({
         }
     }
 
-    function validateForm(){
+    function validateForm():boolean{
         const newErrors = {
             seccion: "",
             nombre: "",
@@ -108,25 +105,29 @@ export default function FormSeccion({
             imagen: ""
         };
 
-        if(!form.seccion){
-            newErrors.seccion = "Debe seleccionar "+(type==='subcategory'? 'una categoria': 'un tipo');
-        }
+        newErrors.seccion=ValidateField(
+            form.seccion,
+            [CommunValidators.required]
+        ) || "";
 
-        if(!form.nombre.trim()){
-            newErrors.nombre = "El nombre de la" +(type==='subcategory'? 'Subcategoria': 'Categoria')+ " es obligatorio";
-        } else if(form.nombre.length <= 2){
-            newErrors.nombre = "NO puede ser menos de 3 caracteres";
-        }
+        newErrors.nombre=ValidateField(
+            form.nombre,
+            [CommunValidators.required,
+             SeccionValidators.nombre
+            ]
+        ) || "";
 
-        if(!form.descripcion.trim()){
-            newErrors.descripcion = "La descripcion es obligatoria";
-        } else if(form.descripcion.length < 10){
-            newErrors.descripcion = "Debe ser una descripcion más detallada";
-        }
+        newErrors.descripcion=ValidateField(
+            form.descripcion,
+            [CommunValidators.required,
+             SeccionValidators.descripcion
+            ]
+        ) || "";
         
-        if(!form.imagen){
-            newErrors.imagen = "Debe subir una imagen";
-        }
+        newErrors.imagen=ValidateField(
+            form.imagen,
+            [CommunValidators.required]
+        ) || "";
 
         setErrors(newErrors);
         return !Object.values(newErrors).some(error => error !== "");

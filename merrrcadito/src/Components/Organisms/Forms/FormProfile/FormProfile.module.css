@@ -1,6 +1,6 @@
 .formContainer {
     max-width: 900px;
-    margin: 20px 40px;      /* 20px arriba/abajo, 40px laterales */
-    margin: 20px auto;      /* Esta es la mejor - centrado con espacio */
+    margin: 20px 40px;      
+    margin: 20px auto;      
     padding: 30px;
 }

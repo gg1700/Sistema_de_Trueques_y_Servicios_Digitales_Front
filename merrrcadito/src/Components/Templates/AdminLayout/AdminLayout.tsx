@@ -24,9 +24,7 @@ export default function AdminLayout({
       </SideBar>
       <main className={styles.main}>
         <HeaderPage pageTitle={pageTitle} pageSubtitle={pageSubtitle} />
-        <div className={styles.content}>
             {children}
-        </div>
       </main>
     </div>
   );

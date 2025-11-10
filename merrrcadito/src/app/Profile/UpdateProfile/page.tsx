@@ -1,8 +1,15 @@
 import {FormProfile} from '@/Components/Organisms'
+import UpdateProfile from './UpdateProfile';
+import {UserLayout} from '@/Components/Templates'
 
 
-export default function UpdateProfile(){
+export default function Profile(){
     return(
-        <FormProfile/>
+        <UserLayout
+           pageTitle="Informacion de la cuenta"
+           pageSubtitle="jijijajajaj"
+        >
+            <UpdateProfile/>
+        </UserLayout>
     );
 }
