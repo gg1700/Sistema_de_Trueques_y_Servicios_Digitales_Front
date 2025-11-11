@@ -12,7 +12,7 @@ export const UserValidators = {
     if (value.length <=1 || value.length >=15) {
         return 'Implemente un nombre real';
     }
-    if (!/^[a-zA-Z]+$/.test(value)) {
+    if (!/^[a-zA-Z]+(?:\s+[a-zA-Z]+)+$/.test(value)) {
         return 'Numeros o signos no permitidos';
     }
     return null;
@@ -45,7 +45,7 @@ export const UserValidators = {
     const fechaNac = new Date(value);
     const hoy = new Date();
 
-    if(fechaNac > hoy) {
+    if(fechaNac >= hoy) {
         return 'Fecha no valida';
     }
 

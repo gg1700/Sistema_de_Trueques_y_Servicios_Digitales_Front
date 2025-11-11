@@ -22,8 +22,6 @@ export default function ReportsAdmin() {
     ]
     return (
         <div className={styles.container}> 
-            <h1 className={styles.principalTitle}>REPORTES PARA MEJORAR EL MERRRCADITO</h1>
-
             <div>
                 <Accordion items={items} />
             </div>

@@ -1,0 +1,18 @@
+
+.formContainer {
+  width: 62%;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columnas */
+  gap: 1rem; /* Espacio entre elementos */
+}
+
+.fullWidth {
+  grid-column: 1 / -1; /* Ocupa toda la fila */
+}
+
+.halfWidth {
+  grid-column: span 1; /* Ocupa 1 columna */
+}

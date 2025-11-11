@@ -235,7 +235,7 @@ export default  function FormProfile({initialData}:UserDataProps){
 
     return(
         <div className={styles.formContainer}>
-            <form className={styles.form} onSubmit={handleSubmit}>
+            <form className={styles.form} onSubmit={handleSubmit} noValidate>
 
                 {userFields.map(field => (
                     <FormField

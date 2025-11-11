@@ -59,18 +59,18 @@ export default function FormSeccion({
     }, [initialData]);
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-      const { name, value } = e.target;
-       setForm(prev => ({
+        const { name, value } = e.target;
+        setForm(prev => ({
         ...prev,
         [name]: value
-       }));
+        }));
 
-       if(error[name as keyof typeof error]){
+        if(error[name as keyof typeof error]){
         setErrors(prev => ({
             ...prev,
             [name]: ""
         }));
-       }
+        }
     } 
 
     function handleFileChange(file: File | null) {
