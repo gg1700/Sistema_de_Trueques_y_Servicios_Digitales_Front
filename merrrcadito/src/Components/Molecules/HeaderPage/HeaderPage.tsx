@@ -1,3 +1,4 @@
+'use client'
 import styles from './HeaderPage.module.css'
 import { PageTitleAdmin, PageSubtitleAdmin, ButtonIcon } from "../../Atoms";
 

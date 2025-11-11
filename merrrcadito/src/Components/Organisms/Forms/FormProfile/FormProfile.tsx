@@ -1,37 +1,36 @@
 'use client'
 import styles from './FormProfile.module.css'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ButtonCancel, ButtonForm, ProfileInput } from '@/Components/Atoms';
 import { FormField } from '@/Components/Molecules';
+import { CommunValidators, ValidateField, UserValidators  } from '@/Utils/FormValidation';
 
 interface  UserDataProps{
+  initialData:{
     handleName: string,
     nombre: string,
     apellidoPaterno: string,
     apellidoMaterno: string,
     rol: string,
     correoElectronico: string,
-    fechaNacimineto: string,
-    numeroTelf: number,
-    ci: number,
+    fechaNacimiento: string,
+    numeroTelf: string,
+    ci: string,}
 }
 
-export default  function FormProfile(){
+interface FormState {
+    handleName: string;
+    nombre: string;
+    apellidoPaterno: string;
+    apellidoMaterno: string;
+    rol: string;
+    correoElectronico: string;
+    fechaNacimiento: string;
+    numeroTelf: string;
+    ci: string;
+}
 
-    const [userData,setUserData] = useState<UserDataProps>({
-        handleName:"ElPapu",
-        nombre:"Alfonso",
-        apellidoPaterno:"Chuño",
-        apellidoMaterno:"Torrales",
-        rol:"Usuario Comun",
-        correoElectronico:"nepe@gmail.com",
-        fechaNacimineto:'02-02-02',
-        numeroTelf:625472,
-        ci:999999
-    });
-
-    //HACER QUE UNA VALIDACION DEL FORM(INCLUIYE SI NO SE HIZO NINGUN CAMBIO PARA NO LLAMA AL SP)
-
+export default  function FormProfile({initialData}:UserDataProps){
     const userFields = [
         { 
             name: 'handleName', 
@@ -61,7 +60,8 @@ export default  function FormProfile(){
             name: 'rol', 
             label: 'Rol', 
             component: 'text',
-            required: true 
+            required: true,
+            readOnly: true
         },
         {
             name: 'correoElectronico', 
@@ -87,19 +87,39 @@ export default  function FormProfile(){
             component: 'text',
             required: true 
         }
-    ]
+    ];
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setUserData(prev => ({ ...prev, [name]: value }));
-    };
+    const [form,setForm]=useState<FormState>({
+        handleName: initialData?.handleName || "",
+        nombre: initialData?.nombre || "",
+        apellidoPaterno: initialData?.apellidoPaterno || "",
+        apellidoMaterno: initialData?.apellidoMaterno || "",
+        rol: initialData?.rol || "",
+        correoElectronico: initialData?.correoElectronico || "",
+        fechaNacimiento: initialData?.fechaNacimiento || "",
+        numeroTelf: initialData?.numeroTelf || "",
+        ci: initialData?.ci || ""
+    });
+
+    const [error,setError]=useState({
+        handleName:"",
+        nombre:"",
+        apellidoPaterno:"",
+        apellidoMaterno:"",
+        correoElectronico:"",
+        fechaNacimiento:'',
+        numeroTelf:"",
+        ci:""
+    });
 
     const renderFieldComponent = (field: typeof userFields[0]) => {
+        const fieldName = field.name as keyof FormState;
         const commonProps = {
         name: field.name,
-        value: userData[field.name as keyof UserDataProps],
+        value: form[fieldName],
         onChange: handleChange,
-        required: field.required
+        required: field.required,
+        disabled: field.readOnly
         };
 
         switch(field.component) {
@@ -109,11 +129,113 @@ export default  function FormProfile(){
             default:
             return <ProfileInput type='text' {...commonProps} />;
         }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+            setForm(prev => ({
+                ...prev,
+                [name]: value
+            }));
+
+        if(error[name as keyof typeof error]){
+            setError(prev => ({
+                ...prev,
+                [name]: ""
+            }));
+        }
+    };
+
+    const handleSubmit = (e:React.FormEvent) => {
+         e.preventDefault();
+        
+        if(validateForm()){
+            console.log("Cambios guardados: ", form);
+              
+        } else {
+            console.log("Form INCORRECTO");
+        }
     }
+
+    function validateForm():boolean{
+        const newErrors={
+            handleName:"",
+            nombre:"",
+            apellidoPaterno:"",
+            apellidoMaterno:"",
+            rol:"",
+            correoElectronico:"",
+            fechaNacimiento:'',
+            numeroTelf:"",
+            ci:""
+        }
+
+        newErrors.handleName=ValidateField(
+            form.handleName,
+            [CommunValidators.required,
+             UserValidators.handleName
+            ]
+        ) || "";
+
+        newErrors.nombre=ValidateField(
+            form.nombre,
+            [CommunValidators.required,
+             UserValidators.nombre
+            ]
+        ) || "";
+
+        newErrors.apellidoPaterno=ValidateField(
+            form.apellidoPaterno,
+            [CommunValidators.required,
+             UserValidators.apellidoPaterno
+            ]
+        ) || "";
+
+        newErrors.apellidoMaterno=ValidateField(
+            form.apellidoMaterno,
+            [CommunValidators.required,
+             UserValidators.apellidoMaterno
+            ]
+        ) || "";
+
+        newErrors.correoElectronico=ValidateField(
+            form.correoElectronico,
+            [CommunValidators.required,
+             UserValidators.correoElectronico
+            ]
+        ) || "";
+
+        newErrors.fechaNacimiento=ValidateField(
+            form.fechaNacimiento,
+            [CommunValidators.required,
+             UserValidators.fechaNacimiento
+            ]
+        ) || "";
+
+        newErrors.numeroTelf=ValidateField(
+            form.numeroTelf,
+            [CommunValidators.required,
+             UserValidators.numeroTelf
+            ]
+        ) || "";
+
+        newErrors.ci=ValidateField(
+            form.ci,
+            [CommunValidators.required,
+             UserValidators.ci
+            ]
+        ) || "";
+
+        setError(newErrors);
+        return !Object.values(newErrors).some(error => error !== "");
+    }
+
+     console.log("initialData recibido:", initialData);
+    console.log("Estado del form:", form);
 
     return(
         <div className={styles.formContainer}>
-            <form className={styles.form} onSubmit={() => console.log("Pollita")}>
+            <form className={styles.form} onSubmit={handleSubmit} noValidate>
 
                 {userFields.map(field => (
                     <FormField
@@ -121,22 +243,20 @@ export default  function FormProfile(){
                         htmlFor={field.name}
                         label={field.label}
                         required={field.required}
+                        error={error[field.name as keyof typeof error]}
                     >
                         {renderFieldComponent(field)}
                     </FormField>
                 ))}
-            </form>
 
             <ButtonForm 
                 type='submit'
                 action='update'
                 entity='user'
-                onClick={() => console.log("Cambios guardados")}
             />
 
             <ButtonCancel />
-
-            
+            </form>
         </div>
     );
 }

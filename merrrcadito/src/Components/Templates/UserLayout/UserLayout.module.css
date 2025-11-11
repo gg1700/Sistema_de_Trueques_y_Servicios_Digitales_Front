@@ -1,0 +1,11 @@
+.userLayout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #D9D9D9; 
+}
+
+.mainArea {
+    flex: 1;
+    background-color: #D9D9D9;
+    min-height: 100vh;
+}
