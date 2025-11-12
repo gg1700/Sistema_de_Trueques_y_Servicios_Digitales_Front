@@ -7,7 +7,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-
 import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(
@@ -19,8 +18,21 @@ ChartJS.register(
   Legend
 );
 
+interface BarDiagramProps {
+  data: {
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      backgroundColor?: string | string[];
+      borderColor?: string;
+    }[];
+  };
+  title?: string;
+  height?: number;
+}
 
-export const options = {
+const defaultOptions = {
   responsive: true,
   plugins: {
     legend: {
@@ -28,23 +40,22 @@ export const options = {
     },
     title: {
       display: true,
-      text: 'INSERTAR TITULO',
+      text: 'Gráfico de Barras',
     },
   },
 };
 
-//CONSTRUIR FUNCION PARA  LLAMAR SP Y DATOS GUARDAR EN LOS LABELS
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+export default function BarDiagram({ data, title, height = 400 }: BarDiagramProps) {
+  const options = {
+    ...defaultOptions,
+    plugins: {
+      ...defaultOptions.plugins,
+      title: {
+        ...defaultOptions.plugins.title,
+        text: title || defaultOptions.plugins.title.text,
+      },
+    },
+  };
 
-export const data={
-    labels,
-    datasets:[{
-      label: 'Dataset 1',
-      data: labels.map(() => 50),
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    }],
-};
-
-export default function BarDiagram() {
-  return <Bar options={options} data={data} />;
+  return <Bar options={options} data={data} height={height} />;
 }
