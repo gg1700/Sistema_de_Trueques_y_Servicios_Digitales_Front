@@ -1,0 +1,9 @@
+.host{
+  position: relative;   
+  min-height: 100dvh;
+  width: 100%;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}

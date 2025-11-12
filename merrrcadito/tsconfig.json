@@ -1,4 +1,5 @@
-{ "compilerOptions": {
+{
+  "compilerOptions": {
     "baseUrl": ".",
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -21,9 +22,16 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/Utils/*": ["./src/Utils/*"],
-      "@/Components/*": ["src/Components/*"]
+      "@/Components/*": ["./src/Components/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/atoms/*": ["./src/components/atoms/*"],
+      "@/molecules/*": ["./src/components/molecules/*"],
+      "@/organisms/*": ["./src/components/organisms/*"],
+      "@/templates/*": ["./src/templates/*"]
     }
   },
+
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+
   "exclude": ["node_modules"]
 }
