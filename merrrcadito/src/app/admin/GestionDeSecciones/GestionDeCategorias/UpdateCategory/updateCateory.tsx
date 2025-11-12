@@ -1,34 +1,41 @@
 import {FormSeccion} from '@/Components/Organisms';
 import { useState } from "react";
+import { CategoryService } from '@/services';
 
 
 interface UpdateSubcategoryProps{
-  subcategoryCod: number,
+  categoryCod: number,
+  initialData: any,
   onSubmit: () => void,
   onCancel: () => void
 }
 
-export default function UpdateSubcategory({subcategoryCod, onSubmit, onCancel}:UpdateSubcategoryProps){
-
-  const [initialData, setInitialData] = useState(null);
-
+export default function UpdateSubcategory({categoryCod, onSubmit, onCancel}:UpdateSubcategoryProps){
 
   const dataType=[
     {value: "1",label:"Producto"},
     {value:"2",label:"Servicio"}
-  ]
-
-  //CREAR FUNCION QUE DEVUELVA LOS DATOS DE LA CATEGORIA CARGADA
+  ];
 
   const handleActualizar = async (formData: any) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log("Actualizando:", formData);
-    const response= new Response(JSON.stringify({ 
-      success: true, 
-      message: "categoría actualizada" 
-    }), { status: 200 });
-    onSubmit();
-    return response;
+    try{
+
+      console.log("Actualizando ", categoryCod);
+      console.log("los datos", formData);
+      const updateData = {
+        nom_cat: formData.nombre,
+        descr_cat: formData.descripcion,
+        imagen_repr: formData.imagen,
+        tipo_cat: formData.seccion
+      };
+
+      console.log("Datos para update:", updateData);
+      const result = await CategoryService.updateCategory(categoryCod, updateData);
+      console.log(result);
+
+    }catch (error){
+       console.error("Error actualizando categoría:", error);
+    }
   }
     return (
 
@@ -36,7 +43,7 @@ export default function UpdateSubcategory({subcategoryCod, onSubmit, onCancel}:U
         
           <FormSeccion 
               type={'category'}
-              initialData={{seccion:"1",nombre:"Textil",descripcion:"Dime que estas orgulloso de mi shifu dimelo",imagen:null}}
+              initialData={initialData}
               onSubmit={handleActualizar}
               onCancel={onCancel}
               isEditing={true}

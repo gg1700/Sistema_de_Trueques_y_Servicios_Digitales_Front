@@ -5,4 +5,4 @@ export {default as ModalManagement} from './ModalManagement/modalManagement';
 export {default as SeccionList} from './SeccionList/SeccionList';
 export {default as ViewSeccion} from './ViewSeccionComponent/ViewSeccion';
 export {default as FormProfile} from './Forms/FormProfile/FormProfile';
-export {default as SideBar} from './SideBar/SideBar'
+export {default as SideBar} from './SideBar/SideBar';

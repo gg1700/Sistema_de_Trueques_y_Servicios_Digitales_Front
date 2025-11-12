@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation';
 import {FormSeccion} from '@/Components/Organisms';
+import {SubcategoryService} from '@/services'
 
 interface NewSubcategoryProps {
   onSubmit?: () => void;
@@ -12,31 +13,24 @@ export default function NewSubcategory(
 ) {
   const router = useRouter();
 
-  const dataCategories=[
-    {codCat:1,nombreCat:"Textil"},
-    {codCat:2,nombreCat:"Casa"},
-    {codCat:3,nombreCat:"Limpieza"}
-  ];
-
-  const selectOptions = dataCategories.map(cat => ({
-    value: cat.codCat.toString(),  
-    label: cat.nombreCat
-  }));
-
   const handleSubmit = async (formData: any) => {
-    const adaptedFormData = {
-      categoria: formData.seccion,
-      nombre: formData.nombre,
-      descripcion: formData.descripcion,
-      imagen: formData.imagen
-    };
+    try{
+      const subcategoryData = {
+        cod_cat: formData.seccion,
+        nom_subcat_prod: formData.nombre,
+        descr_subcat_prod: formData.descripcion,
+        imagen_representativa: formData.imagen
+      };
 
-    if (onSubmit) {
-      onSubmit();
+      if (onSubmit) {
+        onSubmit();
+      }
+      
+      console.log("Creando subcategoría:", subcategoryData);
+      return await SubcategoryService.registerSubcategory(subcategoryData);
+    }catch(error){
+      console.error('Error creando subcateoria: ', error);
     }
-    
-    console.log("Creando subcategoría:", adaptedFormData);
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
   }
 
   return(
