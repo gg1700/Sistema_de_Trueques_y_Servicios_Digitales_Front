@@ -1,7 +1,8 @@
 'use client'
 import { useRouter } from 'next/navigation';
 import {FormSeccion} from '@/Components/Organisms';
-import {SubcategoryService} from '@/services'
+import {CategoryService, SubcategoryService} from '@/services'
+import { useEffect, useState } from 'react';
 
 interface NewSubcategoryProps {
   onSubmit?: () => void;
@@ -12,6 +13,21 @@ export default function NewSubcategory(
  { onSubmit, onCancel }: NewSubcategoryProps
 ) {
   const router = useRouter();
+
+  const [categories,setCategories]=useState<{value:string,label:string}[]>([]);
+  
+  useEffect(() => {
+    async function getCategories(){
+      const response = await CategoryService.getAllCategory();
+      const categorias= response.data;
+      const mapCatNom= categorias.map((cat : any) => ({
+        value: cat.nom_cat,
+        label: cat.nom_cat
+      }));
+      setCategories(mapCatNom);
+    }
+    getCategories();
+  },[]);
 
   const handleSubmit = async (formData: any) => {
     try{
@@ -40,7 +56,7 @@ export default function NewSubcategory(
       onSubmit={handleSubmit}
       onCancel={onCancel}
       isEditing={false}
-      selectOptions={selectOptions}
+      selectOptions={categories}
     />
   );
 }

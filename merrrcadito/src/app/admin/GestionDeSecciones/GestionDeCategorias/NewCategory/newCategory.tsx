@@ -9,12 +9,14 @@ interface NewCategoryProps {
 export default function NewCategory({onSubmit, onCancel}:NewCategoryProps){
 
     const dataTypes=[
-        {value:"1", label:"Producto"},
-        {value: "2", label: "Servicio"}
+        {value:"Producto", label:"Producto"},
+        {value: "Servicio", label: "Servicio"}
     ]
 
     const handleSubmit = async (formData:any) => {
+        console.log(formData.imagen);
         try{
+            
          const categoryData = {
             nom_cat: formData.nombre,           
             descr_cat: formData.descripcion,    

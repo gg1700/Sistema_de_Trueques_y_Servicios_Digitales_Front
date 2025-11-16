@@ -21,28 +21,28 @@ export default function FormPublicationProduct(){
                            {value: "2", label: "Nuevo"}];
 
    const [form,setForm]=useState({
-        nombreProduct: "",
+        nom_prod: "",
         peso:"",
-        material:"",
-        categoria:"",
-        subcategoria:"",
+        nom_mat:"",
+        nom_cat:"",
+        nom_subcat_prod:"",
         calidad:"",
         descripcion:"",
         precio:"",
-        imagen: null as File | null
+        foto_pub: null as File | null
      }
     );
 
    const [error,setErrors]=useState({
-      nombreProduct: "",
+      nom_prod: "",
       peso:"",
-      material:"",
-      categoria:"",
-      subcategoria:"",
+      nom_mat:"",
+      nom_cat:"",
+      nom_subcat_prod:"",
       calidad:"",
       descripcion:"",
       precio:"",
-      imagen: ""
+      foto_pub: ""
    })
 
    function handleChange(e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>){
@@ -63,13 +63,13 @@ export default function FormPublicationProduct(){
    function handleFileChange(file : File | null){
       setForm(prev => ({
         ...prev,
-        imagen: file
+        foto_pub: file
         }));
 
-      if (error.imagen) {
+      if (error.foto_pub) {
             setErrors(prev => ({
                 ...prev,
-                imagen: ""
+                foto_pub: ""
             }));
       }
    }
@@ -87,19 +87,19 @@ export default function FormPublicationProduct(){
 
    function validateForm(){
       const newErrors={
-         nombreProduct: "",
+         nom_prod: "",
          peso:"",
-         material:"",
-         categoria:"",
-         subcategoria:"",
+         nom_mat:"",
+         nom_cat:"",
+         nom_subcat_prod:"",
          calidad:"",
          descripcion:"",
          precio:"",
-         imagen: ""
+         foto_pub: ""
       }
 
-      newErrors.nombreProduct=ValidateField(
-         form.nombreProduct,
+      newErrors.nom_prod=ValidateField(
+         form.nom_prod,
          [CommunValidators.required,
           PublicationValidators.nombreProd
          ]
@@ -112,18 +112,18 @@ export default function FormPublicationProduct(){
          ]
       ) || "";
 
-      newErrors.material=ValidateField(
-         form.material,
+      newErrors.nom_mat=ValidateField(
+         form.nom_mat,
          [CommunValidators.required]
       ) || "";
 
-      newErrors.categoria=ValidateField(
-         form.categoria,
+      newErrors.nom_cat=ValidateField(
+         form.nom_cat,
          [CommunValidators.required]
       ) || "";
 
-      newErrors.subcategoria=ValidateField(
-         form.subcategoria,
+      newErrors.nom_subcat_prod=ValidateField(
+         form.nom_subcat_prod,
          [CommunValidators.required]
       ) || "";
 
@@ -146,8 +146,8 @@ export default function FormPublicationProduct(){
          ]
       ) || "";
 
-      newErrors.imagen=ValidateField(
-         form.imagen,
+      newErrors.foto_pub=ValidateField(
+         form.foto_pub,
          [CommunValidators.required]
       ) || "";
 
@@ -162,13 +162,13 @@ export default function FormPublicationProduct(){
                    <FormField
                     htmlFor="nombre producto"
                     label="Nombre del Producto"
-                    error={error.nombreProduct}
+                    error={error.nom_prod}
                  >
                     <GenericInput 
                         name="nombre producto"
-                        value={form.nombreProduct}
+                        value={form.nom_prod}
                         onChange={handleChange}
-                        error={!!error.nombreProduct}
+                        error={!!error.nom_prod}
                     />
                  </FormField>
                </div>
@@ -192,15 +192,15 @@ export default function FormPublicationProduct(){
                  <FormField
                     htmlFor="material"
                     label="Material"
-                    error={error.material}
+                    error={error.nom_mat}
                  >
                     <SelectInput
                         name="material"
-                        value={form.material}
+                        value={form.nom_mat}
                         onChange={handleChange}
                         placeholder={"Seleccione un material"}
                         options={materialOptions}
-                       error={!!error.material}
+                       error={!!error.nom_mat}
                     />
                  </FormField>
                </div>
@@ -208,15 +208,15 @@ export default function FormPublicationProduct(){
                  <FormField
                     htmlFor="categoria"
                     label="Categoria"
-                   error={error.categoria}
+                   error={error.nom_cat}
                  >
                     <SelectInput
                         name="categoria"
-                        value={form.categoria}
+                        value={form.nom_cat}
                         onChange={handleChange}
                         placeholder={"Seleccione una categoria"}
                         options={categoryOptions}
-                       error={!!error.categoria}
+                       error={!!error.nom_cat}
                     />
                  </FormField>
                </div>
@@ -224,16 +224,16 @@ export default function FormPublicationProduct(){
                <div className={styles.hallWidth}>
                  <FormField
                      htmlFor="subcategoria"
-                     label="Subcaegoria"
-                     error={error.subcategoria}
+                     label="Subcategoria"
+                     error={error.nom_subcat_prod}
                  >
                      <SelectInput 
                         name="subcategoria"
-                        value={form.subcategoria}
+                        value={form.nom_subcat_prod}
                         onChange={handleChange}
                         placeholder={"Seleccione una subcategoria"}
                         options={subcategoryOptions}
-                        error={!!error.subcategoria}
+                        error={!!error.nom_subcat_prod}
                      />
                  </FormField>
                </div>
@@ -289,12 +289,12 @@ export default function FormPublicationProduct(){
                  <FormField
                      htmlFor="imagen"
                      label="Suba una imagen del producto"
-                     error={error.imagen}
+                     error={error.foto_pub}
                  >
                      <FileInput
                          name="imagen"
                          onChange={handleFileChange}
-                         error={!!error.imagen}
+                         error={!!error.foto_pub}
                      />
                  </FormField>
                </div>

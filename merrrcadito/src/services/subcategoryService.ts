@@ -3,18 +3,14 @@ import * as dotenv from 'dotenv';
 
 const API_BASE_URL=process.env.NEXT_PUBLIC_BACK_URL;;
 
-const endpoint1='/subcategory/get';
-const endpoint2='/subcategory/register';
-const endpoint3='/subcategory/update';
 
 export const SubcategoryService = {
 
-    getSubcategories: async () =>{
+    getAllSubcategories: async () =>{
         try{
             const response = await axios.get(
-                API_BASE_URL + endpoint1
+                `{API_BASE_URL}/subcategories`
             );
-
             return response.data;
         }catch(error:any){
             console.error('Error obteniendo subcategorias', error);
@@ -36,7 +32,7 @@ export const SubcategoryService = {
             formData.append('imagen_repr', subcategoryData.imagen_representativa);
 
             const response = await axios.post(
-                API_BASE_URL + endpoint2,
+                `{API_BASE_URL}/subcategories`,
                 formData,
                 {
                     headers: {

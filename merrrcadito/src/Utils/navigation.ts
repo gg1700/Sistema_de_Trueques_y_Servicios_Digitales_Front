@@ -5,7 +5,8 @@ export const navItems = {
     { name: 'Mi Perfil', route: '/perfil' },
   ],
   admin: [
-    { name: 'Gestión de Secciones', route: '/admin/secciones' },
+    { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias' },
+    { name: 'Gestión de Subcategorias', route: '/admin/GestionDeSecciones/GestionDeSubcategorias' },
     { name: 'Gestión de la Tienda', route: '/admin/usuarios' },
     { name: 'Reportes', route: '/admin/reportes' },
   ],

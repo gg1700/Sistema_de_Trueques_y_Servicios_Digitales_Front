@@ -1,12 +1,13 @@
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {SeccionList, AccordionForm, ModalManagement} from '..';
 
 interface Seccion {
   cod: number;
   nombre: string;
+  tipo: string
   descripcion: string;
-  imagen: string;
+  imagen: string | null;
 }
 
 interface ViewSeccionesProps {
@@ -37,7 +38,6 @@ export default function ViewSecciones({
     const [updateModal, setUpdateModal] = useState(false);
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
     const [seccionSeleccionada, setSeccionSeleccionada] = useState<Seccion | null>(null);
-    const [data, setData] = useState(datos);
 
     function abrirModalEliminar(seccion: Seccion) {
         setSeccionSeleccionada(seccion);
@@ -62,7 +62,6 @@ export default function ViewSecciones({
 
     const handleEliminacionExitosa = () => {
         if (seccionSeleccionada) {
-            setData(prev => prev.filter(item => item.cod !== seccionSeleccionada.cod));
             onEliminacionExitosa?.(seccionSeleccionada.cod);
         }
         cerrarModalEliminar();
@@ -81,7 +80,7 @@ export default function ViewSecciones({
     return(
         <div>
            <SeccionList
-                data={data}
+                data={datos}
                 onEdit={abrirModalEditar}
                 onDelete={abrirModalEliminar}
                 type={type}

@@ -1,8 +1,8 @@
 import styles from './ButtonForm.module.css'
 
 interface ButtonFormProps{
-    type: 'submit' | 'cancel' | 'delete'
-    action: 'register' | 'delete' | 'update' | 'publish'
+    type: 'submit' | 'cancel' | 'delete' | 'open'
+    action: 'register' | 'delete' | 'update' | 'publish' | 'watch'
     entity: 'category' | 'subcategory' | 'user' | 'publication'
     disabled?: boolean
     onClick?: () => void
@@ -23,7 +23,8 @@ export default function ButtonForm({
         register: 'Registrar',
         update: 'Actualizar', 
         delete: 'Eliminar',
-        publish: 'Publicar'
+        publish: 'Publicar',
+        watch: 'Ver más'
         };
 
         const entities = {
