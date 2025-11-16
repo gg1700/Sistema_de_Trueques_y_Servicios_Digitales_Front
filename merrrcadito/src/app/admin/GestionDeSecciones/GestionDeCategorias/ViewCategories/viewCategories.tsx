@@ -1,27 +1,40 @@
 import ViewSecciones from "../../../../../Components/Organisms/ViewSeccionComponent/ViewSeccion";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DeleteCategory from '../DeleteCategory/deleteCategory';
 import UpdateCategory from '../UpdateCategory/updateCateory';
 import NewCategory from "../NewCategory/newCategory";
+import { CategoryService } from "@/services";
 
 interface Categoria {
-  tipo: number;
+  cod: number
+  tipo: string;
   nombre: string;
   descripcion: string;
-  imagen: string;
+  imagen: string | null;
 }
-
 export default function ViewCategory(){
-    const dataCategoria = [
-        {cod:211,nombre:"Textil",descripcion:"jijijijajajaja",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:241,nombre:"Tenocologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:262,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:273,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:230,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:290,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-    ];
 
-    const [data, setData] = useState(dataCategoria);
+
+    const [data, setData] = useState<Categoria[]>([]);
+    useEffect( () => {
+        async function cargarCategorias(){
+            try{
+                const response = await CategoryService.getAllCategory();
+                const categorias=response.data;
+                const mapCategorias = categorias.map((cat: any)=> ({
+                    cod: cat.cod_cat,
+                    tipo: cat.tipo_cat,
+                    nombre: cat.nom_cat,
+                    descripcion: cat.descr_cat           
+                }));
+                setData(mapCategorias); 
+                console.log(data);
+            }catch(error){
+                console.error('Error cargando categorías:', error);
+            }
+        }
+        cargarCategorias();
+    },[]);
 
     return(
         <ViewSecciones 

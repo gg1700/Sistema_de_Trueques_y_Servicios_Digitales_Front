@@ -1,17 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL=process.env.BACK_URL;
-
-const endpoint1='category/get_all';
-const endpoint2='category/register';
-const endpoint3='category/update';
+const API_BASE_URL=process.env.NEXT_PUBLIC_BACK_URL;
 
 export const CategoryService = {
-    
+
     getAllCategory: async () =>{
         try{
             const response= await axios.get(
-                API_BASE_URL + endpoint1,
+               `${API_BASE_URL}/categories`,
             );
 
             console.log("Categorías obtenidas:", response.data);
@@ -28,25 +24,23 @@ export const CategoryService = {
         tipo_cat: string;
     }) => {
         try{
+
             const formData = new FormData();
+
             formData.append('nom_cat', categoryData.nom_cat);
             formData.append('descr_cat', categoryData.descr_cat);
             formData.append('imagen_repr', categoryData.imagen_repr);
             formData.append('tipo_cat', categoryData.tipo_cat);
 
             const response = await axios.post(
-                API_BASE_URL + endpoint2,
+                `${API_BASE_URL}/categories`,
                 formData,
-                {
-                    headers: {
-                    'Content-Type': 'multipart/form-data'  
-                    }
-                }
             );
 
             return response.data;
+
         }catch(error:any){
-            console.error('Error registrando categoria:', error);
+            console.error('Error registrando categoria:', error.response?.data || error.message);
             throw new Error(error.response?.data?.error || 'Error al registrar categoría');
         }
     },
@@ -65,7 +59,7 @@ export const CategoryService = {
             if (attributes.tipo_cat) formData.append('tipo_cat', attributes.tipo_cat);
 
             const response = await axios.put(
-                `${API_BASE_URL}/category/update?cod_cat=${cod_cat}`,
+                `${API_BASE_URL}/categories?cod_cat=${cod_cat}`,
                 formData,
                 {
                 headers: {

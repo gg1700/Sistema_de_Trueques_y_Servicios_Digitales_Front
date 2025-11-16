@@ -3,7 +3,7 @@ export const SeccionValidators = {
     if (value.length <= 2) {
       return 'No puede ser menos de 3 caracteres';
     }
-    if (!/^[a-zA-Z]+(?:\s+[a-zA-Z]+)+$/.test(value)) {
+    if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
       return 'No puede ser un numero o signos';
     }
     return null;

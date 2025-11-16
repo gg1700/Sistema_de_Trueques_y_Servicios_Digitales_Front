@@ -9,9 +9,10 @@ import { SubcategoryService } from '@/services';
 import * as dotenv from 'dotenv';
 interface Subcategoria {
   cod: number;
+  tipo: string;
   nombre: string;
   descripcion: string;
-  imagen: string;
+  imagen: string | null;
 }
 
 export default function ViewSubcategories(){
@@ -24,7 +25,7 @@ export default function ViewSubcategories(){
       const optionsSubcategories = async () => {
       try{
         console.log('Obtenindo subcategorias');
-        const subcategoria= await SubcategoryService.getSubcategories();
+        const subcategoria= await SubcategoryService.getAllSubcategories();
         console.log('subcategorias: ', subcategoria)
         setData(subcategoria);
       }catch(error: any){
