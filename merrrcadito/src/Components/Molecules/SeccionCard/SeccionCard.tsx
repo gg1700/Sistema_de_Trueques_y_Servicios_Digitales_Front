@@ -1,11 +1,13 @@
 import styles from './SeccionCard.module.css';
 import {ButtonIcon} from '../../Atoms';
 
+
 interface Seccion {
   cod: number;
   nombre: string;
   descripcion: string;
-  imagen: string;
+  tipo: string;
+  imagen: string | null;
 }
 
 interface SeccionCardProps {
@@ -13,24 +15,30 @@ interface SeccionCardProps {
   onEdit: (seccion: Seccion) => void;
   onDelete: (seccion: Seccion) => void;
 }
+const API_BASE_URL=process.env.NEXT_PUBLIC_BACK_URL;
 
 export default function SeccionCard({
   seccion,
   onEdit,
   onDelete
 }: SeccionCardProps) {
+
+  function getImageCategory(cod : number){
+    return `${API_BASE_URL}/categories/${cod}/image`;
+  }
+
   return (
     <div className={styles.seccionCard}>
       <div className={styles.cardContent}>
-        {seccion.imagen && (
           <div className={styles.imageContainer} style={{ backgroundImage: `url(${seccion.imagen})`}} >
             <img 
-              src={seccion.imagen} 
+              src={getImageCategory(seccion.cod)} 
               alt={`Imagen de ${seccion.nombre}`}
               className={styles.image}
+              onLoad={() => console.log('Imagen cargada:', getImageCategory(seccion.cod))}  
             />
           </div>
-        )}
+        
         <div className={styles.contentMain}>
           <div className={styles.headerRow}>
             <h3 className={styles.seccionName}>{seccion.nombre}</h3>

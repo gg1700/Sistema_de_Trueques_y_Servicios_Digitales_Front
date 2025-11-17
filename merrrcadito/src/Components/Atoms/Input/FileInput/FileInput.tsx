@@ -1,11 +1,12 @@
 'use client'
 import styles from './FileInput.module.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 interface FileInputProps {
   name: string;
   onChange: (file: File | null) => void;
   accept?: string;
+  initialImage?: string | null,
   disabled?: boolean;
   error?: boolean;
 }
@@ -15,10 +16,17 @@ export default function FileInput({
   onChange,
   accept = "image/*",
   disabled = false,
+  initialImage= null,
   error = false
 }: FileInputProps) {
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(initialImage);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (initialImage) {
+      setPreview(initialImage);
+    }
+  }, [initialImage]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -30,7 +38,7 @@ export default function FileInput({
       };
       reader.readAsDataURL(file);
     } else {
-      setPreview(null);
+      setPreview(initialImage);
     }
     
     onChange(file);

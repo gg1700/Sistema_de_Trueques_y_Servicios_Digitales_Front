@@ -9,25 +9,26 @@ interface NewCategoryProps {
 export default function NewCategory({onSubmit, onCancel}:NewCategoryProps){
 
     const dataTypes=[
-        {value:"1", label:"Producto"},
-        {value: "2", label: "Servicio"}
-    ]
+        {value:"Producto", label:"Producto"},
+        {value: "Servicio", label: "Servicio"}
+    ];
 
     const handleSubmit = async (formData:any) => {
+        console.log(formData.imagen);
         try{
+            
          const categoryData = {
             nom_cat: formData.nombre,           
             descr_cat: formData.descripcion,    
             imagen_repr: formData.imagen,       
             tipo_cat: formData.seccion   
          };
-
             const result=await CategoryService.registerCategory(categoryData);
             console.log("Categoria registrada", result);
         }catch (error) {
                 console.error("Error creando categoría:", error);
         }
-    }
+    };
 
     return(
         <FormSeccion 

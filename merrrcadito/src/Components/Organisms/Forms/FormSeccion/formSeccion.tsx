@@ -12,7 +12,7 @@ interface FormProps {
         seccion: string;
         nombre: string;
         descripcion: string;
-        imagen?: File | null;
+        imagen?: string | File | null;
     };
     onSubmit: (formData: any) => void;
     onCancel?:() => void;
@@ -37,7 +37,7 @@ export default function FormSeccion({
         seccion: "",
         nombre: "",
         descripcion: "",
-        imagen: null as File | null 
+        imagen: null as string | File | null 
     });
 
     const [error, setErrors] = useState({
@@ -213,12 +213,13 @@ export default function FormSeccion({
                 htmlFor="imagen"
                 label="Subir Imagen"
                 error={error.imagen}
-                required
+                required={!isEditing}
             >
                 <FileInput
                     name="imagen"
                     onChange={handleFileChange}
                     error={!!error.imagen}
+                    initialImage={typeof initialData?.imagen === 'string' ? initialData.imagen : null}
                 >
                 </FileInput>
             </FormField>

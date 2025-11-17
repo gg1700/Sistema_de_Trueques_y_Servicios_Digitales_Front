@@ -5,7 +5,8 @@ interface Seccion {
   cod: number;
   nombre: string;
   descripcion: string;
-  imagen: string;
+  tipo: string
+  imagen: string | null;
 }
 
 interface SeccionListProps {
@@ -20,6 +21,7 @@ export default function SeccionList({
   onEdit,
   onDelete,
   type
+  
 }: SeccionListProps) {
   return (
     <div>
