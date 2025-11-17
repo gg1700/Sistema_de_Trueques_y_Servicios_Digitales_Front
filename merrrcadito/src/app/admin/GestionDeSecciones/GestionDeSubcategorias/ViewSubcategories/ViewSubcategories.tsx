@@ -1,10 +1,12 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {ViewSeccion} from '@/Components/Organisms'; // El componente genérico
 import UpdateSubcategory from '../UpdateSubcategory/updateSubcategory';
 import DeleteSubcategory from '../DeleteSubcategory/deleteSubcategory';
 import NewSubcategory from '../NewSubcategory/newSubcategory';
+import { SubcategoryService } from '@/services';
 
+import * as dotenv from 'dotenv';
 interface Subcategoria {
   cod: number;
   nombre: string;
@@ -13,20 +15,27 @@ interface Subcategoria {
 }
 
 export default function ViewSubcategories(){
-    const dataSubcategoria = [
-        {cod:234,nombre:"Ropa Varon",descripcion:"jijijijajajaja",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:201,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:202,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:203,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:220,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-        {cod:210,nombre:"Ropa mujer",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
-    ];
 
-    const [data, setData] = useState(dataSubcategoria);
+  console.log("BACK_URL: ", process.env.NEXT_PUBLIC_BACK_URL);
+    
+  const [data, setData] = useState<Subcategoria[]>([]);
 
-    const handleEliminacionExitosa = (cod: number) => {
-        setData(prev => prev.filter(item => item.cod !== cod));
-    };
+  useEffect(() => {
+      const optionsSubcategories = async () => {
+      try{
+        console.log('Obtenindo subcategorias');
+        const subcategoria= await SubcategoryService.getSubcategories();
+        console.log('subcategorias: ', subcategoria)
+        setData(subcategoria);
+      }catch(error: any){
+        console.error('Error al obtener subcategorias: ', error);
+      };
+    } 
+      optionsSubcategories();
+  },[])
+
+  const handleEliminacionExitosa = (cod: number) => {
+  };
 
     return(
         <ViewSeccion

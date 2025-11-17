@@ -22,12 +22,17 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/Utils/*": ["./src/Utils/*"],
+<<<<<<< HEAD
       "@/Components/*": ["./src/Components/*"],
       "@/components/*": ["./src/components/*"],
       "@/atoms/*": ["./src/components/atoms/*"],
       "@/molecules/*": ["./src/components/molecules/*"],
       "@/organisms/*": ["./src/components/organisms/*"],
       "@/templates/*": ["./src/templates/*"]
+=======
+      "@/Components/*": ["src/Components/*"],
+      "@/services": ["./src/services/index.ts"]
+>>>>>>> 15235c6a46d9e3331e691a17d454b122b2d97d43
     }
   },
 

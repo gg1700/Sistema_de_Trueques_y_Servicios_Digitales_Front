@@ -12,7 +12,7 @@ interface Categoria {
 }
 
 export default function ViewCategory(){
-    const dataSubcategoria = [
+    const dataCategoria = [
         {cod:211,nombre:"Textil",descripcion:"jijijijajajaja",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
         {cod:241,nombre:"Tenocologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
         {cod:262,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
@@ -21,7 +21,7 @@ export default function ViewCategory(){
         {cod:290,nombre:"Tecnologia",descripcion:"vivaOrurococa",imagen:encodeURI("/Captura desde 2025-11-03 23-42-08.png")},
     ];
 
-    const [data, setData] = useState(dataSubcategoria);
+    const [data, setData] = useState(dataCategoria);
 
     return(
         <ViewSecciones 

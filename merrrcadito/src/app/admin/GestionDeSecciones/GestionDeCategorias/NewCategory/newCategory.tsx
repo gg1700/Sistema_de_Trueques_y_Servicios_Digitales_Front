@@ -1,4 +1,5 @@
 import {FormSeccion} from "@/Components/Organisms";
+import { CategoryService } from "@/services";
 
 interface NewCategoryProps {
   onSubmit?: () => void;
@@ -12,13 +13,21 @@ export default function NewCategory({onSubmit, onCancel}:NewCategoryProps){
         {value: "2", label: "Servicio"}
     ]
 
-    const handleSubmit = async (formData: any) => {
-        const adaptedFormData = {
-        tipo: formData.seccion,
-        nombre: formData.nombre,
-        descripcion: formData.descripcion,
-        imagen: formData.imagen
-    }};
+    const handleSubmit = async (formData:any) => {
+        try{
+         const categoryData = {
+            nom_cat: formData.nombre,           
+            descr_cat: formData.descripcion,    
+            imagen_repr: formData.imagen,       
+            tipo_cat: formData.seccion   
+         };
+
+            const result=await CategoryService.registerCategory(categoryData);
+            console.log("Categoria registrada", result);
+        }catch (error) {
+                console.error("Error creando categoría:", error);
+        }
+    }
 
     return(
         <FormSeccion 
@@ -28,6 +37,5 @@ export default function NewCategory({onSubmit, onCancel}:NewCategoryProps){
             isEditing={false}
             selectOptions={dataTypes}
         />
-    );
+    ); 
 }
-
