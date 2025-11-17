@@ -21,6 +21,7 @@ export default function SeccionList({
   onEdit,
   onDelete,
   type
+  
 }: SeccionListProps) {
   return (
     <div>

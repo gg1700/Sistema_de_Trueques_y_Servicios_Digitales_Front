@@ -23,7 +23,7 @@ export default function ViewCategory(){
                 const categorias=response.data;
                 const mapCategorias = categorias.map((cat: any)=> ({
                     cod: cat.cod_cat,
-                    tipo: cat.tipo_cat,
+                    tipo: cat.tipo_cat || (cat.tipo_cat === 'Producto' ? '1' : '2'),
                     nombre: cat.nom_cat,
                     descripcion: cat.descr_cat           
                 }));

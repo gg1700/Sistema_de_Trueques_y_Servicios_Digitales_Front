@@ -1,0 +1,92 @@
+
+.sectionContainer {
+  width: 100%;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+
+.sectionHeader {
+  padding: 0 50px;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+
+.scrollWrapper {
+  position: relative;
+}
+
+
+.scrollContainer {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 0 50px;
+  scrollbar-width: none;
+  -ms-overflow-style: none; 
+}
+
+
+.scrollContainer::-webkit-scrollbar {
+  display: none;
+}
+
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s ease;
+}
+
+.navButton:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.navButton:active {
+  background-color: rgba(0, 0, 0, 1);
+}
+
+.navButtonLeft {
+  left: 0;
+}
+
+.navButtonRight {
+  right: 0;
+}
+
+
+@media (max-width: 768px) {
+  .sectionHeader {
+    padding: 0 20px;
+  }
+
+  .scrollContainer {
+    padding: 0 20px;
+  }
+
+  .navButton {
+    width: 40px;
+    font-size: 20px;
+  }
+
+  .sectionTitle {
+    font-size: 20px;
+  }
+}

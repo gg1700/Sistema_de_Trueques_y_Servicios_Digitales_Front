@@ -22,8 +22,9 @@ export default function AdminLayout({
       <SideBar title="MERRRCADITO">
         <NavBar navBar={adminNavItems} />
       </SideBar>
-      <main className={styles.main}>
-        <HeaderPage pageTitle={pageTitle} pageSubtitle={pageSubtitle} />
+
+      <HeaderPage pageTitle={pageTitle} pageSubtitle={pageSubtitle} />
+      <main className={styles.mainContent}>
             {children}
       </main>
     </div>

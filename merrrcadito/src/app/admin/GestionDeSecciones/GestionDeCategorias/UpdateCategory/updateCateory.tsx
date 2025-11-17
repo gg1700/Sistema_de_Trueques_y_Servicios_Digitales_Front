@@ -3,23 +3,32 @@ import { useState } from "react";
 import { CategoryService } from '@/services';
 
 
-interface UpdateSubcategoryProps{
+interface UpdateCategoryProps{
   categoryCod: number,
-  initialData: any,
+  initialData:{
+    seccion: string;
+    nombre: string;
+    descripcion: string;
+    imagen: string | null;
+  },
   onSubmit: () => void,
   onCancel: () => void
 }
 
-export default function UpdateSubcategory({categoryCod, onSubmit, onCancel}:UpdateSubcategoryProps){
+export default function UpdateCategory({
+  categoryCod, 
+  initialData,
+  onSubmit, 
+  onCancel
+}:UpdateCategoryProps){
 
   const dataType=[
-    {value: "1",label:"Producto"},
-    {value:"2",label:"Servicio"}
+    {value: "Producto",label:"Producto"},
+    {value:"Servicio",label:"Servicio"}
   ];
 
   const handleActualizar = async (formData: any) => {
     try{
-
       console.log("Actualizando ", categoryCod);
       console.log("los datos", formData);
       const updateData = {
