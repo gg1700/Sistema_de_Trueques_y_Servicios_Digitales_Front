@@ -16,6 +16,7 @@ export const CategoryService = {
             console.error("Error al obtener las categorias");
         }
 
+        
     },
     registerCategory: async (categoryData:{
         nom_cat: string;
@@ -59,7 +60,7 @@ export const CategoryService = {
             if (attributes.tipo_cat) formData.append('tipo_cat', attributes.tipo_cat);
 
             const response = await axios.put(
-                `${API_BASE_URL}/categories?cod_cat=${cod_cat}`,
+                `${API_BASE_URL}/category/update=${cod_cat}`,
                 formData,
                 {
                 headers: {

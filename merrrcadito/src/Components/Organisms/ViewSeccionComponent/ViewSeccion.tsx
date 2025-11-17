@@ -39,6 +39,8 @@ export default function ViewSecciones({
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
     const [seccionSeleccionada, setSeccionSeleccionada] = useState<Seccion | null>(null);
 
+    const API_BASE_URL = process.env.NEXT_PUBLIC_BACK_URL; 
+
     function abrirModalEliminar(seccion: Seccion) {
         setSeccionSeleccionada(seccion);
         setDeleteModal(true);
@@ -111,6 +113,12 @@ export default function ViewSecciones({
                             ? { subcategoryCod: seccionSeleccionada.cod, subcategoryName: seccionSeleccionada.nombre }
                             : { categoryCod: seccionSeleccionada.cod, categoryName: seccionSeleccionada.nombre }
                         )}
+                         initialData={{  
+                                seccion: seccionSeleccionada.tipo ,  
+                                nombre: seccionSeleccionada.nombre,
+                                descripcion: seccionSeleccionada.descripcion,
+                                imagen: type=== 'category'? `${API_BASE_URL}/categories/${seccionSeleccionada.cod}/image` : null
+                            }}
                         onSubmit={handleActualizacionExitosa}
                         onCancel={cerrarModalEditar}
                     />

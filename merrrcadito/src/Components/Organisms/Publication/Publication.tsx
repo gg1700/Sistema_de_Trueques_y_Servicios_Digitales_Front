@@ -18,6 +18,7 @@ interface PubProdProps extends BasePubProps {
     marca?: string;
 }
 
+
 interface PubServProps extends BasePubProps {
     hrs_ini_serv: string;
     hrs_fin_serv: string;
@@ -29,7 +30,8 @@ interface PublicationProps{
     pub:{
         cod_pub: number,
         nombre_publicacion: string,
-        nombre_seccion: string,
+        nombre_categoria: string,
+        nombre_subcat?: string,
         precio_pub?: number,
         foto_pub: string,
         calif_pond_pub: number,
@@ -37,8 +39,8 @@ interface PublicationProps{
         handlename: string,
         estado_pub: 'activo' | 'inactivo',
     },
-    pubP: PubProdProps,
-    pubS: PubServProps
+    pubP?: PubProdProps | null,
+    pubS?: PubServProps | null
 }
 
 export default function Publication({
@@ -67,10 +69,12 @@ export default function Publication({
             />
             {isModalOpen && (
                 <ModalManagement onClose={cerrarModal}>
-                    {clase === 'Producto' ? (
+                    {clase === 'Producto' && pubP ? (  
                         <PublicationProducto pub={pubP} onCancel={cerrarModal} />
-                    ) : (
+                    ) : clase === 'Servicio' && pubS ? (  
                         <PublicationService pub={pubS} onCancel={cerrarModal}/>
+                    ) : (
+                        <div>No hay datos disponibles</div> 
                     )}
                 </ModalManagement>
             )}

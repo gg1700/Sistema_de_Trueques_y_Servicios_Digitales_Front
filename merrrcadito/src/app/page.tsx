@@ -1,3 +1,4 @@
+import FormPublicationProduct from "@/Components/Organisms/Forms/FormPublication/FormPublicationProduct";
 import Publication from "@/Components/Organisms/Publication/Publication";
 
 export default function paginaPrincipal(){
@@ -23,10 +24,10 @@ export default function paginaPrincipal(){
             cantidad: 3,
             marca: "Apple"
         },
-        pubS: {} as any // Placeholder para servicio
+        pubS: {} as any 
     };
 
-    // Datos hardcodeados para SERVICIO
+
     const publicacionServicio = {
         clase: 'Servicio' as const,
         pub: {
@@ -49,11 +50,11 @@ export default function paginaPrincipal(){
             hrs_fin_serv: "18:00",
             duracion: 2
         },
-        pubP: {} as any // Placeholder para producto
+        pubP: {} as any 
     };
   return(
     <div>
-            {/* Publicación de Producto */}
+            
             <Publication
                 clase={publicacionProducto.clase}
                 pub={publicacionProducto.pub}
@@ -61,13 +62,15 @@ export default function paginaPrincipal(){
                 pubS={publicacionProducto.pubS}
             />
 
-            {/* Publicación de Servicio */}
+    
             <Publication
                 clase={publicacionServicio.clase}
                 pub={publicacionServicio.pub}
                 pubP={publicacionServicio.pubP}
                 pubS={publicacionServicio.pubS}
             />
+
+            <FormPublicationProduct />
         </div>
   );
 }

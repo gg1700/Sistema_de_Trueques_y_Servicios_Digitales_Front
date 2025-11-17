@@ -7,6 +7,7 @@ import NewSubcategory from '../NewSubcategory/newSubcategory';
 import { SubcategoryService } from '@/services';
 
 import * as dotenv from 'dotenv';
+
 interface Subcategoria {
   cod: number;
   tipo: string;
@@ -24,9 +25,12 @@ export default function ViewSubcategories(){
   useEffect(() => {
       const optionsSubcategories = async () => {
       try{
-        console.log('Obtenindo subcategorias');
-        const subcategoria= await SubcategoryService.getAllSubcategories();
-        console.log('subcategorias: ', subcategoria)
+        const response= await SubcategoryService.getAllSubcategories();
+        const subcategoria= response.data;
+        const mapSubcategories= subcategoria.map((subcat:any)=>({
+          cod: subcat.cod_subcat_prod,
+        }));
+
         setData(subcategoria);
       }catch(error: any){
         console.error('Error al obtener subcategorias: ', error);

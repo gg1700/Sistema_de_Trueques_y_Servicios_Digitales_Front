@@ -29,7 +29,7 @@ export default function FormPublicationProduct(){
         calidad:"",
         descripcion:"",
         precio:"",
-        foto_pub: null as File | null
+        foto_pub: null as File | null,
      }
     );
 

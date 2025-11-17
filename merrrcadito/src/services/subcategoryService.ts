@@ -9,8 +9,9 @@ export const SubcategoryService = {
     getAllSubcategories: async () =>{
         try{
             const response = await axios.get(
-                `{API_BASE_URL}/subcategories`
+                `${API_BASE_URL}/subcategories`,
             );
+
             return response.data;
         }catch(error:any){
             console.error('Error obteniendo subcategorias', error);
