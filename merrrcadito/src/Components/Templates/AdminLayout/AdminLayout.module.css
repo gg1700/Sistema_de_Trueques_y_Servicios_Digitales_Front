@@ -1,11 +1,11 @@
 .adminLayout {
-    min-height: 100vh;
+    min-height: 200vh;
     background-color: #D9D9D9;
 }
 
 .mainContent {
-    margin-left: 400px;  
-    min-height: 100vh;
+    margin-left: 50px;  
+    min-height: 200vh;
     display: flex;
     flex-direction: column;
 }

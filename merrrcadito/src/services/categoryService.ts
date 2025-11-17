@@ -16,6 +16,7 @@ export const CategoryService = {
             console.error("Error al obtener las categorias");
         }
 
+        
     },
     registerCategory: async (categoryData:{
         nom_cat: string;

@@ -1,12 +1,28 @@
 'use client'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {AccordionForm} from '@/Components/Organisms';
 import BarDiagram from '@/Components/Diagrams/BarDiagram';
 import styles from './reportsAdmin.module.css'
+import { ReportService } from '@/services';
 
 export default function ReportsAdmin() {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
-        const categoriasData = {
+
+    const [dataR1, setDataR2]=useState<any[]>([]);
+
+    
+    useEffect(() => {
+        async function loadFirstReport() {
+            const report = await ReportService.get_category_report_by_month("01");
+            
+            console.log("📊 Reporte cargado:", report);
+        }
+        
+        loadFirstReport();  
+    }, [])
+    
+
+    const categoriasData = {
         labels: ['Electrónicos', 'Ropa', 'Hogar', 'Deportes', 'Juguetes', 'Libros'],
         datasets: [{
             label: 'Ventas Totales',
@@ -42,7 +58,7 @@ export default function ReportsAdmin() {
 
     const reportConfigs = [
         {
-            title: "Categorias y sus Ventas o Intercambios",
+            title: "Categorias de Productos y sus Ventas o Intercambios",
             data: categoriasData,
             chartProps: {
                 xAxisKey: "categoria",

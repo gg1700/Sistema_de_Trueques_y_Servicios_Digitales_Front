@@ -24,10 +24,10 @@ export default function paginaPrincipal(){
             cantidad: 3,
             marca: "Apple"
         },
-        pubS: {} as any // Placeholder para servicio
+        pubS: {} as any 
     };
 
-    // Datos hardcodeados para SERVICIO
+
     const publicacionServicio = {
         clase: 'Servicio' as const,
         pub: {
