@@ -13,6 +13,7 @@ export const CategoryService = {
             console.log("Categorías obtenidas:", response.data);
             return response.data;
         }catch(error){
+            console.log(error);
             console.error("Error al obtener las categorias");
         }
 
