@@ -44,21 +44,21 @@ interface ServiceFormState {
 const fakeOffers: Offer[] = [
   {
     id: 1,
-    title: 'Cocaina',
+    title: 'Cámara Vintage Canon AE-1',
     description:
-      'Droga estimulante adictiva elaborada a partir de las hojas de la planta de coca (Erythroxylon coca), nativa de Sudamérica. La cocaína se puede inhalar, frotar en las encías, inyectar en la sangre o fumar.',
+      'Cámara analógica clásica en perfecto estado de conservación. Incluye lente de 50mm f/1.8 y funda de cuero original. Ideal para estudiantes de fotografía o coleccionistas.',
   },
   {
     id: 2,
-    title: 'Cocaina',
+    title: 'Mantenimiento y Reparación de PC',
     description:
-      'Droga estimulante adictiva elaborada a partir de las hojas de la planta de coca (Erythroxylon coca), nativa de Sudamérica. La cocaína se puede inhalar, frotar en las encías, inyectar en la sangre o fumar.',
+      'Servicio técnico profesional para laptops y computadoras de escritorio. Incluye limpieza de hardware, optimización de sistema operativo, eliminación de virus e instalación de programas.',
   },
   {
     id: 3,
-    title: 'Cocaina',
+    title: 'Bicicleta de Montaña Trek Marlin',
     description:
-      'Droga estimulante adictiva elaborada a partir de las hojas de la planta de coca (Erythroxylon coca), nativa de Sudamérica. La cocaína se puede inhalar, frotar en las encías, inyectar en la sangre o fumar.',
+      'Bicicleta talla M con poco uso. Cuenta con frenos de disco hidráulicos, suspensión delantera y transmisión Shimano de 21 velocidades. Lista para rodar.',
   },
 ];
 
@@ -248,13 +248,13 @@ export default function UserProfile({ role = 'admin' }: UserProfileProps) {
 
         {activeTab === 'likes' && (
           <div className={styles.placeholderTab}>
-            <p>Python, el mejor lenguaje</p>
+            <p>No hay me gustas</p>
           </div>
         )}
 
         {activeTab === 'events' && (
           <div className={styles.placeholderTab}>
-            <p>Java es basura</p>
+            <p>No hay eventos</p>
           </div>
         )}
       </div>
