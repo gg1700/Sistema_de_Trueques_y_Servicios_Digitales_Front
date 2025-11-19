@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import UserLayout from '@/Components/Templates/UserLayout/UserLayout';
+import AdminLayout from '@/Components/Templates/UserLayout/UserLayout';
 import { getAllTokenPackages, TokenPackageDB } from '@/services/tokenService';
 import styles from './tokens.module.css';
 import { FaCoins } from 'react-icons/fa';
@@ -92,7 +92,7 @@ export default function TokensPage() {
   };
 
   return (
-    <UserLayout
+    <AdminLayout
       pageTitle="Tienda de Tokens"
       pageSubtitle="Compra tokens con dinero real para usar en la plataforma."
     >
@@ -110,6 +110,6 @@ export default function TokensPage() {
           ))}
         </div>
       )}
-    </UserLayout>
+    </AdminLayout>
   );
 }
