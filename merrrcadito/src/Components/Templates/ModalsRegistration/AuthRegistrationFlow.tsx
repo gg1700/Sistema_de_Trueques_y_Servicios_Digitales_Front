@@ -1,95 +1,119 @@
 "use client";
 
-import { useState } from "react";
-import styles from "./AuthRegistrationFlow.module.css";
+import React, { useState } from "react";
 
-/* Importes RELATIVOS porque están en la misma carpeta */
-import LoginLandingModal from "./LoginLandingModal";
-import SignInChoiceModal from "./SignInChoiceModal";
-import LogInModal from "./LogInModal";
-import SignInUserModal from "./SignInUserModal";
-import SignInOrganizationModal from "./SignInOrganizationModal";
+import LoginLandingModal from "@/Components/Templates/ModalsRegistration/LoginLandingModal";
+import LogInModal from "@/Components/Templates/ModalsRegistration/LogInModal";
+import SignInChoiceModal from "@/Components/Templates/ModalsRegistration/SignInChoiceModal";
+import SignInOrganizationModal from "@/Components/Templates/ModalsRegistration/SignInOrganizationModal";
+import SignInUserModal from "@/Components/Templates/ModalsRegistration/SignInUserModal";
+import EntrepreneurRegister from "@/Components/Templates/ModalsRegistration/EntrepreneurRegister";
 
-/* Estados del flujo */
 type Step =
   | "landing"
-  | "choice"
   | "login"
-  | "signup_user"
-  | "signup_org"
-  | "idle";
+  | "choice"
+  | "organization"
+  | "user"
+  | "entrepreneur";
 
-export default function AuthRegistrationFlow() {
+const AuthRegistrationFlow: React.FC = () => {
+  // 👇 Punto de entrada: como antes, empezamos en el landing
   const [step, setStep] = useState<Step>("landing");
 
-  // Navegación entre pantallas
-  const goLanding = () => setStep("landing");
-  const goChoice = () => setStep("choice");
-  const goLogin = () => setStep("login");
-  const goSignupUser = () => setStep("signup_user");
-  const goSignupOrg = () => setStep("signup_org");
-  const closeAll = () => setStep("idle");
+  // ---------- HANDLERS LÓGICOS (aquí irían tus llamadas a API) ----------
 
-  // Submits (conecta aquí tu API)
   const handleLogin = async (data: { username: string; password: string }) => {
-    console.log("LOGIN", data);
-    closeAll();
+    console.log("Log In:", data);
+    // TODO: llamada a tu backend para log in
   };
 
-  const handleSignupUser = async (payload: unknown) => {
-    console.log("SIGNUP USER", payload);
-    closeAll();
+  const handleOrganizationRegister = async (data: {
+    legalName: string;
+    alias: string;
+    type: string;
+    cif: string;
+    email: string;
+    phone: string;
+    address: string;
+    website: string;
+    logo?: File | null;
+  }) => {
+    console.log("Registro Organización:", data);
+    // TODO: llamada a tu backend
   };
 
-  const handleSignupOrg = async (payload: unknown) => {
-    console.log("SIGNUP ORG", payload);
-    closeAll();
+  const handleUserRegister = async (data: {
+    ci: string;
+    firstName: string;
+    lastNameFather: string;
+    lastNameMother: string;
+    birth: string;
+    sex: "M" | "F" | "";
+    email: string;
+    phone: string;
+    photo?: File | null;
+  }) => {
+    console.log("Registro Usuario:", data);
+    // TODO: llamada a tu backend
   };
+
+  // ----------------------- RENDER DEL FLUJO -----------------------
 
   return (
-    <div className={styles.host}>
-      {/* 1) Landing pantalla completa */}
-      {step === "landing" ? (
-        <LoginLandingModal
-          open={true}
-          onSignIn={goChoice}
-          onLogIn={goLogin}
-          appName="Pixer"
-        />
-      ) : null}
-
-      {/* 2) Elección de tipo */}
-      <SignInChoiceModal
-        open={step === "choice"}
-        onOrganization={goSignupOrg}
-        onUser={goSignupUser}
-        onClose={goLanding}
+    <>
+      {/* 1) LANDING: Sign In / Log In */}
+      <LoginLandingModal
+        open={step === "landing"}
+        onSignIn={() => setStep("choice")}   // Ir a elección de tipo de registro
+        onLogIn={() => setStep("login")}     // Ir al formulario de Log In
+        onClose={() => {
+          // Si quieres cerrar y volver a otra página, hazlo aquí
+          console.log("Cerrar landing de login");
+        }}
       />
 
-      {/* 3) Login */}
+      {/* 2) MODAL DE LOG IN */}
       <LogInModal
         open={step === "login"}
         onConfirm={handleLogin}
-        onCancel={goLanding}
+        onCancel={() => setStep("landing")} // Cancelar → volver al landing
       />
 
-      {/* 4) Registro Usuario */}
-      <SignInUserModal
-        open={step === "signup_user"}
-        onCancel={goChoice}
-        onConfirm={handleSignupUser}
+      {/* 3) ELEGIR: Organización / Emprendedor-Usuario */}
+      <SignInChoiceModal
+        open={step === "choice"}
+        onOrganization={() => setStep("organization")}
+        onUser={() => setStep("user")}
+        onClose={() => setStep("landing")}  // Clic fuera / cerrar → landing
       />
 
-      {/* 5) Registro Organización */}
+      {/* 4) REGISTRO DE ORGANIZACIÓN */}
       <SignInOrganizationModal
-        open={step === "signup_org"}
-        onCancel={goChoice}
-        onConfirm={handleSignupOrg}
+        open={step === "organization"}
+        onCancel={() => setStep("choice")}  // Cancelar → volver a la elección
+        onConfirm={handleOrganizationRegister}
         onPickLocation={() => {
-          // sólo se ejecuta cuando se hace clic
-          alert("Abrir mapa aquí");
+          console.log("Elegir ubicación en mapa");
         }}
       />
-    </div>
+
+      {/* 5) REGISTRO DE USUARIO (tu SignInUserModal mejorado) */}
+      <SignInUserModal
+        open={step === "user"}
+        onCancel={() => setStep("choice")}  // 👈 Ahora SÍ retrocede a la elección
+        onConfirm={handleUserRegister}
+        onGoEntrepreneur={() => setStep("entrepreneur")} // link "Iniciar como emprendedor"
+      />
+
+      {/* 6) REGISTRO DE EMPRENDEDOR (pantalla completa) */}
+      {step === "entrepreneur" && (
+        <EntrepreneurRegister
+          onBack={() => setStep("user")}    // botón X → vuelve al formulario de usuario
+        />
+      )}
+    </>
   );
-}
+};
+
+export default AuthRegistrationFlow;
