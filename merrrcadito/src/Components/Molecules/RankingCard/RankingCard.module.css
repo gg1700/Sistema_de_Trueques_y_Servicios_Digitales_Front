@@ -10,3 +10,79 @@
     cursor: pointer;
     margin-bottom: 15px;
 }
+
+.containerCard:hover {
+    transform: translateY(-3px);
+}
+
+.rankBadge {
+    min-width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: #235E69;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    font-family: monospace;
+}
+
+.userImage {
+    min-width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #235E69;
+    background: #160C28;
+}
+
+.imageUser {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.userInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.handlename {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+
+.userName {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: normal;
+}
+
+.pointsContainer {
+    min-width: 100px;
+    padding: 12px 20px;
+    background: #235E69;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.pointsLabel {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.point {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    font-family: monospace;
+}

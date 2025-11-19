@@ -40,5 +40,15 @@ export const ReportService = {
         }catch(error){
             console.log("Error al obtener tercer reporte")
         }
+    },
+    get_ranking_users_co2: async() => {
+        try{
+            const response = await axios.get(
+                `${API_BASE_URL}/users/get_rankin_users_co2`,
+            );
+            return response.data;
+        }catch(error){
+            throw error;
+        }
     }
 }
