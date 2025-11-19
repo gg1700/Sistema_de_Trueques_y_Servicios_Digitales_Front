@@ -54,12 +54,22 @@ export const ReportService = {
     get_user_transaction_history: async(codUs : number) => {
         try{
             const response = await axios.get(
-                 `${API_BASE_URL}/transactions/get_user_transaction_history`,
+                `${API_BASE_URL}/transactions/get_user_transaction_history`,
                  {
                     params: {cod_us:codUs}
                  }
             );
             return response.data
+        }catch(error){
+            throw error;
+        }
+    },
+    get_ranking_users_by_sells: async () => {
+        try{
+            const response = await axios.get(
+                `${API_BASE_URL}/users/get_rankin_users_sells`
+            );
+            return response.data;
         }catch(error){
             throw error;
         }
