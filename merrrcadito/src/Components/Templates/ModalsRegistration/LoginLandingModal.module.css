@@ -1,0 +1,94 @@
+:root{
+  --bg-soft: #fff6f6;   
+  --ink: #111013;      
+  --purple: #1b0c22;
+  --purple-hover: #170a1c;
+  --green: #18c0a6;  
+  --green-hover: #14af97;
+}
+
+
+.screen{
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #fff6f6 0px,
+      #fff6f6 56px,    
+      #ffeef1 56px,
+      #ffeef1 112px     
+    );
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.center{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;          
+  margin-top: 14vh;  
+}
+
+
+.logoRow{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logoSvg{
+  width: 56px;
+  height: 56px;
+  display: block;
+}
+.brand{
+  color: var(--ink);
+  font-size: 36px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+
+.buttons{
+  width: 100%;
+  padding: 8px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+.btn{
+  height: 42px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #fff;
+  width: 86%;
+  max-width: 340px;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: transform .06s ease, background .15s ease;
+}
+.btn:active{ transform: translateY(1px); }
+.btnPrimary{ background: var(--purple); }
+.btnPrimary:hover{ background: var(--purple-hover); }
+.btnSuccess{ background: var(--green); }
+.btnSuccess:hover{ background: var(--green-hover); }
+
+
+.footer{
+  height: 56px;
+  background: var(--purple);
+  color: #eee;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+}
+
+
+html, body { height: 100%; }
+body { margin: 0; }
