@@ -3,34 +3,25 @@ import { useEffect, useState } from 'react';
 import {AccordionForm} from '@/Components/Organisms';
 import BarDiagram from '@/Components/Diagrams/BarDiagram';
 import styles from './reportsAdmin.module.css'
-import { ReportService } from '@/services';
+import {Reports} from './ReportsAdmins'
 
 export default function ReportsAdmin() {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     const [dataR1, setDataR2]=useState<any[]>([]);
 
-    
-    useEffect(() => {
-        async function loadFirstReport() {
-            const report = await ReportService.get_category_report_by_month("01");
-            
-            console.log("📊 Reporte cargado:", report);
-        }
-        
-        loadFirstReport();  
-    }, [])
-    
+    const reporteUno=Reports.useCategoryProdsReport("11");
+    const safeReporteUno = Array.isArray(reporteUno) ? reporteUno : [];
 
     const categoriasData = {
-        labels: ['Electrónicos', 'Ropa', 'Hogar', 'Deportes', 'Juguetes', 'Libros'],
+        labels: safeReporteUno.map((dato: any) => dato.categoria),
         datasets: [{
-            label: 'Ventas Totales',
-            data: [12500, 8900, 6700, 5400, 3200, 2800],
+            label: 'Compras',
+            data: safeReporteUno.map((dato: any) => dato.compras),
             backgroundColor: 'rgba(255, 99, 132, 0.8)',
         }, {
             label: 'Intercambios',
-            data: [3200, 4500, 2100, 1800, 900, 1200],
+            data: safeReporteUno.map((dato: any) => dato.intercambios),
             backgroundColor: 'rgba(54, 162, 235, 0.8)',
         }]
     };
@@ -91,21 +82,27 @@ export default function ReportsAdmin() {
     }
 
     return (
-        <div>
-            {reportConfigs.map((config, index) => (
-                <AccordionForm
-                    key={index}
-                    triggerText={config.title}
-                    isOpen={openIndex === index}
-                    onToggle={() => handleToggle(index)}
-                >
-                    <BarDiagram 
-                        data={config.data}
-                        title={config.title}
-                        {...config.chartProps}
-                    />
-                </AccordionForm>
-            ))}
+         <div className={styles.container}>
+            <h1 className={styles.principalTitle}>Reportes Administrativos</h1>  
+            
+            <div className={styles.subtitleSection}>  
+                {reportConfigs.map((config, index) => (
+                    <div key={index} className={styles.subtitleItem}>  
+                        <AccordionForm
+                            triggerText={config.title}
+                            isOpen={openIndex === index}
+                            onToggle={() => handleToggle(index)}
+                            variant='FullWidth'
+                        >
+                            <BarDiagram 
+                                data={config.data}
+                                title={config.title}
+                                {...config.chartProps}
+                            />
+                        </AccordionForm>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

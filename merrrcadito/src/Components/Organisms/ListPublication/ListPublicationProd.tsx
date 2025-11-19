@@ -11,7 +11,7 @@ interface DataPubProps{
         nombre_categoria: string,
         nombre_subcat: string,
         precio_pub?: number,
-        foto_pub: string,
+        foto_pub: string | null,
         calif_pond_pub: number,
         calidad?: string,
         estado_pub: 'activo' | 'inactivo',
@@ -21,7 +21,7 @@ interface DataPubProps{
         contacto_numero: number;
         handlename: string;
         cantidad: number;
-        marca?: string;
+        marca?: string | null;
     }[]
 }
 
@@ -39,7 +39,7 @@ export default function ListPublicationProd({
         }
     };
     return(
-        <div>
+        <div className={styles.listContainer}>
             <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>{title}</h2>
             </div>
@@ -55,7 +55,9 @@ export default function ListPublicationProd({
 
             <div  ref={scrollContainerRef} className={styles.scrollContainer}>
                 {pubProd.map(pubP => (
+                    
                     <Publication 
+                    key={pubP.cod_pub}
                     clase= 'Producto'
                     pub={{
                             cod_pub: pubP.cod_pub,

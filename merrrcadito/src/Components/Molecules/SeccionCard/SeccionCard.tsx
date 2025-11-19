@@ -14,29 +14,45 @@ interface SeccionCardProps {
   seccion: Seccion;
   onEdit: (seccion: Seccion) => void;
   onDelete: (seccion: Seccion) => void;
+  type: 'category' | 'subcategory'
 }
 const API_BASE_URL=process.env.NEXT_PUBLIC_BACK_URL;
 
 export default function SeccionCard({
   seccion,
   onEdit,
-  onDelete
+  onDelete,
+  type
 }: SeccionCardProps) {
 
-  function getImageCategory(cod : number){
-    return `${API_BASE_URL}/categories/${cod}/image`;
+  function getImageSeccion(cod : number): string | null{
+    if (!API_BASE_URL) {
+      console.warn('API_BASE_URL no está definida');
+      return null;
+    }
+
+    if (!seccion?.cod) {
+      console.warn('seccion.cod no está definido');
+      return null;
+    }
+    if(type==='category'){
+      return `${API_BASE_URL}/categories/${cod}/image`;
+    }else{
+      return `${API_BASE_URL}/subcategories/${cod}/image`
+    }
   }
+
+  const imageUrl = getImageSeccion(seccion.cod);
 
   return (
     <div className={styles.seccionCard}>
       <div className={styles.cardContent}>
           <div className={styles.imageContainer} style={{ backgroundImage: `url(${seccion.imagen})`}} >
-            <img 
-              src={getImageCategory(seccion.cod)} 
-              alt={`Imagen de ${seccion.nombre}`}
-              className={styles.image}
-              onLoad={() => console.log('Imagen cargada:', getImageCategory(seccion.cod))}  
-            />
+            {imageUrl ? (
+              <img src={imageUrl} />
+            ) : (
+              <div>Placeholder</div>
+            )}
           </div>
         
         <div className={styles.contentMain}>

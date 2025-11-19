@@ -14,6 +14,7 @@ export const CategoryService = {
             return response.data;
         }catch(error){
             console.error("Error al obtener las categorias");
+            throw error;
         }
 
         
@@ -60,7 +61,7 @@ export const CategoryService = {
             if (attributes.tipo_cat) formData.append('tipo_cat', attributes.tipo_cat);
 
             const response = await axios.put(
-                `${API_BASE_URL}/category/update=${cod_cat}`,
+                `${API_BASE_URL}/categories/${cod_cat}`,
                 formData,
                 {
                 headers: {
