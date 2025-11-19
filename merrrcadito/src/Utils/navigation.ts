@@ -1,7 +1,7 @@
 export const navItems = {
   common: [
     { name: 'Dashboard', route: '/dashboard' },
-    { name: 'Productos', route: '/productos' },
+    { name: 'Ranking CO2', route: '/admin/RankingCO2' },
     { name: 'Mi Perfil', route: '/perfil' },
   ],
   admin: [

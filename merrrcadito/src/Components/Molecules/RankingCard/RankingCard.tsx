@@ -5,7 +5,7 @@ interface RankingCardProps{
     imagenUsuario: string | File,
     handlename: string,
     nombreUsuario: string,
-    point: number | string,
+    points: number | string,
     puesto: number
 }
 export default function RankingCard({
@@ -13,11 +13,14 @@ export default function RankingCard({
     imagenUsuario,
     handlename,
     nombreUsuario,
-    point,
+    points,
     puesto
 }:RankingCardProps){
     return(
         <div className={styles.containerCard}>
+             <div className={styles.rankBadge}>
+                #{puesto}
+            </div>
             <div className={styles.userImage}>
                 <img 
                   src={imagenUsuario}
@@ -25,13 +28,13 @@ export default function RankingCard({
                   className={styles.imageUser}
                 />
             </div>
-            <div>
-                <span>#</span>
-                <span className={styles.point}></span>
-            </div>
-            <div>
+            <div className={styles.userInfo}>
                 <h1 className={styles.handlename}>{handlename}</h1>
                 <h4 className={styles.userName}>{nombreUsuario}</h4>
+            </div>
+             <div className={styles.pointsContainer}>
+                <span className={styles.pointsLabel}>Puntos</span>
+                <span className={styles.point}>{points}</span>
             </div>
         </div>
     );
