@@ -1,3 +1,8 @@
+.listContainer {
+  width: 100%;
+  max-width: 100%;  
+  overflow: hidden;  
+}
 
 .sectionContainer {
   width: 100%;
@@ -7,7 +12,7 @@
 
 
 .sectionHeader {
-  padding: 0 50px;
+  padding: 0 30px;
   margin-bottom: 20px;
 }
 
@@ -21,6 +26,9 @@
 
 .scrollWrapper {
   position: relative;
+  width: 100%;  
+  max-width: 100%;
+  overflow: hidden; 
 }
 
 
@@ -29,7 +37,7 @@
   gap: 15px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 0 50px;
+  padding: 0 10px;
   scrollbar-width: none;
   -ms-overflow-style: none; 
 }
@@ -44,9 +52,9 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 50px;
+  width: 30px;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(12, 153, 75, 0.7);
   border: none;
   color: white;
   font-size: 24px;

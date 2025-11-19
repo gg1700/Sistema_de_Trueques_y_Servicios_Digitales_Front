@@ -29,9 +29,12 @@ export default function ViewSubcategories(){
         const subcategoria= response.data;
         const mapSubcategories= subcategoria.map((subcat:any)=>({
           cod: subcat.cod_subcat_prod,
+          tipo: subcat.cod_cat.toString(),
+          nombre: subcat.nom_subcat_prod,
+          descripcion: subcat.descr_subcat_prod
         }));
 
-        setData(subcategoria);
+        setData(mapSubcategories);
       }catch(error: any){
         console.error('Error al obtener subcategorias: ', error);
       };

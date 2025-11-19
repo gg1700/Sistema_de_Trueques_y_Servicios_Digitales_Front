@@ -21,7 +21,7 @@ export default function NewSubcategory(
       const response = await CategoryService.getAllCategory();
       const categorias= response.data;
       const mapCatNom= categorias.map((cat : any) => ({
-        value: cat.nom_cat,
+        value: cat.cod_cat.toString(),
         label: cat.nom_cat
       }));
       setCategories(mapCatNom);
@@ -32,7 +32,7 @@ export default function NewSubcategory(
   const handleSubmit = async (formData: any) => {
     try{
       const subcategoryData = {
-        cod_cat: formData.seccion,
+        cod_cat: Number(formData.seccion),
         nom_subcat_prod: formData.nombre,
         descr_subcat_prod: formData.descripcion,
         imagen_representativa: formData.imagen
