@@ -1,0 +1,12 @@
+.containerCard {
+    background: linear-gradient(135deg, #160C28 0%, #235E69 100%);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(22, 12, 40, 0.4);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 15px;
+}

@@ -19,7 +19,7 @@
     padding: 20px;
     width: 100%;
     overflow-y: auto;  
-    max-width: 100%;  /* 👈 AGREGAR */
-    box-sizing: border-box;  /* 👈 AGREGAR */
+    max-width: 100%; 
+    box-sizing: border-box; 
     overflow-x: hidden; 
 }
