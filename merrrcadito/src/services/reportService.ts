@@ -50,5 +50,18 @@ export const ReportService = {
         }catch(error){
             throw error;
         }
+    },
+    get_user_transaction_history: async(codUs : number) => {
+        try{
+            const response = await axios.get(
+                 `${API_BASE_URL}/transactions/get_user_transaction_history`,
+                 {
+                    params: {cod_us:codUs}
+                 }
+            );
+            return response.data
+        }catch(error){
+            throw error;
+        }
     }
 }
