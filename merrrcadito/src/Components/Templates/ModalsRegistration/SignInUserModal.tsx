@@ -14,6 +14,9 @@ import ButtonCancel from "@/Components/Atoms/Buttons/ButtonCancel/ButtonCancel";
 import Label from "@/Components/Atoms/Label/Label";
 import ButtonIcon from "@/Components/Atoms/Buttons/ButtonIcon/ButtonIcon";
 
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api/users";
+
 type Sex = "M" | "F" | "";
 
 interface SignInForm {
@@ -44,17 +47,14 @@ type CredentialMode = "user" | "admin" | null;
 type SignInErrors = Partial<Record<keyof SignInForm, string>>;
 type CredentialErrors = Partial<Record<keyof CredentialForm, string>>;
 
-const MOCK_USERNAMES: string[] = ["angelica", "demo", "admin"];
-
-async function isUsernameTaken(username: string): Promise<boolean> {
-  await new Promise((res) => setTimeout(res, 300));
-  return MOCK_USERNAMES.includes(username.toLowerCase());
-}
-
 interface Props {
   open: boolean;
   onCancel?: () => void;
-  onConfirm: (data: SignInForm & { photo?: File | null }) => void | Promise<void>;
+  /**
+   * Se llama opcionalmente cuando el registro en el backend fue exitoso.
+   * Puedes usarlo para redirigir, cerrar modales, etc.
+   */
+  onConfirm?: (data: SignInForm & { photo?: File | null }) => void | Promise<void>;
   onGoEntrepreneur?: () => void;
 }
 
@@ -139,8 +139,7 @@ const SignInUserModal: React.FC<Props> = ({
 
     if (!validateMainForm()) return;
 
-    await onConfirm({ ...form, photo: photoFile });
-
+    // Registro como usuario normal por defecto
     setCredMode("user");
     setShowCredModal(true);
   };
@@ -188,19 +187,69 @@ const SignInUserModal: React.FC<Props> = ({
 
     if (!validateCredentials()) return;
 
-    const taken = await isUsernameTaken(credentials.username);
-    if (taken) {
+    if (!credMode) {
       setPopup({
         type: "error",
-        message: "El nombre de usuario ya está ocupado, por favor elige otro.",
+        message: "No se ha definido si es usuario o administrador.",
       });
       return;
     }
 
-    setPopup({
-      type: "success",
-      message: "Usuario registrado con éxito.",
-    });
+    try {
+      // Mapear los campos del formulario al modelo del backend
+      const codRol = credMode === "admin" ? 2 : 1; // ajusta si tus roles tienen otros IDs
+
+      const payload = {
+        cod_rol: codRol,
+        cod_disp: null,
+        ci: form.ci,
+        nom_us: form.firstName,
+        handle_name: credentials.username,
+        ap_pat_us: form.lastNameFather,
+        ap_mat_us: form.lastNameMother || null,
+        contra_us: credentials.password,
+        fecha_nacimiento: form.birth, // viene como "YYYY-MM-DD" del input date
+        sexo: form.sex || "M", // ya validaste que no esté vacío
+        estado_us: "activo",
+        correo_us: form.email,
+        telefono_us: form.phone,
+        // foto_us no se envía: el backend usa imagen por defecto si falta
+      };
+
+      const res = await fetch(`${API_BASE}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        // El back manda mensajes como "El handle name ya existe."
+        throw new Error(json.message || "Error al registrar el usuario.");
+      }
+
+      // Aviso visual
+      setPopup({
+        type: "success",
+        message:
+          credMode === "admin"
+            ? "Administrador registrado con éxito."
+            : "Usuario registrado con éxito.",
+      });
+
+      // Si el padre quiere enterarse del éxito, se lo notificamos
+      if (onConfirm) {
+        await onConfirm({ ...form, photo: photoFile });
+      }
+    } catch (err: any) {
+      setPopup({
+        type: "error",
+        message: err?.message ?? "Ocurrió un error al registrar.",
+      });
+    }
   };
 
   const closePopup = (): void => {
