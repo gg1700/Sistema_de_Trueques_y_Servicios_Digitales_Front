@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import LoginLandingModal from "@/Components/Templates/ModalsRegistration/LoginLandingModal";
 import LogInModal from "@/Components/Templates/ModalsRegistration/LogInModal";
@@ -17,17 +18,52 @@ type Step =
   | "user"
   | "entrepreneur";
 
+const USERS_API_BASE =
+  process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
+  "http://localhost:5000/api/users";
+
+// Ruta a donde mandas al usuario logueado
+const PROFILE_ROUTE_BASE = "/perfil";
+
 const AuthRegistrationFlow: React.FC = () => {
-  // 👇 Punto de entrada: como antes, empezamos en el landing
   const [step, setStep] = useState<Step>("landing");
+  const [loginError, setLoginError] = useState<string | null>(null);
 
-  // ---------- HANDLERS LÓGICOS (aquí irían tus llamadas a API) ----------
+  const router = useRouter();
 
+  // ---------- LOGIN: comprobar si el usuario está registrado ----------
   const handleLogin = async (data: { username: string; password: string }) => {
-    console.log("Log In:", data);
-    // TODO: llamada a tu backend para log in
+    const { username } = data;
+    setLoginError(null);
+
+    try {
+      const res = await fetch(
+        `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(
+          username
+        )}`,
+        { method: "GET" }
+      );
+
+      const json = await res.json().catch(() => ({} as any));
+
+      const userNotFound =
+        !res.ok || json.success === false || !json.data || json.data.length === 0;
+
+      if (userNotFound) {
+        // Solo mostramos el modal de error, sin lanzar excepciones
+        setLoginError("Usuario no registrado o credenciales incorrectas.");
+        return;
+      }
+
+      // Login “ok” → ir al perfil
+      router.push(`${PROFILE_ROUTE_BASE}?handle=${encodeURIComponent(username)}`);
+    } catch {
+      // Error de red u otro problema → mismo modal genérico
+      setLoginError("Ocurrió un problema al iniciar sesión. Inténtalo de nuevo.");
+    }
   };
 
+  // ---------- REGISTRO ORGANIZACIÓN (placeholder) ----------
   const handleOrganizationRegister = async (data: {
     legalName: string;
     alias: string;
@@ -40,9 +76,10 @@ const AuthRegistrationFlow: React.FC = () => {
     logo?: File | null;
   }) => {
     console.log("Registro Organización:", data);
-    // TODO: llamada a tu backend
+    // TODO: llamada real al backend
   };
 
+  // ---------- REGISTRO USUARIO (placeholder) ----------
   const handleUserRegister = async (data: {
     ci: string;
     firstName: string;
@@ -55,20 +92,21 @@ const AuthRegistrationFlow: React.FC = () => {
     photo?: File | null;
   }) => {
     console.log("Registro Usuario:", data);
-    // TODO: llamada a tu backend
+    // El registro real lo manejas dentro de SignInUserModal con /api/users/register
   };
 
-  // ----------------------- RENDER DEL FLUJO -----------------------
-
+  // ---------- RENDER DEL FLUJO ----------
   return (
     <>
       {/* 1) LANDING: Sign In / Log In */}
       <LoginLandingModal
         open={step === "landing"}
-        onSignIn={() => setStep("choice")}   // Ir a elección de tipo de registro
-        onLogIn={() => setStep("login")}     // Ir al formulario de Log In
+        onSignIn={() => setStep("choice")}
+        onLogIn={() => {
+          setLoginError(null);
+          setStep("login");
+        }}
         onClose={() => {
-          // Si quieres cerrar y volver a otra página, hazlo aquí
           console.log("Cerrar landing de login");
         }}
       />
@@ -77,40 +115,123 @@ const AuthRegistrationFlow: React.FC = () => {
       <LogInModal
         open={step === "login"}
         onConfirm={handleLogin}
-        onCancel={() => setStep("landing")} // Cancelar → volver al landing
+        onCancel={() => {
+          setLoginError(null);
+          setStep("landing");
+        }}
       />
+
+      {/* Modal pequeño para errores de login */}
+      {step === "login" && loginError && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+          onClick={() => setLoginError(null)}
+        >
+          <div
+            style={{
+              background: "#1b1024",
+              color: "#ffffffff",
+              padding: "20px 24px",
+              borderRadius: "12px",
+              maxWidth: "320px",
+              width: "90%",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <span style={{ fontWeight: 600 }}>Error de inicio de sesión</span>
+              <button
+                type="button"
+                onClick={() => setLoginError(null)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  fontSize: "18px",
+                  cursor: "pointer",
+                  lineHeight: 1,
+                }}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <p
+              style={{
+                fontSize: "0.9rem",
+                marginBottom: "16px",
+                color: "#ff9ca1",
+              }}
+            >
+              {loginError}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setLoginError(null)}
+              style={{
+                width: "100%",
+                padding: "8px 0",
+                borderRadius: "999px",
+                border: "none",
+                background: "#08c9acff",
+                color: "#1b1024",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 3) ELEGIR: Organización / Emprendedor-Usuario */}
       <SignInChoiceModal
         open={step === "choice"}
         onOrganization={() => setStep("organization")}
         onUser={() => setStep("user")}
-        onClose={() => setStep("landing")}  // Clic fuera / cerrar → landing
+        onClose={() => setStep("landing")}
       />
 
       {/* 4) REGISTRO DE ORGANIZACIÓN */}
       <SignInOrganizationModal
         open={step === "organization"}
-        onCancel={() => setStep("choice")}  // Cancelar → volver a la elección
+        onCancel={() => setStep("choice")}
         onConfirm={handleOrganizationRegister}
         onPickLocation={() => {
           console.log("Elegir ubicación en mapa");
         }}
       />
 
-      {/* 5) REGISTRO DE USUARIO (tu SignInUserModal mejorado) */}
+      {/* 5) REGISTRO DE USUARIO */}
       <SignInUserModal
         open={step === "user"}
-        onCancel={() => setStep("choice")}  // 👈 Ahora SÍ retrocede a la elección
+        onCancel={() => setStep("choice")}
         onConfirm={handleUserRegister}
-        onGoEntrepreneur={() => setStep("entrepreneur")} // link "Iniciar como emprendedor"
+        onGoEntrepreneur={() => setStep("entrepreneur")}
       />
 
-      {/* 6) REGISTRO DE EMPRENDEDOR (pantalla completa) */}
+      {/* 6) REGISTRO DE EMPRENDEDOR */}
       {step === "entrepreneur" && (
-        <EntrepreneurRegister
-          onBack={() => setStep("user")}    // botón X → vuelve al formulario de usuario
-        />
+        <EntrepreneurRegister onBack={() => setStep("user")} />
       )}
     </>
   );
