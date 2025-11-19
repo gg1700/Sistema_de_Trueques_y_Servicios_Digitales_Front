@@ -30,10 +30,10 @@ export const SubcategoryService = {
             formData.append('cod_cat', subcategoryData.cod_cat.toString());
             formData.append('nom_subcat_prod', subcategoryData.nom_subcat_prod);
             formData.append('descr_subcat_prod', subcategoryData.descr_subcat_prod);
-            formData.append('imagen_repr', subcategoryData.imagen_representativa);
+            formData.append('imagen_representativa', subcategoryData.imagen_representativa);
 
             const response = await axios.post(
-                `{API_BASE_URL}/subcategories`,
+                `${API_BASE_URL}/subcategories`,
                 formData,
                 {
                     headers: {

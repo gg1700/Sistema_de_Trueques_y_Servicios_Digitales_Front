@@ -16,7 +16,7 @@ export const SeccionValidators = {
     if (value.length > 200) {
       return 'Debe ser una descripción directa'
     }
-    if (!/^[a-zA-ZÁáÉéÍíÓóÚúÜüÑñ]+(?:\s+[a-zA-ZÁáÉéÍíÓóÚúÜüÑñ]+)+$/.test(value)) {
+    if (!/^[a-zA-ZÁáÉéÍíÓóÚúÜüÑñ0-9\s.,!?()-]+$/.test(value)) {
       return 'No puede ser un numero o signos';
     }
     return null;
