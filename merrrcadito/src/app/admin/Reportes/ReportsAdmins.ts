@@ -27,15 +27,20 @@ export function useActivityWeek(){
     useEffect(() => {
         async function loadSecondRepo(){
             const response= await ReportService.get_activity_report_by_week();
-            const reporte= await ReportService.get_activity_report_by_week();
+            const reporte= response.data;
             const mapReporte= reporte.map((report : any) => ({
-                
-            }))
+                fecha: report.fecha_semana,
+                cant_us: report.active_users
+            }));
+            setData(mapReporte);
         }
-    });
+        loadSecondRepo();
+    },[]);
+    return data;
 }
 
 
 export const Reports = {
-    useCategoryProdsReport
+    useCategoryProdsReport,
+    useActivityWeek
 }

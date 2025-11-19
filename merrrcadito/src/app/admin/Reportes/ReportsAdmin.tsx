@@ -4,13 +4,11 @@ import {AccordionForm} from '@/Components/Organisms';
 import BarDiagram from '@/Components/Diagrams/BarDiagram';
 import styles from './reportsAdmin.module.css'
 import {Reports} from './ReportsAdmins'
+import { useDynamicRouteParams } from 'next/dist/server/app-render/dynamic-rendering';
 
 export default function ReportsAdmin() {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-    const [dataR1, setDataR2]=useState<any[]>([]);
-
-    const reporteUno=Reports.useCategoryProdsReport("11");
+    const reporteUno = Reports.useCategoryProdsReport("11");
     const safeReporteUno = Array.isArray(reporteUno) ? reporteUno : [];
 
     const categoriasData = {
@@ -26,11 +24,14 @@ export default function ReportsAdmin() {
         }]
     };
 
-    const subcategoriasData = {
-        labels: ['Smartphones', 'Laptops', 'Tablets', 'Audífonos', 'Smartwatches'],
+    const reporteDos = Reports.useActivityWeek();
+    const safeReporteDos = Array.isArray(reporteDos) ? reporteDos : [];
+
+    const usuariosActivityData = {
+        labels: safeReporteDos.map((dato:any) => dato.fecha),
         datasets: [{
-            label: 'Transacciones',
-            data: [450, 320, 180, 290, 150],
+            label: 'Activos',
+            data: safeReporteDos.map((dato:any) => dato.cant_us),
             backgroundColor: 'rgba(75, 192, 192, 0.8)',
         }]
     };
@@ -58,8 +59,8 @@ export default function ReportsAdmin() {
             }
         },
         {
-            title: "Ventas o Intercambios en Subcategorias dada una Categoria", 
-            data: subcategoriasData,
+            title: "Usuarios Activos de la Semana", 
+            data: usuariosActivityData,
             chartProps: {
                 xAxisKey: "subcategoria",
                 yAxisKey: "intercambios", 

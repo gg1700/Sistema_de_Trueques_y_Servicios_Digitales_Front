@@ -1,23 +1,23 @@
 .hrCard {
    border: none;
    border-top: 10px solid #000;     
-   margin: 130px 550px 0 550px;                  
-   width: calc(100% - 1000px);
+   margin: 130px 400px 0 400px;                  
+   width: calc(100% - 800px);
    border-radius: 20px;
 }
 
 .hrCard2 {
    border: none;
     border-top: 10px solid #000;     
-    margin: 70px 550px 0 550px;                  
-    width: calc(100% - 1000px);
+    margin: 10px 400px 0 400px;                  
+    width: calc(100% - 800px);
     border-radius: 20px;
 }
 
 .mainContainer {
    height: 400px;
    overflow-y: auto; 
-   margin: 0 500px;
+   margin: 0 420px;
 }
 
 .seccionContainer {

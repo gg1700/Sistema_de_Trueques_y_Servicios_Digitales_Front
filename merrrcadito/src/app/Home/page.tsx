@@ -1,8 +1,6 @@
 'use client'
 import { ListPublicationProd } from "@/Components/Organisms";
 import { AdminLayout } from "@/Components/Templates";
-import { PublicationService } from "@/services";
-import { useEffect, useState } from "react";
 import { usePublicationsProds } from "./PublicationViewHome";
 
 export default function Home(){
