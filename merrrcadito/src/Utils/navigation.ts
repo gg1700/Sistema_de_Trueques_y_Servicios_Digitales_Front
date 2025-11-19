@@ -1,9 +1,10 @@
 export const navItems = {
   common: [
-    { name: 'Dashboard', route: '/admin/Home' },
+    { name: 'Dashboard', route: '/Home' },
     { name: 'Ranking CO2', route: '/admin/RankingCO2' },
     { name: 'Mi Perfil', route: '/perfil' },
-    { name: 'Rankig Emprendedores', route: '/admin/RankingCO2/RankingSells'}
+    { name: 'Rankig Emprendedores', route: '/admin/RankingCO2/RankingSells'},
+    { name: 'Tienda', route: '/tokens'}
   ],
   admin: [
     { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias' },
@@ -15,7 +16,6 @@ export const navItems = {
   user: [
     { name: 'Ver mi C02', route: '/mi-tienda' },
     { name: 'Mis Compras', route: '/pedidos' },
-    { name: 'Tokens', route: '/tokens' },
   ]
 };
 
