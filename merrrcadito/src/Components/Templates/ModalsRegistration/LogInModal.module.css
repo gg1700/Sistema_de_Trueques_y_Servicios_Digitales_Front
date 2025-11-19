@@ -1,0 +1,107 @@
+:root {
+  --bg-soft: #fff6f6;
+  --stripe: #ffeff2; 
+  --ink: #1b1a1f;
+  --green: #18c0a6;
+  --green-h: #14af97;
+  --red: #ff5f5f;
+  --red-h: #e34d4d;
+  --border: #d8cdd1;
+}
+
+
+.screen {
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--bg-soft) 0px,
+      var(--bg-soft) 52px,
+      var(--stripe) 52px,
+      var(--stripe) 104px
+    );
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+
+.card {
+  width: 92%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transform: translateY(6vh);
+}
+
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field input {
+  height: 42px;
+  border-radius: 8px;
+  border: 1.6px solid var(--border);
+  background: #fff;
+  padding: 0 10px;
+  outline: none;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.field input:focus {
+  border-color: #312338;
+  box-shadow: 0 0 0 2px rgba(49, 35, 56, 0.08);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+
+.actions button {
+  height: 42px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.06s ease, background 0.15s ease;
+}
+
+
+.btnConfirm {
+  background: var(--green);
+}
+.btnConfirm:hover {
+  background: var(--green-h);
+}
+
+
+.actions :global(.buttonCancel),
+.btnCancel {
+  background: var(--red);
+}
+.actions :global(.buttonCancel:hover),
+.btnCancel:hover {
+  background: var(--red-h);
+}
+
+
+.actions button:active {
+  transform: translateY(1px);
+}
+
+
+.btnConfirm:hover:not(:disabled) {
+    background-color: #2ab29d;
+    transform: translateY(-1px);
+}

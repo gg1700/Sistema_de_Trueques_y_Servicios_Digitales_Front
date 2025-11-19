@@ -1,24 +1,24 @@
 .profileInput {
     width: 100%;
     border: none;
-    border-bottom: 10px solid #160C28;
-    padding: 10px 0;
+    padding: 10px 5px;
     font-size: 16px;
     background: transparent;
     transition: border-color 0.3s ease;
     outline: none;
+    border-radius: 3px;
+    border:1px solid rgb(229, 229, 229);
 }
 
 .profileInput:focus {
     outline: none;
-    border-color: #40E0D0; 
     background-color: white;
-    box-shadow: 0 0 0 3px rgba(64, 224, 208, 0.1);
+    box-shadow: 0 0 0 3px rgba(179, 176, 176, 0.1);
 }
 
 .profileInput:disabled {
-    background-color: #e9ecef;
-    color: #6c757d;
+    background-color: #e4e4e4;
+    color: #e0e0e0;
     cursor: not-allowed;
 }
 
