@@ -13,6 +13,7 @@ export const navItems = {
   user: [
     { name: 'Ver mi C02', route: '/mi-tienda' },
     { name: 'Mis Compras', route: '/pedidos' },
+    { name: 'Tokens', route: '/tokens' },
   ]
 };
 

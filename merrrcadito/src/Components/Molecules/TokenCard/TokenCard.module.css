@@ -1,0 +1,55 @@
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-width: 250px;
+}
+
+.imagePlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f7f7f7;
+  width: 100%;
+  height: 150px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.info {
+  padding: 16px;
+  background-color: #f0f2f5; /* Fondo gris de tu imagen */
+  text-align: center;
+  flex-grow: 1;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.buyButton {
+  background-color: #00a99d; /* Color verde de tu imagen */
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.buyButton:hover {
+  background-color: #008a7e;
+}
+
+.buyButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
