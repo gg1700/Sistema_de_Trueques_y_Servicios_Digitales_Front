@@ -8,7 +8,7 @@ export const navItems = {
     { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias' },
     { name: 'Gestión de Subcategorias', route: '/admin/GestionDeSecciones/GestionDeSubcategorias' },
     { name: 'Gestión de la Tienda', route: '/admin/usuarios' },
-    { name: 'Reportes', route: '/admin/reportes' },
+    { name: 'Reportes', route: '/admin/Reportes' },
   ],
   user: [
     { name: 'Ver mi C02', route: '/mi-tienda' },

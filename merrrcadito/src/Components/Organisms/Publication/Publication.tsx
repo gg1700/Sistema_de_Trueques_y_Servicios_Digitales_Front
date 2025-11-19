@@ -15,7 +15,7 @@ interface BasePubProps {
 
 interface PubProdProps extends BasePubProps {
     cantidad: number;
-    marca?: string;
+    marca?: string | null;
 }
 
 
@@ -33,7 +33,7 @@ interface PublicationProps{
         nombre_categoria: string,
         nombre_subcat?: string,
         precio_pub?: number,
-        foto_pub: string,
+        foto_pub: string | null,
         calif_pond_pub: number,
         calidad?: string,
         handlename: string,

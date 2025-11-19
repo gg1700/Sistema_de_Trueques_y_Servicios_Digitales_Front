@@ -8,7 +8,7 @@ interface PublicationProps{
         nombre_categoria: string,
         nombre_subcat?: string,
         precio_pub?: number,
-        foto_pub: string,
+        foto_pub: string | null,
         calif_pond_pub: number,
         calidad?: string,
         handlename: string,
@@ -47,6 +47,7 @@ export default function PublicationCard({
                 <div className={styles.header}>
                     <h1 className={styles.title}>{pub.nombre_publicacion}</h1>
                     <h3 className={styles.seccion}>{pub.nombre_categoria}</h3>
+                    <h2 className={styles.seccion}>{pub.handlename}</h2>
                 </div>
                 <div className={styles.priceSection}>
                     <p className={styles.price}>

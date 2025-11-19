@@ -41,6 +41,14 @@ export default function ViewSecciones({
 
     const API_BASE_URL = process.env.NEXT_PUBLIC_BACK_URL; 
 
+    useEffect(() => {
+        if (!API_BASE_URL) {
+            console.error('NEXT_PUBLIC_BACK_URL no está definida');
+        } else {
+            console.log(' API_BASE_URL:', API_BASE_URL);
+        }
+    }, [API_BASE_URL]);
+
     function abrirModalEliminar(seccion: Seccion) {
         setSeccionSeleccionada(seccion);
         setDeleteModal(true);
@@ -49,7 +57,13 @@ export default function ViewSecciones({
     function cerrarModalEliminar() {
         console.log("0. Sección seleccionada:", seccionSeleccionada);
         setSeccionSeleccionada(null);
-        setDeleteModal(false);
+        setDeleteModal(false);useEffect(() => {
+        if (!API_BASE_URL) {
+            console.error('⚠️ NEXT_PUBLIC_BACK_URL no está definida');
+        } else {
+            console.log('✅ API_BASE_URL:', API_BASE_URL);
+        }
+    }, [API_BASE_URL]);
     }
 
     function abrirModalEditar(seccion: Seccion) {

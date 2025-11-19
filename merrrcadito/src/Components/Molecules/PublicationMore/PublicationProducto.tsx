@@ -8,13 +8,13 @@ interface PubPropsProd {
         contacto_correo: string,
         contacto_numero: number,
         cantidad: number,
-        marca?: string,
+        marca?: string | null,
         handlename: string
     },
     onCancel: () => void
 }
 
-export default function PublicationMore({
+export default function PublicationProducto({
     pub,
     onCancel
 }:PubPropsProd) {

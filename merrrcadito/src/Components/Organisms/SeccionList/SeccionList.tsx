@@ -30,12 +30,13 @@ export default function SeccionList({
       </div>
       <div className={styles.mainContainer}>
         <div className={styles.seccionContainer}>
-          {data.map(seccion => (
+          {data.map((seccion, index) => (
             <SeccionCard
-              key={seccion.cod}
+              key={`${type}-${seccion.cod}-${index}`}
               seccion={seccion}
               onEdit={onEdit}
               onDelete={onDelete}
+              type={type}
             />
           ))}
         </div>
