@@ -146,16 +146,16 @@ const SignInUserModal: React.FC<Props> = ({
 
   const handleAdminClick = (e: MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();
-    const isValid = validateMainForm();
-    if (!isValid) return;
+    // const isValid = validateMainForm();
+    // if (!isValid) return;
     setCredMode("admin");
     setShowCredModal(true);
   };
 
   const handleEntrepreneurClick = (e: MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();
-    const isValid = validateMainForm();
-    if (!isValid) return;
+    // const isValid = validateMainForm();
+    // if (!isValid) return;
     onGoEntrepreneur?.();
   };
 
