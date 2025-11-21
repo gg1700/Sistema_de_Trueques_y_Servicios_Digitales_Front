@@ -4,8 +4,9 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  max-width: 320px;
-  margin: 16px;
+  width: 320px;
+  height: 600px;
+  margin: 10px;
 }
 
 .card:hover {
@@ -32,7 +33,7 @@
 }
 
 .content {
-  padding: 20px;
+  padding: 30px;
 }
 
 .header {
@@ -75,7 +76,7 @@
   font-weight: 500;
 }
 
-/* Sección inferior - Estado y calidad en línea */
+
 .bottomSection {
   display: flex;
   justify-content: space-between;
