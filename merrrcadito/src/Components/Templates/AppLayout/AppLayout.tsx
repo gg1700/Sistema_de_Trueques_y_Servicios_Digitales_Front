@@ -1,4 +1,3 @@
-// AppLayout.tsx o MainLayout.tsx
 import { getNavItems } from '@/Utils/navigation';
 import { SideBar } from '@/Components/Organisms';
 import { NavBar, HeaderPage } from '@/Components/Molecules';
