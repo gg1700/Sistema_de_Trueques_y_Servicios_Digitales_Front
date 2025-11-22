@@ -1,8 +1,8 @@
 import { ButtonForm } from '@/Components/Atoms';
 import styles from './PublicationCard.module.css'
 
-interface PublicationProps{
-    pub:{
+interface PublicationProps {
+    pub: {
         cod_pub: number,
         nombre_publicacion: string,
         nombre_categoria: string,
@@ -14,16 +14,18 @@ interface PublicationProps{
         handlename: string,
         estado_pub: 'activo' | 'inactivo'
     },
-    onOpenModal: () => void
+    onOpenModal: () => void,
+    onPurchaseClick?: () => void
 }
 
 export default function PublicationCard({
     pub,
-    onOpenModal
-}: PublicationProps){
-    
+    onOpenModal,
+    onPurchaseClick
+}: PublicationProps) {
+
     const getStatusClass = (estado: string) => {
-        switch(estado?.toLowerCase()) {
+        switch (estado?.toLowerCase()) {
             case 'activo': return styles.statusActive;
             case 'inactivo': return styles.statusInactive;
             default: return '';
@@ -31,16 +33,16 @@ export default function PublicationCard({
     };
 
     const cod_publication = pub.cod_pub.toString();
-    
-    return(
+
+    return (
         <div className={styles.card}>
             <div className={styles.imageContainer}>
                 {pub.foto_pub && (
-                    <img 
+                    <img
                         src={pub.foto_pub}
                         alt={cod_publication}
                         className={styles.image}
-                    /> 
+                    />
                 )}
             </div>
             <div className={styles.content}>
@@ -60,14 +62,33 @@ export default function PublicationCard({
                         Estado: {pub.estado_pub}
                     </span>
                 </div>
-                 {pub.calidad &&  <div className={styles.qualitySection}>
-                        <span className={styles.qualityLabel}>Calidad:</span>
-                        <span className={styles.qualityValue}>{pub.calidad}</span>
-                                 </div>
+                {pub.calidad && <div className={styles.qualitySection}>
+                    <span className={styles.qualityLabel}>Calidad:</span>
+                    <span className={styles.qualityValue}>{pub.calidad}</span>
+                </div>
                 }
             </div>
             <div className={styles.buttonContainer}>
-                <ButtonForm 
+                {onPurchaseClick && pub.estado_pub === 'activo' && (
+                    <button
+                        onClick={onPurchaseClick}
+                        style={{
+                            backgroundColor: '#1fb7a1',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '10px 20px',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            marginBottom: '8px',
+                            width: '100%'
+                        }}
+                    >
+                        Comprar
+                    </button>
+                )}
+                <ButtonForm
                     type='open'
                     action='watch'
                     entity='publication'
