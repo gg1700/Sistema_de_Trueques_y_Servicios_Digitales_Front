@@ -13,6 +13,10 @@ const USERS_API_BASE =
   process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
   "http://localhost:5000/api/users";
 
+const PUBLICATIONS_API_BASE =
+  process.env.NEXT_PUBLIC_PUBLICATIONS_API_BASE_URL ??
+  "http://localhost:5000/api/publications";
+
 type Tab = "offers" | "publish" | "likes" | "events";
 type PublishType = "product" | "service";
 type NavRole = "admin" | "user";
@@ -176,6 +180,7 @@ export default function UserProfile({
               id: p.cod_pub ?? p.id ?? 0,
               title: p.titulo_pub ?? p.title ?? "Sin título",
               description: p.descr_pub ?? p.description ?? "",
+              image: `${PUBLICATIONS_API_BASE}/${p.cod_pub ?? p.id ?? 0}/image`,
             }));
 
             setOffers(mappedOffers);
@@ -257,8 +262,8 @@ export default function UserProfile({
     effectiveRole === "admin"
       ? "Administrador"
       : effectiveRole === "entrepreneur"
-      ? "Emprendedor"
-      : "Usuario Común";
+        ? "Emprendedor"
+        : "Usuario Común";
 
   const avatarUrl =
     user && user.cod_us ? `${USERS_API_BASE}/${user.cod_us}/image` : null;
@@ -317,36 +322,32 @@ export default function UserProfile({
         <nav className={styles.tabs}>
           <button
             type="button"
-            className={`${styles.tab} ${
-              activeTab === "offers" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tab} ${activeTab === "offers" ? styles.tabActive : ""
+              }`}
             onClick={() => setActiveTab("offers")}
           >
             Ofertas Propias
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${
-              activeTab === "publish" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tab} ${activeTab === "publish" ? styles.tabActive : ""
+              }`}
             onClick={() => setActiveTab("publish")}
           >
             Publicar
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${
-              activeTab === "likes" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tab} ${activeTab === "likes" ? styles.tabActive : ""
+              }`}
             onClick={() => setActiveTab("likes")}
           >
             Me gusta
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${
-              activeTab === "events" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tab} ${activeTab === "events" ? styles.tabActive : ""
+              }`}
             onClick={() => setActiveTab("events")}
           >
             Eventos
@@ -431,9 +432,8 @@ export default function UserProfile({
                   <Link
                     key={item.route}
                     href={item.route}
-                    className={`${styles.sideMenuLink} ${
-                      isActive ? styles.sideMenuLinkActive : ""
-                    }`}
+                    className={`${styles.sideMenuLink} ${isActive ? styles.sideMenuLinkActive : ""
+                      }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.name}
@@ -548,18 +548,16 @@ function PublishSection({
       <div className={styles.publishTabs}>
         <button
           type="button"
-          className={`${styles.publishTab} ${
-            publishType === "product" ? styles.publishTabActive : ""
-          }`}
+          className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""
+            }`}
           onClick={() => setPublishType("product")}
         >
           Producto
         </button>
         <button
           type="button"
-          className={`${styles.publishTab} ${
-            publishType === "service" ? styles.publishTabActive : ""
-          }`}
+          className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""
+            }`}
           onClick={() => setPublishType("service")}
         >
           Servicio
