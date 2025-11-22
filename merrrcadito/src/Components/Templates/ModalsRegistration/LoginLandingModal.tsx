@@ -15,7 +15,7 @@ export default function LoginLandingModal({
   open,
   onSignIn,
   onLogIn,
-  appName = "Pixer",
+  appName = "MERRRCADITO",
   year = new Date().getFullYear(),
 }: Props) {
   if (!open) return null;

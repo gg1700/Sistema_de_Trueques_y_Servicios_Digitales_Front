@@ -18,12 +18,23 @@ type Step =
   | "user"
   | "entrepreneur";
 
+type Role = "admin" | "user" | "entrepreneur";
+
 const USERS_API_BASE =
   process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
   "http://localhost:5000/api/users";
 
-// Ruta a donde mandas al usuario logueado
-const PROFILE_ROUTE_BASE = "/perfil";
+const ORG_API_BASE =
+  process.env.NEXT_PUBLIC_ORGANIZATION_API_BASE_URL ??
+  "http://localhost:5000/api/organization";
+
+const PROFILE_ROUTE_BASE = "/Home";
+
+const mapCodRolToRole = (codRol?: number): Role => {
+  if (codRol === 2) return "admin";
+  if (codRol === 3) return "entrepreneur";
+  return "user";
+};
 
 const AuthRegistrationFlow: React.FC = () => {
   const [step, setStep] = useState<Step>("landing");
@@ -31,55 +42,98 @@ const AuthRegistrationFlow: React.FC = () => {
 
   const router = useRouter();
 
-  // ---------- LOGIN: comprobar si el usuario está registrado ----------
   const handleLogin = async (data: { username: string; password: string }) => {
-    const { username } = data;
+    const { username, password } = data;
     setLoginError(null);
-
     try {
-      const res = await fetch(
+      const resUser = await fetch(
         `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(
           username
         )}`,
         { method: "GET" }
       );
 
-      const json = await res.json().catch(() => ({} as any));
+      const jsonUser = await resUser.json().catch(() => ({} as any));
 
-      const userNotFound =
-        !res.ok || json.success === false || !json.data || json.data.length === 0;
+      const rawData = jsonUser?.data;
+      const userData = Array.isArray(rawData) ? rawData[0] : rawData;
 
-      if (userNotFound) {
-        // Solo mostramos el modal de error, sin lanzar excepciones
-        setLoginError("Usuario no registrado o credenciales incorrectas.");
+      const userFound =
+        resUser.ok && jsonUser.success !== false && userData != null;
+
+      if (userFound) {
+        const role = mapCodRolToRole(userData.cod_rol);
+        const codUs: number | undefined = userData.cod_us;
+        if (typeof window !== "undefined") {
+          try {
+            window.localStorage.setItem("currentUserHandle", username);
+            window.localStorage.setItem("currentUserRole", role);
+            if (codUs != null) {
+              window.localStorage.setItem("currentUserId", String(codUs));
+            }
+          } catch {
+          }
+        }
+        const params = new URLSearchParams({
+          type: "user",
+          role,
+          handle: username,
+        });
+        if (codUs != null) {
+          params.append("cod_us", String(codUs)); 
+        }
+
+        router.push(`${PROFILE_ROUTE_BASE}?${params.toString()}`);
         return;
       }
+      const resOrg = await fetch(
+        `${ORG_API_BASE}/get_org_data?nom_leg_org=${encodeURIComponent(
+          username
+        )}&cif=${encodeURIComponent(password)}`,
+        { method: "GET" }
+      );
 
-      // Login “ok” → ir al perfil
-      router.push(`${PROFILE_ROUTE_BASE}?handle=${encodeURIComponent(username)}`);
+      const jsonOrg = await resOrg.json().catch(() => ({} as any));
+
+      const orgFound =
+        resOrg.ok &&
+        jsonOrg.success !== false &&
+        jsonOrg.data &&
+        jsonOrg.data.length > 0;
+
+      if (orgFound) {
+        router.push(
+          `${PROFILE_ROUTE_BASE}?type=org&nom_leg_org=${encodeURIComponent(
+            username
+          )}`
+        );
+        return;
+      }
+      setLoginError(
+        "Usuario u organización no registrados o credenciales incorrectas."
+      );
     } catch {
-      // Error de red u otro problema → mismo modal genérico
-      setLoginError("Ocurrió un problema al iniciar sesión. Inténtalo de nuevo.");
+      setLoginError(
+        "Ocurrió un problema al iniciar sesión. Inténtalo de nuevo."
+      );
     }
   };
 
-  // ---------- REGISTRO ORGANIZACIÓN (placeholder) ----------
   const handleOrganizationRegister = async (data: {
-    legalName: string;
-    alias: string;
-    type: string;
+    nom_com_org: string;
+    nom_leg_org: string;
+    tipo_org: "" | "con_fines_lucro" | "sin_fines_lucro";
+    rubro_org: string;
     cif: string;
-    email: string;
-    phone: string;
-    address: string;
-    website: string;
+    correo_org: string;
+    telf_org: string;
+    dir_org: string;
+    sitio_web: string;
     logo?: File | null;
   }) => {
-    console.log("Registro Organización:", data);
-    // TODO: llamada real al backend
+    console.log("Registro Organización (callback padre):", data);
   };
 
-  // ---------- REGISTRO USUARIO (placeholder) ----------
   const handleUserRegister = async (data: {
     ci: string;
     firstName: string;
@@ -91,14 +145,11 @@ const AuthRegistrationFlow: React.FC = () => {
     phone: string;
     photo?: File | null;
   }) => {
-    console.log("Registro Usuario:", data);
-    // El registro real lo manejas dentro de SignInUserModal con /api/users/register
+    console.log("Registro Usuario (callback padre):", data);
   };
 
-  // ---------- RENDER DEL FLUJO ----------
   return (
     <>
-      {/* 1) LANDING: Sign In / Log In */}
       <LoginLandingModal
         open={step === "landing"}
         onSignIn={() => setStep("choice")}
@@ -111,7 +162,6 @@ const AuthRegistrationFlow: React.FC = () => {
         }}
       />
 
-      {/* 2) MODAL DE LOG IN */}
       <LogInModal
         open={step === "login"}
         onConfirm={handleLogin}
@@ -121,7 +171,6 @@ const AuthRegistrationFlow: React.FC = () => {
         }}
       />
 
-      {/* Modal pequeño para errores de login */}
       {step === "login" && loginError && (
         <div
           style={{
@@ -203,7 +252,6 @@ const AuthRegistrationFlow: React.FC = () => {
         </div>
       )}
 
-      {/* 3) ELEGIR: Organización / Emprendedor-Usuario */}
       <SignInChoiceModal
         open={step === "choice"}
         onOrganization={() => setStep("organization")}
@@ -211,7 +259,6 @@ const AuthRegistrationFlow: React.FC = () => {
         onClose={() => setStep("landing")}
       />
 
-      {/* 4) REGISTRO DE ORGANIZACIÓN */}
       <SignInOrganizationModal
         open={step === "organization"}
         onCancel={() => setStep("choice")}
@@ -221,7 +268,6 @@ const AuthRegistrationFlow: React.FC = () => {
         }}
       />
 
-      {/* 5) REGISTRO DE USUARIO */}
       <SignInUserModal
         open={step === "user"}
         onCancel={() => setStep("choice")}
@@ -229,7 +275,6 @@ const AuthRegistrationFlow: React.FC = () => {
         onGoEntrepreneur={() => setStep("entrepreneur")}
       />
 
-      {/* 6) REGISTRO DE EMPRENDEDOR */}
       {step === "entrepreneur" && (
         <EntrepreneurRegister onBack={() => setStep("user")} />
       )}
