@@ -39,8 +39,31 @@ export function useActivityWeek(){
     return data;
 }
 
+export function useActionsUsers(month:string){
+    const [data, setData] = useState();
+
+    useEffect(() => {
+        async function loadThirdRepo() {
+            const response= await ReportService.get_actions_users_by_month("11");
+            const actions= response.data;
+            const mapActions= actions.map((action:any) => ({
+                mes: action.mes,
+                anio: action.anio,
+                cant_compras_publicaciones_prod: action.cant_compras_publicaciones_prod,
+                cant_compras_publicaciones_serv: action.cant_compras_publicaciones_serv,
+                cant_intercambios: action.cant_intercambios,
+                cant_compras_potenciadores: action.cant_compras_potenciadores,
+                cant_paquetes_tokens: action.cant_paquetes_tokens
+            }))
+            setData(mapActions);
+        }
+        loadThirdRepo();
+    },[])
+}
+
 
 export const Reports = {
     useCategoryProdsReport,
-    useActivityWeek
+    useActivityWeek,
+    useActionsUsers
 }

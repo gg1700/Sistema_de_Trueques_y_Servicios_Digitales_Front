@@ -36,16 +36,41 @@ export default function ReportsAdmin() {
         }]
     };
 
-    const usuariosData = {
-        labels: ['Activos', 'Inactivos'],
+    const reporteTres = Reports.useActionsUsers("11");
+    const safeReporteTres = Array.isArray(reporteTres) ? reporteTres : [];
+    const usuariosActionsData = {
+        labels: ['Productos', 'Servicios', 'Intercambios', 'Potenciadores', 'CV'],
         datasets: [{
-            label: 'Cantidad de Usuarios',
-            data: [1250, 320, 45, 178],
-            backgroundColor: [
-                'rgba(75, 192, 192, 0.8)',   
-                'rgba(255, 205, 86, 0.8)',   
-            ],
-        }]
+            label: 'Compras Productos',
+            data: safeReporteTres.map((dato:any) => dato.cant_compras_publicaciones_prod),
+            backgroundColor: 
+                'rgba(75, 192, 192, 0.8)',     
+            },
+            {
+             label: 'Compras Servicios',
+             data: safeReporteTres.map((dato:any) => dato.cant_compras_publicaciones_serv),
+             backgroundColor: 
+                'rgba(75, 192, 192, 0.8)'
+            },
+            {
+             label: 'Intercambios',
+             data: safeReporteTres.map((dato:any) => dato.cant_intercambios),
+             backgroundColor: 
+                'rgba(75, 192, 192, 0.8)'
+            },
+            {
+             label: 'Compras de Potenciadores',
+             data: safeReporteTres.map((dato:any )=> dato.cant_compras_potenciadores),
+             backgroundColor: 
+                'rgba(75, 192, 192, 0.8)'
+            },
+            {
+             label: 'Compras de CV',
+             data: safeReporteTres.map((dato:any) => dato.cant_paquetes_tokens),
+             backgroundColor: 
+                'rgba(75, 192, 192, 0.8)'
+            }
+        ]
     };
 
     const reportConfigs = [
@@ -68,8 +93,8 @@ export default function ReportsAdmin() {
             }
         },
         {
-            title: "Usuarios Activos e Inactivos",
-            data: usuariosData,
+            title: "Acciones de usuarios en el mes",
+            data: usuariosActionsData,
             chartProps: {
                 xAxisKey: "estado",
                 yAxisKey: "cantidad",

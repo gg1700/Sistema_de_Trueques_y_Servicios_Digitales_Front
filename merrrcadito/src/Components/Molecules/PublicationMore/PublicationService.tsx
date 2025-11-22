@@ -1,4 +1,4 @@
-import { ButtonCancel } from '@/Components/Atoms';
+import { ButtonCancel, ButtonForm } from '@/Components/Atoms';
 import styles from './PublicationMore.module.css';
 
 interface PubServProps{
@@ -49,6 +49,7 @@ export default function PublicationService({
                     </div>
                 </div>
             </div>
+            <ButtonForm  type='buy' action='buy' entity='publication'/>
             <ButtonCancel onClick={onCancel}/>
         </div>
     );

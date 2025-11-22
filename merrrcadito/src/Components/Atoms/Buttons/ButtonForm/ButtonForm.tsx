@@ -1,8 +1,8 @@
 import styles from './ButtonForm.module.css'
 
 interface ButtonFormProps{
-    type: 'submit' | 'cancel' | 'delete' | 'open'
-    action: 'register' | 'delete' | 'update' | 'publish' | 'watch'
+    type: 'submit' | 'cancel' | 'delete' | 'open' | 'buy'
+    action: 'register' | 'delete' | 'update' | 'publish' | 'watch' | 'buy'
     entity: 'category' | 'subcategory' | 'user' | 'publication'
     disabled?: boolean
     onClick?: () => void
@@ -24,7 +24,8 @@ export default function ButtonForm({
         update: 'Actualizar', 
         delete: 'Eliminar',
         publish: 'Publicar',
-        watch: 'Ver más'
+        watch: 'Ver más',
+        buy: 'Adquirir'
         };
 
         const entities = {
@@ -58,7 +59,7 @@ export default function ButtonForm({
             className={`${styles.buttonForm} ${styles[getVariant()]}`}
             onClick={onClick}
             disabled={disabled}
-            >
+        >
             {getButtonText()}
         </button>
     );
