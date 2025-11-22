@@ -21,6 +21,10 @@ interface Publication {
   marca?: string | null;
 }
 
+const PUBLICATIONS_API_BASE =
+  process.env.NEXT_PUBLIC_PUBLICATIONS_API_BASE_URL ??
+  "http://localhost:5000/api/publications";
+
 export const usePublicationsProds = () => {
   const [publications, setPublications] = useState<Publication[]>([]);
 
@@ -36,7 +40,7 @@ export const usePublicationsProds = () => {
           nombre_categoria: pub.nom_cat,
           nombre_subcat: pub.nom_subcat_prod,
           precio_pub: pub.precio_pub,
-          foto_pub: pub.foto_pub,
+          foto_pub: `${PUBLICATIONS_API_BASE}/${pub.cod_pub}/image`,
           calif_pond_pub: pub.calif_pond_pub,
           calidad: pub.calidad_prod,
           estado_pub: pub.estado_pub,
