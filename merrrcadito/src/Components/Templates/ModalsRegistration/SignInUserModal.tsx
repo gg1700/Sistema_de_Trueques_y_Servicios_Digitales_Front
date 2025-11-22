@@ -104,7 +104,7 @@ const SignInUserModal: React.FC<Props> = ({
 
   if (!open) return null;
 
-  const set =
+  const setField =
     (k: keyof SignInForm) =>
     (v: string): void =>
       setForm((prev) => ({ ...prev, [k]: v }));
@@ -131,13 +131,9 @@ const SignInUserModal: React.FC<Props> = ({
     return Object.keys(errors).length === 0;
   };
 
-  const handleConfirmSubmit = async (
-    e: FormEvent<HTMLFormElement>
-  ): Promise<void> => {
+  const handleConfirmSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-
     if (!validateMainForm()) return;
-
     setCredMode("user");
     setShowCredModal(true);
   };
@@ -191,14 +187,11 @@ const SignInUserModal: React.FC<Props> = ({
 
     try {
       let codRol = 1;
-      if (credMode === "admin") codRol = 2;
-      if (credMode === "entrepreneur") codRol = 3;
+      if (credMode === "admin") codRol = 3;
+      if (credMode === "entrepreneur") codRol = 2;
 
-      // 👇 AHORA USAMOS FormData PARA ENVIAR LA FOTO + CAMPOS
       const formData = new FormData();
-
       formData.append("cod_rol", String(codRol));
-      formData.append("cod_disp", "");
       formData.append("ci", form.ci);
       formData.append("nom_us", form.firstName);
       formData.append("handle_name", credentials.username);
@@ -211,19 +204,18 @@ const SignInUserModal: React.FC<Props> = ({
       formData.append("correo_us", form.email);
       formData.append("telefono_us", form.phone);
 
-      // 👇 nombre del campo de archivo que espera multer en backend
       if (photoFile) {
         formData.append("foto_us", photoFile);
       }
 
       const res = await fetch(`${API_BASE}/register`, {
         method: "POST",
-        body: formData, // ⚠️ sin Content-Type manual, lo pone el browser
+        body: formData,
       });
 
-      const json = await res.json();
+      const json = await res.json().catch(() => ({} as any));
 
-      if (!res.ok || !json.success) {
+      if (!res.ok || json.success === false) {
         throw new Error(json.message || "Error al registrar el usuario.");
       }
 
@@ -268,6 +260,7 @@ const SignInUserModal: React.FC<Props> = ({
       setCredentials({ username: "", password: "" });
       setCredErrors({});
       setShowCredModal(false);
+
       if (credMode === "entrepreneur") {
         setShowEntrepreneurModal(false);
         setEntrepreneurModalKey((k) => k + 1);
@@ -297,7 +290,7 @@ const SignInUserModal: React.FC<Props> = ({
                 id={ciId}
                 className={inputClass(formErrors.ci)}
                 value={form.ci}
-                onChange={(e) => set("ci")(e.target.value)}
+                onChange={(e) => setField("ci")(e.target.value)}
               />
               {formErrors.ci && (
                 <span className={styles.errorText}>{formErrors.ci}</span>
@@ -310,7 +303,7 @@ const SignInUserModal: React.FC<Props> = ({
                 id={nId}
                 className={inputClass(formErrors.firstName)}
                 value={form.firstName}
-                onChange={(e) => set("firstName")(e.target.value)}
+                onChange={(e) => setField("firstName")(e.target.value)}
               />
               {formErrors.firstName && (
                 <span className={styles.errorText}>
@@ -325,7 +318,7 @@ const SignInUserModal: React.FC<Props> = ({
                 id={apId}
                 className={inputClass(formErrors.lastNameFather)}
                 value={form.lastNameFather}
-                onChange={(e) => set("lastNameFather")(e.target.value)}
+                onChange={(e) => setField("lastNameFather")(e.target.value)}
               />
               {formErrors.lastNameFather && (
                 <span className={styles.errorText}>
@@ -340,7 +333,7 @@ const SignInUserModal: React.FC<Props> = ({
                 id={amId}
                 className={inputClass(formErrors.lastNameMother)}
                 value={form.lastNameMother}
-                onChange={(e) => set("lastNameMother")(e.target.value)}
+                onChange={(e) => setField("lastNameMother")(e.target.value)}
               />
               {formErrors.lastNameMother && (
                 <span className={styles.errorText}>
@@ -357,7 +350,7 @@ const SignInUserModal: React.FC<Props> = ({
                   type="date"
                   className={inputClass(formErrors.birth)}
                   value={form.birth}
-                  onChange={(e) => set("birth")(e.target.value)}
+                  onChange={(e) => setField("birth")(e.target.value)}
                 />
                 {formErrors.birth && (
                   <span className={styles.errorText}>{formErrors.birth}</span>
@@ -370,7 +363,7 @@ const SignInUserModal: React.FC<Props> = ({
                   id={sxId}
                   className={inputClass(formErrors.sex)}
                   value={form.sex}
-                  onChange={(e) => set("sex")(e.target.value as Sex)}
+                  onChange={(e) => setField("sex")(e.target.value as Sex)}
                 >
                   <option value="">—</option>
                   <option value="M">M</option>
@@ -389,7 +382,7 @@ const SignInUserModal: React.FC<Props> = ({
                 type="email"
                 className={inputClass(formErrors.email)}
                 value={form.email}
-                onChange={(e) => set("email")(e.target.value)}
+                onChange={(e) => setField("email")(e.target.value)}
               />
               {formErrors.email && (
                 <span className={styles.errorText}>{formErrors.email}</span>
@@ -402,7 +395,7 @@ const SignInUserModal: React.FC<Props> = ({
                 id={phId}
                 className={inputClass(formErrors.phone)}
                 value={form.phone}
-                onChange={(e) => set("phone")(e.target.value)}
+                onChange={(e) => setField("phone")(e.target.value)}
               />
               {formErrors.phone && (
                 <span className={styles.errorText}>{formErrors.phone}</span>
