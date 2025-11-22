@@ -8,6 +8,7 @@ import styles from "./UserProfile.module.css";
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
 import { getNavItems } from "../../../Utils/navigation";
+import { useUser } from "@/Contexts/userContext";
 
 const USERS_API_BASE =
   process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
@@ -69,6 +70,8 @@ const mapCodRolToRole = (codRol?: number): Role => {
 export default function UserProfile({
   role: roleProp = "admin",
 }: UserProfileProps) {
+  const {user : userContext} = useUser(); // aqui estuvo bocho
+
   const [activeTab, setActiveTab] = useState<Tab>("offers");
   const [publishType, setPublishType] = useState<PublishType>("product");
 
@@ -105,10 +108,13 @@ export default function UserProfile({
   const searchParams = useSearchParams();
   const handleFromUrl = searchParams.get("handle");
   const roleFromUrl = searchParams.get("role") as Role | null;
+
   useEffect(() => {
     if (handleFromUrl) {
       setResolvedHandle(handleFromUrl);
-    } else if (typeof window !== "undefined") {
+    } else if (userContext?.handlename) {  //aqui estuvo bocho
+      setResolvedHandle(userContext.handlename);
+    }else if (typeof window !== "undefined") {
       const storedHandle = window.localStorage.getItem("currentUserHandle");
       if (storedHandle) {
         setResolvedHandle(storedHandle);
@@ -116,7 +122,15 @@ export default function UserProfile({
     }
     if (roleFromUrl) {
       setResolvedRoleFromStorage(roleFromUrl);
-    } else if (typeof window !== "undefined") {
+    } else if (userContext?.cod_rol) { 
+      if((userContext.cod_rol) === 1){
+        setResolvedRoleFromStorage("user");
+      } else if((userContext.cod_rol) === 2){
+        setResolvedRoleFromStorage("entrepreneur");
+      }else {
+        setResolvedRoleFromStorage("admin");
+      }// aqui estuvo bocho
+    }else if (typeof window !== "undefined") {
       const storedRole = window.localStorage.getItem(
         "currentUserRole"
       ) as Role | null;
@@ -128,7 +142,7 @@ export default function UserProfile({
         setResolvedRoleFromStorage(storedRole);
       }
     }
-  }, [handleFromUrl, roleFromUrl]);
+  }, [handleFromUrl, roleFromUrl, userContext]);
 
   const roleFromBackend = user ? mapCodRolToRole(user.cod_rol) : null;
   const effectiveRole: Role =
@@ -272,7 +286,7 @@ export default function UserProfile({
               <div className={styles.avatarCircle}>
                 <img
                   src={avatarUrl}
-                  alt={user?.handle_name || "Foto de perfil"}
+                  alt={userContext?.handlename || "Foto de perfil"}
                   style={{
                     width: "100%",
                     height: "100%",
@@ -302,7 +316,7 @@ export default function UserProfile({
 
         <div className={styles.userInfo}>
           <h1 className={styles.userName}>
-            {user?.handle_name ??
+            {userContext?.handlename ??
               (loading ? "Cargando..." : "Sin usuario")}
           </h1>
 

@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useState, ReactNode, useContext } from 'react';
+import { createContext, useState, ReactNode, useContext, useEffect } from 'react';
 
 interface User {
     cod_us: number,
@@ -19,15 +19,30 @@ export default function UserContextProvide({children}: { children: ReactNode }){
 
     const [user, setUser]=useState<User | null>(null);
 
-    const clearUser = () => {
+     useEffect(() => {
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+            setUser(JSON.parse(savedUser));
+        }
+    }, []);
+
+    const setUserPersisted = (userData: User) => {
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+    };
+
+    const clearUserPersisted = () => {
         setUser(null);
+        localStorage.removeItem('user');
     };
 
     const valor = {
         user,
-        setUser,
-        clearUser
+        setUser: setUserPersisted, 
+        clearUser: clearUserPersisted 
     };
+
+    console.log('👤 UserContext - Estado actual:', user);
 
     return (
         <UserContext.Provider value={valor} >

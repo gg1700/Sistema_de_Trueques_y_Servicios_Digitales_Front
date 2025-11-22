@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import styles from "./newToken.module.css";
-import AdminLayout from "@/Components/Templates/AdminLayout/AdminLayout";
 import { createTokenPackage } from "@/services/tokenService";
+import ProtectedLayout from "@/app/ProtectedLayout";
 
 export default function NewTokenPackagePage() {
   const [form, setForm] = useState({
@@ -57,7 +57,7 @@ export default function NewTokenPackagePage() {
   };
 
   return (
-    <AdminLayout 
+    <ProtectedLayout 
       pageTitle="Gestión de Tokens" 
       pageSubtitle="Registrar nuevo paquete de tokens"
     >
@@ -120,6 +120,6 @@ export default function NewTokenPackagePage() {
           </div>
         </form>
       </div>
-    </AdminLayout>
+    </ProtectedLayout>
   );
 }

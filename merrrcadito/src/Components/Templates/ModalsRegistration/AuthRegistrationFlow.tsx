@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from '../../../Contexts/userContext';
 
 import LoginLandingModal from "@/Components/Templates/ModalsRegistration/LoginLandingModal";
 import LogInModal from "@/Components/Templates/ModalsRegistration/LogInModal";
@@ -37,6 +38,7 @@ const mapCodRolToRole = (codRol?: number): Role => {
 };
 
 const AuthRegistrationFlow: React.FC = () => {
+  const { setUser } = useUser();
   const [step, setStep] = useState<Step>("landing");
   const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -64,7 +66,7 @@ const AuthRegistrationFlow: React.FC = () => {
       if (userFound) {
         const role = mapCodRolToRole(userData.cod_rol);
         const codUs: number | undefined = userData.cod_us;
-        if (typeof window !== "undefined") {
+        /*if (typeof window !== "undefined") {
           try {
             window.localStorage.setItem("currentUserHandle", username);
             window.localStorage.setItem("currentUserRole", role);
@@ -73,7 +75,7 @@ const AuthRegistrationFlow: React.FC = () => {
             }
           } catch {
           }
-        }
+        }*/
         const params = new URLSearchParams({
           type: "user",
           role,
@@ -82,6 +84,11 @@ const AuthRegistrationFlow: React.FC = () => {
         if (codUs != null) {
           params.append("cod_us", String(codUs)); 
         }
+        setUser({
+          cod_us: userData.cod_us,
+          handlename: username,
+          cod_rol: userData.cod_rol
+        });
 
         router.push(`${PROFILE_ROUTE_BASE}?${params.toString()}`);
         return;

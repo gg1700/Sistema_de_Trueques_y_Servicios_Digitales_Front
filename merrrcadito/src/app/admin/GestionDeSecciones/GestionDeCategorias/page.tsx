@@ -1,14 +1,14 @@
 'use client'
-import {AdminLayout} from '@/Components/Templates';
 import ViewCategories from './ViewCategories/viewCategories';
+import ProtectedLayout from '@/app/ProtectedLayout';
 
 export default function Categorias(){
 
     return(
         <>
-         <AdminLayout pageTitle='Gestion de Secciones' pageSubtitle='Categorias'>
+         <ProtectedLayout pageTitle='Gestion de Secciones' pageSubtitle='Categorias'>
             <ViewCategories />
-         </AdminLayout>
+         </ProtectedLayout>
         </>
     );
 }

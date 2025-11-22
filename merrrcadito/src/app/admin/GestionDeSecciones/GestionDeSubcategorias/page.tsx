@@ -1,15 +1,15 @@
 'use client'
-import {AdminLayout} from '@/Components/Templates';
 import ViewSubcategories from './ViewSubcategories/ViewSubcategories';
+import ProtectedLayout from '@/app/ProtectedLayout';
 
 export default function Subcategorias(){
 
     return(
         <>
          <div>
-            <AdminLayout pageTitle='Gestion de Secciones' pageSubtitle='Subcategorias'>
+            <ProtectedLayout pageTitle='Gestion de Secciones' pageSubtitle='Subcategorias'>
                 <ViewSubcategories/>
-            </AdminLayout>
+            </ProtectedLayout>
          </div>
         </>
     );

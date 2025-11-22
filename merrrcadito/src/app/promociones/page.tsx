@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import UserLayout from '@/Components/Templates/UserLayout/UserLayout'; 
 import { getPromociones, Promocion } from '@/services/promocionService';
 import PromotionCard from '@/Components/Molecules/PromotionCard/PromotionCard';
+import ProtectedLayout from '../ProtectedLayout';
 
 export default function PromocionesPage() {
   const [promociones, setPromociones] = useState<Promocion[]>([]);
@@ -20,7 +21,7 @@ export default function PromocionesPage() {
 
 
   return (
-    <UserLayout
+    <ProtectedLayout
       pageTitle="Promociones"
       pageSubtitle="¡Aprovecha los descuentos y ofertas especiales!"
     >
@@ -33,6 +34,6 @@ export default function PromocionesPage() {
           ))}
         </div>
       )}
-    </UserLayout>
+    </ProtectedLayout>
   );
 }

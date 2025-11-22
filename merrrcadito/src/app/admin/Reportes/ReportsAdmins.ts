@@ -44,7 +44,7 @@ export function useActionsUsers(month:string){
 
     useEffect(() => {
         async function loadThirdRepo() {
-            const response= await ReportService.get_actions_users_by_month("11");
+            const response= await ReportService.get_actions_users_by_month(month);
             const actions= response.data;
             const mapActions= actions.map((action:any) => ({
                 mes: action.mes,
@@ -58,7 +58,8 @@ export function useActionsUsers(month:string){
             setData(mapActions);
         }
         loadThirdRepo();
-    },[])
+    },[]);
+    return data;
 }
 
 
