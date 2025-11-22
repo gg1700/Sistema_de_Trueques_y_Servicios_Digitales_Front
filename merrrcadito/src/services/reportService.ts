@@ -73,5 +73,18 @@ export const ReportService = {
         }catch(error){
             throw error;
         }
+    },
+    get_actions_users_by_month: async (month: string) => {
+        try{
+            const response = await axios.get(
+                `${API_BASE_URL}/users/action_report_by_month`,
+                {
+                    params: {month}
+                }
+            );
+            return response.data;
+        }catch(error){
+            throw error;
+        }
     }
 }

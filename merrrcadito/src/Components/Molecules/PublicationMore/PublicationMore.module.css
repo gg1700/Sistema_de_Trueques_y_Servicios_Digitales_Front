@@ -66,3 +66,76 @@
   font-size: 14px;
   color: #333;
 }
+
+.buttonsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+@media (max-width: 480px) {
+  .buttonsContainer {
+    grid-template-columns: 1fr; 
+  }
+}
+
+.modalContainer {
+    background: white;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 400px;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.modalHeader {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    text-align: center;
+}
+
+.modalTitle {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.modalBody {
+    padding: 30px 25px;
+    text-align: center;
+}
+
+.iconContainer {
+    margin-bottom: 15px;
+}
+
+.questionIcon {
+    font-size: 48px;
+    display: block;
+}
+
+.confirmationText {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.detailText {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.modalFooter {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 20px 25px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
