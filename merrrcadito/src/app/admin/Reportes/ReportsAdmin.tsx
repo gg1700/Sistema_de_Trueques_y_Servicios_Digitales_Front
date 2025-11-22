@@ -36,42 +36,36 @@ export default function ReportsAdmin() {
         }]
     };
 
+
     const reporteTres = Reports.useActionsUsers("11");
     const safeReporteTres = Array.isArray(reporteTres) ? reporteTres : [];
+    const usuario = safeReporteTres[0] as any || {};
+
+
+
     const usuariosActionsData = {
-        labels: ['Productos', 'Servicios', 'Intercambios', 'Potenciadores', 'CV'],
-        datasets: [{
-            label: 'Compras Productos',
-            data: safeReporteTres.map((dato:any) => dato.cant_compras_publicaciones_prod),
-            backgroundColor: 
-                'rgba(75, 192, 192, 0.8)',     
-            },
+        labels: ['Compras Productos', 'Compras Servicios', 'Intercambios', 'Compras de Potenciadores', 'Compras de CV'],
+        datasets: [
             {
-             label: 'Compras Servicios',
-             data: safeReporteTres.map((dato:any) => dato.cant_compras_publicaciones_serv),
-             backgroundColor: 
-                'rgba(75, 192, 192, 0.8)'
-            },
-            {
-             label: 'Intercambios',
-             data: safeReporteTres.map((dato:any) => dato.cant_intercambios),
-             backgroundColor: 
-                'rgba(75, 192, 192, 0.8)'
-            },
-            {
-             label: 'Compras de Potenciadores',
-             data: safeReporteTres.map((dato:any )=> dato.cant_compras_potenciadores),
-             backgroundColor: 
-                'rgba(75, 192, 192, 0.8)'
-            },
-            {
-             label: 'Compras de CV',
-             data: safeReporteTres.map((dato:any) => dato.cant_paquetes_tokens),
-             backgroundColor: 
-                'rgba(75, 192, 192, 0.8)'
+                label: 'Acciones del Usuario',
+                data: [
+                    usuario.cant_compras_publicaciones_prod || 0,
+                    usuario.cant_compras_publicaciones_serv || 0,
+                    usuario.cant_intercambios || 0,
+                    usuario.cant_compras_potenciadores || 0,
+                    usuario.cant_paquetes_tokens || 0
+                ],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(153, 102, 255, 0.8)'
+                ]
             }
         ]
     };
+
 
     const reportConfigs = [
         {
