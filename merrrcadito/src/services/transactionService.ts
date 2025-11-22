@@ -66,3 +66,41 @@ export const getUserTransactionHistory = async (cod_us: number) => {
         throw error;
     }
 };
+
+export interface PurchaseProductResponse {
+    success: boolean;
+    message: string;
+    transaction?: any;
+    new_balance?: number;
+    tokens_spent?: number;
+    co2_impact_increase?: number;
+    seller_id?: number;
+    error?: string;
+}
+
+/**
+ * Purchase a product from a publication
+ * @param cod_us - User ID making the purchase
+ * @param cod_pub - Publication ID to purchase
+ * @returns Purchase response with transaction details
+ */
+export const purchaseProduct = async (
+    cod_us: number,
+    cod_pub: number
+): Promise<PurchaseProductResponse> => {
+    try {
+        const response = await axios.post(
+            `${API_URL}/transactions/purchase_product?cod_us=${cod_us}`,
+            { cod_pub }
+        );
+        return response.data;
+    } catch (error: any) {
+        console.error('Error purchasing product:', error);
+        return {
+            success: false,
+            message: error.response?.data?.message || 'Error al procesar la compra',
+            error: error.response?.data?.error || error.message
+        };
+    }
+};
+

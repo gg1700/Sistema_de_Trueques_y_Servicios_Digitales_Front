@@ -29,6 +29,10 @@ const SUBCATEGORIES_API_BASE =
   process.env.NEXT_PUBLIC_SUBCATEGORIES_API_BASE_URL ??
   "http://localhost:5000/api/subcategories";
 
+const PUBLICATIONS_API_BASE =
+  process.env.NEXT_PUBLIC_PUBLICATIONS_API_BASE_URL ??
+  "http://localhost:5000/api/publications";
+
 type Tab = "offers" | "publish" | "likes" | "events";
 type PublishType = "product" | "service";
 type NavRole = "admin" | "user";
@@ -39,6 +43,7 @@ interface Offer {
   title: string;
   description: string;
   image?: string;
+  price?: number;
 }
 
 interface ProductFormState {
@@ -101,6 +106,7 @@ export default function UserProfile({
   role: roleProp = "admin",
 }: UserProfileProps) {
   const [activeTab, setActiveTab] = useState<Tab>("offers");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [publishType, setPublishType] = useState<PublishType>("product");
 
   const [productForm, setProductForm] = useState<ProductFormState>({
@@ -132,6 +138,7 @@ export default function UserProfile({
   const [resolvedHandle, setResolvedHandle] = useState<string | null>(null);
   const [resolvedRoleFromStorage, setResolvedRoleFromStorage] =
     useState<Role | null>(null);
+
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
@@ -231,8 +238,9 @@ export default function UserProfile({
           .map((p: any) => ({
             id: p.cod_pub ?? p.id ?? 0,
             title: p.nom_prod ?? p.titulo_pub ?? p.title ?? "Sin título",
-            description: p.descr_pub ?? p.desc_prod ?? "",
-            image: undefined,
+            description: p.descr_pub ?? p.desc_prod ?? p.contenido ?? "",
+            image: `${PUBLICATIONS_API_BASE}/${p.cod_pub ?? p.id ?? 0}/image`,
+            price: p.precio_pub ?? p.precio_prod ?? 0,
           }));
 
         setOffers(mappedOffers);
@@ -363,7 +371,7 @@ export default function UserProfile({
             : null,
         desc_prod:
           productForm.description &&
-          productForm.description.trim() !== ""
+            productForm.description.trim() !== ""
             ? productForm.description
             : null,
       };
@@ -433,7 +441,7 @@ export default function UserProfile({
       formData.append("unidad_medida", "kg");
 
       if (productForm.image) {
-        formData.append("image", productForm.image);
+        formData.append("foto_pub", productForm.image);
       }
 
       const resPost = await fetch(
@@ -448,23 +456,20 @@ export default function UserProfile({
       console.log("Respuesta /posts/create:", jsonPost);
 
       if (!resPost.ok || jsonPost.success === false) {
-        const backendMsg =
-          (jsonPost.message ||
-            "No se pudo crear la publicación de producto.") +
-          (jsonPost.error ? ` ${jsonPost.error}` : "");
-        throw new Error(backendMsg);
+        const errorMsg = jsonPost.message || "No se pudo crear la publicación.";
+        const errorDetail = jsonPost.error ? ` Detalle: ${jsonPost.error}` : "";
+        console.error("Error del backend:", jsonPost);
+        throw new Error(errorMsg + errorDetail);
       }
 
-      await fetchOffersForUser(user.cod_us);
-
+      console.log("Publicación creada con éxito!");
+      setShowSuccessModal(true);
       handleCancelProduct();
-      alert("Publicación creada correctamente.");
+      // Recargar ofertas para que aparezca la nueva
+      // Podríamos llamar a fetchData() de nuevo si extraemos la lógica
     } catch (err: any) {
-      console.error("Error al crear publicación:", err);
-      setError(
-        err?.message ??
-          "Ocurrió un error al crear la publicación de producto."
-      );
+      console.error(err);
+      alert(`Error: ${err.message}`);
     }
   };
 
@@ -506,8 +511,8 @@ export default function UserProfile({
     effectiveRole === "admin"
       ? "Administrador"
       : effectiveRole === "entrepreneur"
-      ? "Emprendedor"
-      : "Usuario Común";
+        ? "Emprendedor"
+        : "Usuario Común";
 
   const avatarUrl =
     user && user.cod_us ? `${USERS_API_BASE}/${user.cod_us}/image` : null;
@@ -565,36 +570,32 @@ export default function UserProfile({
         <nav className={styles.tabs}>
           <button
             type="button"
-            className={`${styles.tab} ${
-              activeTab === "offers" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tab} ${activeTab === "offers" ? styles.tabActive : ""
+              }`}
             onClick={() => setActiveTab("offers")}
           >
             Ofertas Propias
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${
-              activeTab === "publish" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tab} ${activeTab === "publish" ? styles.tabActive : ""
+              }`}
             onClick={() => setActiveTab("publish")}
           >
             Publicar
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${
-              activeTab === "likes" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tab} ${activeTab === "likes" ? styles.tabActive : ""
+              }`}
             onClick={() => setActiveTab("likes")}
           >
             Me gusta
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${
-              activeTab === "events" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tab} ${activeTab === "events" ? styles.tabActive : ""
+              }`}
             onClick={() => setActiveTab("events")}
           >
             Eventos
@@ -681,9 +682,8 @@ export default function UserProfile({
                   <Link
                     key={item.route}
                     href={item.route}
-                    className={`${styles.sideMenuLink} ${
-                      isActive ? styles.sideMenuLinkActive : ""
-                    }`}
+                    className={`${styles.sideMenuLink} ${isActive ? styles.sideMenuLinkActive : ""
+                      }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.name}
@@ -693,6 +693,27 @@ export default function UserProfile({
             </nav>
           </aside>
         </>
+      )}
+
+      {showSuccessModal && (
+        <div className={styles.successModalOverlay}>
+          <div className={styles.successModalContent}>
+            <span className={styles.successIcon}>🎉</span>
+            <h2 className={styles.successTitle}>¡Publicación Exitosa!</h2>
+            <p className={styles.successMessage}>
+              Tu producto ha sido publicado correctamente y ya está visible en el mercado.
+            </p>
+            <button
+              className={styles.submitButton}
+              onClick={() => {
+                setShowSuccessModal(false);
+                window.location.reload();
+              }}
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
       )}
     </section>
   );
@@ -734,20 +755,46 @@ function OffersSection({ offers }: OffersSectionProps) {
             <p className={styles.offerDescription}>{offer.description}</p>
           </div>
           <div className={styles.offerActions}>
-            <button
-              type="button"
-              className={styles.iconButton}
-              title="Compartir"
-            >
-              <i className="bi bi-share" />
-            </button>
-            <button
-              type="button"
-              className={styles.iconButton}
-              title="Favorito"
-            >
-              <i className="bi bi-heart" />
-            </button>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: '4px'
+              }}>
+                <span style={{
+                  fontSize: '20px',
+                  fontWeight: '700',
+                  color: '#1fb7a1'
+                }}>
+                  {offer.price ?? 0}
+                </span>
+                <span style={{
+                  fontSize: '13px',
+                  color: '#6b7785',
+                  fontWeight: '500'
+                }}>
+                  Tokens
+                </span>
+              </div>
+              <button
+                type="button"
+                className={styles.iconButton}
+                title="Compartir"
+              >
+                <i className="bi bi-share" />
+              </button>
+              <button
+                type="button"
+                className={styles.iconButton}
+                title="Favorito"
+              >
+                <i className="bi bi-heart" />
+              </button>
+            </div>
           </div>
         </article>
       ))}
@@ -803,18 +850,16 @@ function PublishSection({
       <div className={styles.publishTabs}>
         <button
           type="button"
-          className={`${styles.publishTab} ${
-            publishType === "product" ? styles.publishTabActive : ""
-          }`}
+          className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""
+            }`}
           onClick={() => setPublishType("product")}
         >
           Producto
         </button>
         <button
           type="button"
-          className={`${styles.publishTab} ${
-            publishType === "service" ? styles.publishTabActive : ""
-          }`}
+          className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""
+            }`}
           onClick={() => setPublishType("service")}
         >
           Servicio
