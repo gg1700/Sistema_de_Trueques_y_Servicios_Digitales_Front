@@ -187,8 +187,8 @@ const SignInUserModal: React.FC<Props> = ({
 
     try {
       let codRol = 1;
-      if (credMode === "admin") codRol = 2;
-      if (credMode === "entrepreneur") codRol = 3;
+      if (credMode === "admin") codRol = 3;
+      if (credMode === "entrepreneur") codRol = 2;
 
       const formData = new FormData();
       formData.append("cod_rol", String(codRol));
