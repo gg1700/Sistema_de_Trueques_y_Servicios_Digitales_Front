@@ -45,7 +45,9 @@ const AuthRegistrationFlow: React.FC = () => {
   const handleLogin = async (data: { username: string; password: string }) => {
     const { username, password } = data;
     setLoginError(null);
+
     try {
+      // 1) Intentar como USUARIO (handle_name)
       const resUser = await fetch(
         `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(
           username
@@ -63,29 +65,27 @@ const AuthRegistrationFlow: React.FC = () => {
 
       if (userFound) {
         const role = mapCodRolToRole(userData.cod_rol);
-        const codUs: number | undefined = userData.cod_us;
+
+        // 🔹 Guardamos info en localStorage para que /Home pueda leerla
         if (typeof window !== "undefined") {
           try {
             window.localStorage.setItem("currentUserHandle", username);
             window.localStorage.setItem("currentUserRole", role);
-            if (codUs != null) {
-              window.localStorage.setItem("currentUserId", String(codUs));
-            }
           } catch {
+            // si falla localStorage no rompemos el flujo
           }
         }
-        const params = new URLSearchParams({
-          type: "user",
-          role,
-          handle: username,
-        });
-        if (codUs != null) {
-          params.append("cod_us", String(codUs)); 
-        }
 
-        router.push(`${PROFILE_ROUTE_BASE}?${params.toString()}`);
+        // puedes dejar la URL “limpia” o con query, ambas sirven ahora
+        router.push(
+          `${PROFILE_ROUTE_BASE}?type=user&role=${role}&handle=${encodeURIComponent(
+            username
+          )}`
+        );
         return;
       }
+
+      // 2) Si no es usuario, intentar como ORGANIZACIÓN
       const resOrg = await fetch(
         `${ORG_API_BASE}/get_org_data?nom_leg_org=${encodeURIComponent(
           username
@@ -102,6 +102,7 @@ const AuthRegistrationFlow: React.FC = () => {
         jsonOrg.data.length > 0;
 
       if (orgFound) {
+        // si luego quieres perfil de org, aquí podrías guardar otra cosa
         router.push(
           `${PROFILE_ROUTE_BASE}?type=org&nom_leg_org=${encodeURIComponent(
             username
@@ -109,6 +110,8 @@ const AuthRegistrationFlow: React.FC = () => {
         );
         return;
       }
+
+      // 3) No se encontró ni usuario ni organización
       setLoginError(
         "Usuario u organización no registrados o credenciales incorrectas."
       );
@@ -119,6 +122,7 @@ const AuthRegistrationFlow: React.FC = () => {
     }
   };
 
+  // 🔹 Firma alineada con el tipo que espera SignInOrganizationModal
   const handleOrganizationRegister = async (data: {
     nom_com_org: string;
     nom_leg_org: string;
