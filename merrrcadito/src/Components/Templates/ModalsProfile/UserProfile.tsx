@@ -570,7 +570,7 @@ export default function UserProfile({
         <nav className={styles.tabs}>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "offers" ? styles.tabActive : ""
+            className={`${styles.tab} ${activeTab === "offers" ? "tabActive" : ""
               }`}
             onClick={() => setActiveTab("offers")}
           >
@@ -578,7 +578,7 @@ export default function UserProfile({
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "publish" ? styles.tabActive : ""
+            className={`${styles.tab} ${activeTab === "publish" ? "tabActive" : ""
               }`}
             onClick={() => setActiveTab("publish")}
           >
@@ -586,7 +586,7 @@ export default function UserProfile({
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "likes" ? styles.tabActive : ""
+            className={`${styles.tab} ${activeTab === "likes" ? "tabActive" : ""
               }`}
             onClick={() => setActiveTab("likes")}
           >
@@ -594,7 +594,7 @@ export default function UserProfile({
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "events" ? styles.tabActive : ""
+            className={`${styles.tab} ${activeTab === "events" ? "tabActive" : ""
               }`}
             onClick={() => setActiveTab("events")}
           >
@@ -682,7 +682,7 @@ export default function UserProfile({
                   <Link
                     key={item.route}
                     href={item.route}
-                    className={`${styles.sideMenuLink} ${isActive ? styles.sideMenuLinkActive : ""
+                    className={`${styles.sideMenuLink} ${isActive ? "sideMenuLinkActive" : ""
                       }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -850,7 +850,7 @@ function PublishSection({
       <div className={styles.publishTabs}>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""
+          className={`${styles.publishTab} ${publishType === "product" ? "publishTabActive" : ""
             }`}
           onClick={() => setPublishType("product")}
         >
@@ -858,7 +858,7 @@ function PublishSection({
         </button>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""
+          className={`${styles.publishTab} ${publishType === "service" ? "publishTabActive" : ""
             }`}
           onClick={() => setPublishType("service")}
         >
