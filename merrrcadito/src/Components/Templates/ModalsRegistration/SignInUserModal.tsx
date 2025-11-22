@@ -14,6 +14,8 @@ import ButtonCancel from "@/Components/Atoms/Buttons/ButtonCancel/ButtonCancel";
 import Label from "@/Components/Atoms/Label/Label";
 import ButtonIcon from "@/Components/Atoms/Buttons/ButtonIcon/ButtonIcon";
 
+import EntrepreneurAvailabilityModal from "@/Components/Templates/ModalsRegistration/EntrepreneurAvailabilityModal";
+
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api/users";
 
@@ -42,7 +44,7 @@ interface PopupState {
   message: string;
 }
 
-type CredentialMode = "user" | "admin" | null;
+type CredentialMode = "user" | "admin" | "entrepreneur" | null;
 
 type SignInErrors = Partial<Record<keyof SignInForm, string>>;
 type CredentialErrors = Partial<Record<keyof CredentialForm, string>>;
@@ -50,10 +52,6 @@ type CredentialErrors = Partial<Record<keyof CredentialForm, string>>;
 interface Props {
   open: boolean;
   onCancel?: () => void;
-  /**
-   * Se llama opcionalmente cuando el registro en el backend fue exitoso.
-   * Puedes usarlo para redirigir, cerrar modales, etc.
-   */
   onConfirm?: (data: SignInForm & { photo?: File | null }) => void | Promise<void>;
   onGoEntrepreneur?: () => void;
 }
@@ -62,7 +60,6 @@ const SignInUserModal: React.FC<Props> = ({
   open,
   onCancel,
   onConfirm,
-  onGoEntrepreneur,
 }) => {
   const ciId = useId();
   const nId = useId();
@@ -102,6 +99,8 @@ const SignInUserModal: React.FC<Props> = ({
   const [credErrors, setCredErrors] = useState<CredentialErrors>({});
 
   const [popup, setPopup] = useState<PopupState | null>(null);
+  const [showEntrepreneurModal, setShowEntrepreneurModal] = useState(false);
+  const [entrepreneurModalKey, setEntrepreneurModalKey] = useState(0);
 
   if (!open) return null;
 
@@ -139,24 +138,19 @@ const SignInUserModal: React.FC<Props> = ({
 
     if (!validateMainForm()) return;
 
-    // Registro como usuario normal por defecto
     setCredMode("user");
     setShowCredModal(true);
   };
 
   const handleAdminClick = (e: MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();
-    // const isValid = validateMainForm();
-    // if (!isValid) return;
     setCredMode("admin");
     setShowCredModal(true);
   };
 
   const handleEntrepreneurClick = (e: MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();
-    // const isValid = validateMainForm();
-    // if (!isValid) return;
-    onGoEntrepreneur?.();
+    setShowEntrepreneurModal(true);
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -190,57 +184,61 @@ const SignInUserModal: React.FC<Props> = ({
     if (!credMode) {
       setPopup({
         type: "error",
-        message: "No se ha definido si es usuario o administrador.",
+        message: "No se ha definido si es usuario, administrador o emprendedor.",
       });
       return;
     }
 
     try {
-      // Mapear los campos del formulario al modelo del backend
-      const codRol = credMode === "admin" ? 2 : 1; // ajusta si tus roles tienen otros IDs
+      let codRol = 1;
+      if (credMode === "admin") codRol = 2;
+      if (credMode === "entrepreneur") codRol = 3;
 
-      const payload = {
-        cod_rol: codRol,
-        cod_disp: null,
-        ci: form.ci,
-        nom_us: form.firstName,
-        handle_name: credentials.username,
-        ap_pat_us: form.lastNameFather,
-        ap_mat_us: form.lastNameMother || null,
-        contra_us: credentials.password,
-        fecha_nacimiento: form.birth, // viene como "YYYY-MM-DD" del input date
-        sexo: form.sex || "M", // ya validaste que no esté vacío
-        estado_us: "activo",
-        correo_us: form.email,
-        telefono_us: form.phone,
-        // foto_us no se envía: el backend usa imagen por defecto si falta
-      };
+      // 👇 AHORA USAMOS FormData PARA ENVIAR LA FOTO + CAMPOS
+      const formData = new FormData();
+
+      formData.append("cod_rol", String(codRol));
+      formData.append("cod_disp", "");
+      formData.append("ci", form.ci);
+      formData.append("nom_us", form.firstName);
+      formData.append("handle_name", credentials.username);
+      formData.append("ap_pat_us", form.lastNameFather);
+      formData.append("ap_mat_us", form.lastNameMother || "");
+      formData.append("contra_us", credentials.password);
+      formData.append("fecha_nacimiento", form.birth);
+      formData.append("sexo", form.sex || "M");
+      formData.append("estado_us", "activo");
+      formData.append("correo_us", form.email);
+      formData.append("telefono_us", form.phone);
+
+      // 👇 nombre del campo de archivo que espera multer en backend
+      if (photoFile) {
+        formData.append("foto_us", photoFile);
+      }
 
       const res = await fetch(`${API_BASE}/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+        body: formData, // ⚠️ sin Content-Type manual, lo pone el browser
       });
 
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        // El back manda mensajes como "El handle name ya existe."
         throw new Error(json.message || "Error al registrar el usuario.");
       }
 
-      // Aviso visual
+      let successMessage = "Usuario registrado con éxito.";
+      if (credMode === "admin") {
+        successMessage = "Administrador registrado con éxito.";
+      } else if (credMode === "entrepreneur") {
+        successMessage = "Emprendedor registrado con éxito.";
+      }
+
       setPopup({
         type: "success",
-        message:
-          credMode === "admin"
-            ? "Administrador registrado con éxito."
-            : "Usuario registrado con éxito.",
+        message: successMessage,
       });
 
-      // Si el padre quiere enterarse del éxito, se lo notificamos
       if (onConfirm) {
         await onConfirm({ ...form, photo: photoFile });
       }
@@ -270,6 +268,11 @@ const SignInUserModal: React.FC<Props> = ({
       setCredentials({ username: "", password: "" });
       setCredErrors({});
       setShowCredModal(false);
+      if (credMode === "entrepreneur") {
+        setShowEntrepreneurModal(false);
+        setEntrepreneurModalKey((k) => k + 1);
+      }
+
       setCredMode(null);
     }
     setPopup(null);
@@ -280,7 +283,7 @@ const SignInUserModal: React.FC<Props> = ({
 
   return (
     <>
-      <div className={styles.screen} onClick={onCancel}>
+      <div className={styles.screen}>
         <form
           className={styles.sheet}
           onClick={(e) => e.stopPropagation()}
@@ -453,10 +456,7 @@ const SignInUserModal: React.FC<Props> = ({
       </div>
 
       {showCredModal && (
-        <div
-          className={styles.loginScreen}
-          onClick={() => setShowCredModal(false)}
-        >
+        <div className={styles.loginScreen}>
           <form
             className={styles.loginSheet}
             onClick={(e) => e.stopPropagation()}
@@ -466,6 +466,8 @@ const SignInUserModal: React.FC<Props> = ({
               <h2 className={styles.loginTitle}>
                 {credMode === "admin"
                   ? "Registrar administrador"
+                  : credMode === "entrepreneur"
+                  ? "Registrar emprendedor"
                   : "Registrar usuario"}
               </h2>
               <button
@@ -527,10 +529,7 @@ const SignInUserModal: React.FC<Props> = ({
               >
                 Cancelar
               </button>
-              <button
-                type="submit"
-                className={styles.btnConfirmLogin}
-              >
+              <button type="submit" className={styles.btnConfirmLogin}>
                 Guardar
               </button>
             </div>
@@ -539,19 +538,14 @@ const SignInUserModal: React.FC<Props> = ({
       )}
 
       {popup && (
-        <div
-          className={styles.popupScreen}
-          onClick={closePopup}
-        >
+        <div className={styles.popupScreen} onClick={closePopup}>
           <div
             className={styles.popupCard}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.popupHeader}>
               <span className={styles.popupTitle}>
-                {popup.type === "error"
-                  ? "Error"
-                  : "Registro completado"}
+                {popup.type === "error" ? "Error" : "Registro completado"}
               </span>
               <button
                 type="button"
@@ -573,15 +567,24 @@ const SignInUserModal: React.FC<Props> = ({
               {popup.message}
             </p>
 
-            <button
-              className={styles.popupBtn}
-              onClick={closePopup}
-            >
+            <button className={styles.popupBtn} onClick={closePopup}>
               Aceptar
             </button>
           </div>
         </div>
       )}
+
+      <EntrepreneurAvailabilityModal
+        key={entrepreneurModalKey}
+        open={showEntrepreneurModal}
+        onClose={() => setShowEntrepreneurModal(false)}
+        onSave={(availability) => {
+          console.log("Disponibilidad seleccionada:", availability);
+          setShowEntrepreneurModal(false);
+          setCredMode("entrepreneur");
+          setShowCredModal(true);
+        }}
+      />
     </>
   );
 };

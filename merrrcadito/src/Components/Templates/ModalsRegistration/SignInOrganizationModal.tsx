@@ -13,41 +13,25 @@ import ButtonCancel from "@/Components/Atoms/Buttons/ButtonCancel/ButtonCancel";
 import Label from "@/Components/Atoms/Label/Label";
 import ButtonIcon from "@/Components/Atoms/Buttons/ButtonIcon/ButtonIcon";
 
-interface Props {
-  open: boolean;
-  onCancel?: () => void;
-  onConfirm: (data: {
-    legalName: string;
-    alias: string;
-    type: string;
-    cif: string;
-    email: string;
-    phone: string;
-    address: string;
-    website: string;
-    logo?: File | null;
-  }) => void | Promise<void>;
-  onPickLocation?: () => void;
-}
+const API_BASE =
+  process.env.NEXT_PUBLIC_ORGANIZATION_API_BASE_URL ??
+  "http://localhost:5000/api/organization";
+
+type OrgType = "" | "con_fines_lucro" | "sin_fines_lucro";
 
 interface OrgForm {
-  legalName: string;
-  alias: string;
-  type: string;
+  nom_com_org: string;
+  nom_leg_org: string;
+  tipo_org: OrgType;
+  rubro_org: string;
   cif: string;
-  email: string;
-  phone: string;
-  address: string;
-  website: string;
-}
-
-interface CredentialForm {
-  username: string;
-  password: string;
+  correo_org: string;
+  telf_org: string;
+  dir_org: string;
+  sitio_web: string;
 }
 
 type OrgErrors = Partial<Record<keyof OrgForm, string>>;
-type CredentialErrors = Partial<Record<keyof CredentialForm, string>>;
 
 type PopupType = "error" | "success";
 
@@ -56,11 +40,11 @@ interface PopupState {
   message: string;
 }
 
-const MOCK_ORG_USERNAMES: string[] = ["ongdemo", "empresa", "orgadmin"];
-
-async function isUsernameTaken(username: string): Promise<boolean> {
-  await new Promise((res) => setTimeout(res, 300));
-  return MOCK_ORG_USERNAMES.includes(username.toLowerCase());
+interface Props {
+  open: boolean;
+  onCancel?: () => void;
+  onConfirm?: (data: OrgForm & { logo?: File | null }) => void | Promise<void>;
+  onPickLocation?: () => void;
 }
 
 export default function SignInOrganizationModal({
@@ -69,42 +53,33 @@ export default function SignInOrganizationModal({
   onConfirm,
   onPickLocation,
 }: Props) {
-  const legalId = useId();
-  const aliasId = useId();
-  const typeId = useId();
+  const nomComId = useId();
+  const nomLegId = useId();
+  const tipoId = useId();
+  const rubroId = useId();
   const cifId = useId();
   const emId = useId();
   const phId = useId();
   const addrId = useId();
   const webId = useId();
 
-  const credUserId = useId();
-  const credPwId = useId();
-
   const logoRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState<OrgForm>({
-    legalName: "",
-    alias: "",
-    type: "",
+    nom_com_org: "",
+    nom_leg_org: "",
+    tipo_org: "",
+    rubro_org: "",
     cif: "",
-    email: "",
-    phone: "",
-    address: "",
-    website: "",
+    correo_org: "",
+    telf_org: "",
+    dir_org: "",
+    sitio_web: "",
   });
-  const [formErrors, setFormErrors] = useState<OrgErrors>({});
 
+  const [formErrors, setFormErrors] = useState<OrgErrors>({});
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoName, setLogoName] = useState("vacío");
-
-  const [credentials, setCredentials] = useState<CredentialForm>({
-    username: "",
-    password: "",
-  });
-  const [credErrors, setCredErrors] = useState<CredentialErrors>({});
-
-  const [showCredModal, setShowCredModal] = useState(false);
   const [popup, setPopup] = useState<PopupState | null>(null);
 
   if (!open) return null;
@@ -114,93 +89,113 @@ export default function SignInOrganizationModal({
     (v: string): void =>
       setForm((prev) => ({ ...prev, [k]: v }));
 
-  const validateMainForm = (): boolean => {
+  const validateForm = (): boolean => {
     const errors: OrgErrors = {};
 
-    if (!form.legalName.trim()) errors.legalName = "El nombre legal es obligatorio.";
-    if (!form.alias.trim()) errors.alias = "El alias es obligatorio.";
-    if (!form.type.trim()) errors.type = "Selecciona un tipo.";
-    if (!form.cif.trim()) errors.cif = "El CIF es obligatorio.";
+    if (!form.nom_com_org.trim())
+      errors.nom_com_org = "El nombre comercial es obligatorio.";
 
-    if (!form.email.trim()) {
-      errors.email = "El correo es obligatorio.";
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      errors.email = "El correo no es válido.";
+    if (!form.nom_leg_org.trim())
+      errors.nom_leg_org = "El nombre legal es obligatorio.";
+
+    if (!form.rubro_org.trim())
+      errors.rubro_org = "El rubro es obligatorio.";
+
+    if (!form.cif.trim())
+      errors.cif = "El CIF es obligatorio.";
+
+    if (!form.correo_org.trim()) {
+      errors.correo_org = "El correo es obligatorio.";
+    } else if (!/\S+@\S+\.\S+/.test(form.correo_org)) {
+      errors.correo_org = "El correo no es válido.";
     }
 
-    if (!form.phone.trim()) errors.phone = "El teléfono es obligatorio.";
-    if (!form.address.trim()) errors.address = "La dirección es obligatoria.";
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const validateCredentials = (): boolean => {
-    const errors: CredentialErrors = {};
-
-    if (!credentials.username.trim()) {
-      errors.username = "El nombre de usuario es obligatorio.";
-    }
-    if (!credentials.password || credentials.password.length < 6) {
-      errors.password = "La contraseña debe tener al menos 6 caracteres.";
-    }
-
-    setCredErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmitMain = async (
-    e: FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    e.preventDefault();
-
-    if (!validateMainForm()) return;
-
-    await onConfirm({ ...form, logo: logoFile });
-
-    setShowCredModal(true);
-  };
-
-  const handleCredSubmit = async (
-    e: FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    e.preventDefault();
-
-    if (!validateCredentials()) return;
-
-    const taken = await isUsernameTaken(credentials.username);
-    if (taken) {
+    if (!logoFile) {
       setPopup({
         type: "error",
-        message: "El nombre de usuario ya está ocupado, por favor elige otro.",
+        message: "El logo de la organización es obligatorio.",
+      });
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0 && !!logoFile;
+  };
+
+  const handleSubmit = async (
+    e: FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    if (!logoFile) {
+      setPopup({
+        type: "error",
+        message: "El logo de la organización es obligatorio.",
       });
       return;
     }
 
-    setPopup({
-      type: "success",
-      message: "Organización registrada con éxito.",
-    });
+    try {
+      const formData = new FormData();
+
+      formData.append("nom_com_org", form.nom_com_org);
+      formData.append("nom_leg_org", form.nom_leg_org);
+      formData.append("tipo_org", form.tipo_org || "sin_fines_lucro");
+      formData.append("rubro_org", form.rubro_org);
+      formData.append("cif", form.cif);
+      formData.append("correo_org", form.correo_org);
+      formData.append("telf_org", form.telf_org);
+      formData.append("dir_org", form.dir_org);
+      formData.append("sitio_web", form.sitio_web || "");
+      formData.append("logo_org", logoFile);
+
+      const res = await fetch(`${API_BASE}/register`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const json = await res.json().catch(() => ({} as any));
+
+      if (!res.ok || json.success === false) {
+        throw new Error(
+          json.message || "Error al registrar la organización."
+        );
+      }
+
+      setPopup({
+        type: "success",
+        message: "Organización registrada con éxito.",
+      });
+
+      if (onConfirm) {
+        await onConfirm({ ...form, logo: logoFile });
+      }
+    } catch (err: any) {
+      setPopup({
+        type: "error",
+        message:
+          err?.message ?? "Ocurrió un error al registrar la organización.",
+      });
+    }
   };
 
   const closePopup = (): void => {
     if (popup?.type === "success") {
       setForm({
-        legalName: "",
-        alias: "",
-        type: "",
+        nom_com_org: "",
+        nom_leg_org: "",
+        tipo_org: "",
+        rubro_org: "",
         cif: "",
-        email: "",
-        phone: "",
-        address: "",
-        website: "",
+        correo_org: "",
+        telf_org: "",
+        dir_org: "",
+        sitio_web: "",
       });
       setFormErrors({});
       setLogoFile(null);
       setLogoName("vacío");
-      setCredentials({ username: "", password: "" });
-      setCredErrors({});
-      setShowCredModal(false);
     }
     setPopup(null);
   };
@@ -216,56 +211,73 @@ export default function SignInOrganizationModal({
 
   return (
     <>
-      <div className={styles.screen} onClick={onCancel}>
+      {/* aquí ya sin onClick={onCancel} */}
+      <div className={styles.screen}>
         <form
           className={styles.sheet}
           onClick={(e) => e.stopPropagation()}
-          onSubmit={handleSubmitMain}
+          onSubmit={handleSubmit}
           aria-label="Registro de Organización"
         >
           <div className={styles.content}>
             <div className={styles.field}>
-              <Label htmlFor={legalId}>Nombre Legal</Label>
+              <Label htmlFor={nomComId}>Nombre comercial</Label>
               <input
-                id={legalId}
-                className={inputClass(formErrors.legalName)}
-                value={form.legalName}
-                onChange={(e) => set("legalName")(e.target.value)}
+                id={nomComId}
+                className={inputClass(formErrors.nom_com_org)}
+                value={form.nom_com_org}
+                onChange={(e) => set("nom_com_org")(e.target.value)}
               />
-              {formErrors.legalName && (
-                <span className={styles.errorText}>{formErrors.legalName}</span>
+              {formErrors.nom_com_org && (
+                <span className={styles.errorText}>
+                  {formErrors.nom_com_org}
+                </span>
               )}
             </div>
 
             <div className={styles.field}>
-              <Label htmlFor={aliasId}>Alias</Label>
+              <Label htmlFor={nomLegId}>Nombre legal</Label>
               <input
-                id={aliasId}
-                className={inputClass(formErrors.alias)}
-                value={form.alias}
-                onChange={(e) => set("alias")(e.target.value)}
+                id={nomLegId}
+                className={inputClass(formErrors.nom_leg_org)}
+                value={form.nom_leg_org}
+                onChange={(e) => set("nom_leg_org")(e.target.value)}
               />
-              {formErrors.alias && (
-                <span className={styles.errorText}>{formErrors.alias}</span>
+              {formErrors.nom_leg_org && (
+                <span className={styles.errorText}>
+                  {formErrors.nom_leg_org}
+                </span>
               )}
             </div>
 
             <div className={styles.field}>
-              <Label htmlFor={typeId}>Tipo</Label>
+              <Label htmlFor={tipoId}>Tipo de organización</Label>
               <select
-                id={typeId}
-                className={inputClass(formErrors.type)}
-                value={form.type}
-                onChange={(e) => set("type")(e.target.value)}
+                id={tipoId}
+                className={inputClass()}
+                value={form.tipo_org}
+                onChange={(e) =>
+                  set("tipo_org")(e.target.value as OrgType)
+                }
               >
                 <option value="">—</option>
-                <option value="ONG">ONG</option>
-                <option value="Empresa">Empresa</option>
-                <option value="Fundación">Fundación</option>
-                <option value="Asociación">Asociación</option>
+                <option value="con_fines_lucro">Con fines de lucro</option>
+                <option value="sin_fines_lucro">Sin fines de lucro</option>
               </select>
-              {formErrors.type && (
-                <span className={styles.errorText}>{formErrors.type}</span>
+            </div>
+
+            <div className={styles.field}>
+              <Label htmlFor={rubroId}>Rubro</Label>
+              <input
+                id={rubroId}
+                className={inputClass(formErrors.rubro_org)}
+                value={form.rubro_org}
+                onChange={(e) => set("rubro_org")(e.target.value)}
+              />
+              {formErrors.rubro_org && (
+                <span className={styles.errorText}>
+                  {formErrors.rubro_org}
+                </span>
               )}
             </div>
 
@@ -287,12 +299,14 @@ export default function SignInOrganizationModal({
               <input
                 id={emId}
                 type="email"
-                className={inputClass(formErrors.email)}
-                value={form.email}
-                onChange={(e) => set("email")(e.target.value)}
+                className={inputClass(formErrors.correo_org)}
+                value={form.correo_org}
+                onChange={(e) => set("correo_org")(e.target.value)}
               />
-              {formErrors.email && (
-                <span className={styles.errorText}>{formErrors.email}</span>
+              {formErrors.correo_org && (
+                <span className={styles.errorText}>
+                  {formErrors.correo_org}
+                </span>
               )}
             </div>
 
@@ -300,12 +314,14 @@ export default function SignInOrganizationModal({
               <Label htmlFor={phId}>Teléfono</Label>
               <input
                 id={phId}
-                className={inputClass(formErrors.phone)}
-                value={form.phone}
-                onChange={(e) => set("phone")(e.target.value)}
+                className={inputClass(formErrors.telf_org)}
+                value={form.telf_org}
+                onChange={(e) => set("telf_org")(e.target.value)}
               />
-              {formErrors.phone && (
-                <span className={styles.errorText}>{formErrors.phone}</span>
+              {formErrors.telf_org && (
+                <span className={styles.errorText}>
+                  {formErrors.telf_org}
+                </span>
               )}
             </div>
 
@@ -314,12 +330,14 @@ export default function SignInOrganizationModal({
                 <Label htmlFor={addrId}>Dirección</Label>
                 <input
                   id={addrId}
-                  className={inputClass(formErrors.address)}
-                  value={form.address}
-                  onChange={(e) => set("address")(e.target.value)}
+                  className={inputClass(formErrors.dir_org)}
+                  value={form.dir_org}
+                  onChange={(e) => set("dir_org")(e.target.value)}
                 />
-                {formErrors.address && (
-                  <span className={styles.errorText}>{formErrors.address}</span>
+                {formErrors.dir_org && (
+                  <span className={styles.errorText}>
+                    {formErrors.dir_org}
+                  </span>
                 )}
               </div>
 
@@ -336,8 +354,8 @@ export default function SignInOrganizationModal({
               <input
                 id={webId}
                 className={inputClass()}
-                value={form.website}
-                onChange={(e) => set("website")(e.target.value)}
+                value={form.sitio_web}
+                onChange={(e) => set("sitio_web")(e.target.value)}
               />
             </div>
 
@@ -368,95 +386,15 @@ export default function SignInOrganizationModal({
         </form>
       </div>
 
-      {showCredModal && (
-        <div
-          className={styles.loginScreen}
-          onClick={() => setShowCredModal(false)}
-        >
-          <form
-            className={styles.loginSheet}
-            onClick={(e) => e.stopPropagation()}
-            onSubmit={handleCredSubmit}
-          >
-            <div className={styles.loginHeader}>
-              <h2 className={styles.loginTitle}>Credenciales de la organización</h2>
-              <button
-                type="button"
-                className={styles.closeBtn}
-                onClick={() => setShowCredModal(false)}
-                aria-label="Cerrar"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className={styles.field}>
-              <Label htmlFor={credUserId}>Nombre de usuario</Label>
-              <input
-                id={credUserId}
-                className={inputClass(credErrors.username)}
-                value={credentials.username}
-                onChange={(e) =>
-                  setCredentials((prev) => ({
-                    ...prev,
-                    username: e.target.value,
-                  }))
-                }
-              />
-              {credErrors.username && (
-                <span className={styles.errorText}>{credErrors.username}</span>
-              )}
-            </div>
-
-            <div className={styles.field}>
-              <Label htmlFor={credPwId}>Contraseña</Label>
-              <input
-                id={credPwId}
-                type="password"
-                className={inputClass(credErrors.password)}
-                value={credentials.password}
-                onChange={(e) =>
-                  setCredentials((prev) => ({
-                    ...prev,
-                    password: e.target.value,
-                  }))
-                }
-              />
-              {credErrors.password && (
-                <span className={styles.errorText}>{credErrors.password}</span>
-              )}
-            </div>
-
-            <div className={styles.loginActions}>
-              <button
-                type="button"
-                className={styles.btnCancelLogin}
-                onClick={() => setShowCredModal(false)}
-              >
-                Cancelar
-              </button>
-              <button type="submit" className={styles.btnConfirmLogin}>
-                Guardar
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
       {popup && (
-        <div
-          className={styles.popupScreen}
-          onClick={closePopup}
-        >
+        <div className={styles.popupScreen} onClick={closePopup}>
           <div
             className={styles.popupCard}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.popupHeader}>
               <span className={styles.popupTitle}>
-                {popup.type === "error"
-                  ? "Error"
-                  : "Registro completado"}
+                {popup.type === "error" ? "Error" : "Registro completado"}
               </span>
               <button
                 type="button"
@@ -478,10 +416,7 @@ export default function SignInOrganizationModal({
               {popup.message}
             </p>
 
-            <button
-              className={styles.popupBtn}
-              onClick={closePopup}
-            >
+            <button className={styles.popupBtn} onClick={closePopup}>
               Aceptar
             </button>
           </div>

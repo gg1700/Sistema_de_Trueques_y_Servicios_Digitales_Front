@@ -1,17 +1,22 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import styles from './UserProfile.module.css';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import styles from "./UserProfile.module.css";
 
-import FileInput from '@/Components/Templates/ModalsProfile/FileInput';
-import ProfileInput from '@/Components/Atoms/Input/ProfileInput/ProfileInput';
-import { getNavItems } from '../../../Utils/navigation';
+import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
+import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
+import { getNavItems } from "../../../Utils/navigation";
 
-type Tab = 'offers' | 'publish' | 'likes' | 'events';
-type PublishType = 'product' | 'service';
-type Role = 'admin' | 'user';
+const USERS_API_BASE =
+  process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
+  "http://localhost:5000/api/users";
+
+type Tab = "offers" | "publish" | "likes" | "events";
+type PublishType = "product" | "service";
+type NavRole = "admin" | "user";
+type Role = NavRole | "entrepreneur";
 
 interface Offer {
   id: number;
@@ -40,66 +45,161 @@ interface ServiceFormState {
   priceTokens: string;
   image: File | null;
 }
-
-const fakeOffers: Offer[] = [
-  {
-    id: 1,
-    title: 'Cámara Vintage Canon AE-1',
-    description:
-      'Cámara analógica clásica en perfecto estado de conservación. Incluye lente de 50mm f/1.8 y funda de cuero original. Ideal para estudiantes de fotografía o coleccionistas.',
-  },
-  {
-    id: 2,
-    title: 'Mantenimiento y Reparación de PC',
-    description:
-      'Servicio técnico profesional para laptops y computadoras de escritorio. Incluye limpieza de hardware, optimización de sistema operativo, eliminación de virus e instalación de programas.',
-  },
-  {
-    id: 3,
-    title: 'Bicicleta de Montaña Trek Marlin',
-    description:
-      'Bicicleta talla M con poco uso. Cuenta con frenos de disco hidráulicos, suspensión delantera y transmisión Shimano de 21 velocidades. Lista para rodar.',
-  },
-];
+interface UserApi {
+  cod_us: number;
+  cod_rol: number;
+  handle_name: string;
+  nom_us: string;
+  ap_pat_us: string;
+  ap_mat_us?: string | null;
+  correo_us: string;
+  telefono_us: string;
+}
 
 interface UserProfileProps {
   role?: Role;
 }
 
-export default function UserProfile({ role = 'admin' }: UserProfileProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('offers');
-  const [publishType, setPublishType] = useState<PublishType>('product');
+const mapCodRolToRole = (codRol?: number): Role => {
+  if (codRol === 2) return "entrepreneur";
+  if (codRol === 3) return "admin";
+  return "user";
+};
+
+export default function UserProfile({
+  role: roleProp = "admin",
+}: UserProfileProps) {
+  const [activeTab, setActiveTab] = useState<Tab>("offers");
+  const [publishType, setPublishType] = useState<PublishType>("product");
 
   const [productForm, setProductForm] = useState<ProductFormState>({
-    name: '',
-    weightKg: '',
-    material: '',
-    category: '',
-    subcategory: '',
-    quality: '',
-    description: '',
-    priceTokens: '',
+    name: "",
+    weightKg: "",
+    material: "",
+    category: "",
+    subcategory: "",
+    quality: "",
+    description: "",
+    priceTokens: "",
     image: null,
   });
 
   const [serviceForm, setServiceForm] = useState<ServiceFormState>({
-    name: '',
-    duration: '',
-    category: '',
-    description: '',
-    priceTokens: '',
+    name: "",
+    duration: "",
+    category: "",
+    description: "",
+    priceTokens: "",
     image: null,
   });
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const [user, setUser] = useState<UserApi | null>(null);
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [resolvedHandle, setResolvedHandle] = useState<string | null>(null);
+  const [resolvedRoleFromStorage, setResolvedRoleFromStorage] =
+    useState<Role | null>(null);
   const pathname = usePathname();
-  const navList = getNavItems(role); // con role='admin' por defecto
+  const searchParams = useSearchParams();
+  const handleFromUrl = searchParams.get("handle");
+  const roleFromUrl = searchParams.get("role") as Role | null;
+  useEffect(() => {
+    if (handleFromUrl) {
+      setResolvedHandle(handleFromUrl);
+    } else if (typeof window !== "undefined") {
+      const storedHandle = window.localStorage.getItem("currentUserHandle");
+      if (storedHandle) {
+        setResolvedHandle(storedHandle);
+      }
+    }
+    if (roleFromUrl) {
+      setResolvedRoleFromStorage(roleFromUrl);
+    } else if (typeof window !== "undefined") {
+      const storedRole = window.localStorage.getItem(
+        "currentUserRole"
+      ) as Role | null;
+      if (
+        storedRole === "admin" ||
+        storedRole === "user" ||
+        storedRole === "entrepreneur"
+      ) {
+        setResolvedRoleFromStorage(storedRole);
+      }
+    }
+  }, [handleFromUrl, roleFromUrl]);
+
+  const roleFromBackend = user ? mapCodRolToRole(user.cod_rol) : null;
+  const effectiveRole: Role =
+    resolvedRoleFromStorage || roleFromBackend || roleProp || "user";
+
+  const navRole: NavRole = effectiveRole === "admin" ? "admin" : "user";
+  const navList = getNavItems(navRole);
+  useEffect(() => {
+    if (!resolvedHandle) {
+      setError("No se encontró información de sesión del usuario.");
+      setLoading(false);
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const resUser = await fetch(
+          `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(
+            resolvedHandle
+          )}`
+        );
+        const jsonUser = await resUser.json();
+
+        if (!resUser.ok || jsonUser.success === false || !jsonUser.data) {
+          throw new Error(
+            jsonUser.message || "No se pudieron cargar los datos del usuario."
+          );
+        }
+
+        const rawData = jsonUser.data;
+        const userData: UserApi = Array.isArray(rawData)
+          ? rawData[0]
+          : rawData;
+        setUser(userData);
+        if (userData.cod_us) {
+          const resPosts = await fetch(
+            `${USERS_API_BASE}/get_user_posts?cod_us=${userData.cod_us}`
+          );
+          const jsonPosts = await resPosts.json();
+
+          if (resPosts.ok && jsonPosts.data && Array.isArray(jsonPosts.data)) {
+            const mappedOffers: Offer[] = jsonPosts.data.map((p: any) => ({
+              id: p.cod_pub ?? p.id ?? 0,
+              title: p.titulo_pub ?? p.title ?? "Sin título",
+              description: p.descr_pub ?? p.description ?? "",
+            }));
+
+            setOffers(mappedOffers);
+          } else {
+            setOffers([]);
+          }
+        }
+      } catch (err: any) {
+        console.error(err);
+        setError(
+          err?.message ?? "Ocurrió un error al cargar los datos del perfil."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [resolvedHandle]);
 
   const handleProductChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value } = e.target;
     setProductForm((prev) => ({ ...prev, [name]: value }));
@@ -108,7 +208,7 @@ export default function UserProfile({ role = 'admin' }: UserProfileProps) {
   const handleServiceChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value } = e.target;
     setServiceForm((prev) => ({ ...prev, [name]: value }));
@@ -116,47 +216,76 @@ export default function UserProfile({ role = 'admin' }: UserProfileProps) {
 
   const handleSubmitProduct = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Producto a publicar:', productForm);
+    console.log("Producto a publicar:", productForm);
   };
 
   const handleSubmitService = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Servicio a publicar:', serviceForm);
+    console.log("Servicio a publicar:", serviceForm);
   };
 
   const handleCancelProduct = () => {
     setProductForm({
-      name: '',
-      weightKg: '',
-      material: '',
-      category: '',
-      subcategory: '',
-      quality: '',
-      description: '',
-      priceTokens: '',
+      name: "",
+      weightKg: "",
+      material: "",
+      category: "",
+      subcategory: "",
+      quality: "",
+      description: "",
+      priceTokens: "",
       image: null,
     });
   };
 
   const handleCancelService = () => {
     setServiceForm({
-      name: '',
-      duration: '',
-      category: '',
-      description: '',
-      priceTokens: '',
+      name: "",
+      duration: "",
+      category: "",
+      description: "",
+      priceTokens: "",
       image: null,
     });
   };
+
+  const fullName =
+    user &&
+    `${user.nom_us} ${user.ap_pat_us} ${user.ap_mat_us ?? ""}`.trim();
+
+  const roleLabel =
+    effectiveRole === "admin"
+      ? "Administrador"
+      : effectiveRole === "entrepreneur"
+      ? "Emprendedor"
+      : "Usuario Común";
+
+  const avatarUrl =
+    user && user.cod_us ? `${USERS_API_BASE}/${user.cod_us}/image` : null;
 
   return (
     <section className={styles.profilePage}>
       <header className={styles.header}>
         <div className={styles.headerTop}>
           <div className={styles.avatarWrapper}>
-            <div className={styles.avatarCircle}>
-              <span className={styles.avatarEmoji}>😊</span>
-            </div>
+            {avatarUrl ? (
+              <div className={styles.avatarCircle}>
+                <img
+                  src={avatarUrl}
+                  alt={user?.handle_name || "Foto de perfil"}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+            ) : (
+              <div className={styles.avatarCircle}>
+                <span className={styles.avatarEmoji}>😊</span>
+              </div>
+            )}
           </div>
 
           <button
@@ -172,13 +301,16 @@ export default function UserProfile({ role = 'admin' }: UserProfileProps) {
         </div>
 
         <div className={styles.userInfo}>
-          <h1 className={styles.userName}>ZEBNELL</h1>
+          <h1 className={styles.userName}>
+            {user?.handle_name ??
+              (loading ? "Cargando..." : "Sin usuario")}
+          </h1>
 
           <div className={styles.userInfoGrid}>
-            <p className={styles.userInfoText}>Usuario Común</p>
-            <p className={styles.userInfoText}>Leonel Zeballos Aldunate</p>
-            <p className={styles.userInfoText}>68599945</p>
-            <p className={styles.userInfoText}>uwu@gmail.com</p>
+            <p className={styles.userInfoText}>{roleLabel}</p>
+            <p className={styles.userInfoText}>{fullName || "—"}</p>
+            <p className={styles.userInfoText}>{user?.telefono_us ?? "—"}</p>
+            <p className={styles.userInfoText}>{user?.correo_us ?? "—"}</p>
           </div>
         </div>
 
@@ -186,36 +318,36 @@ export default function UserProfile({ role = 'admin' }: UserProfileProps) {
           <button
             type="button"
             className={`${styles.tab} ${
-              activeTab === 'offers' ? styles.tabActive : ''
+              activeTab === "offers" ? styles.tabActive : ""
             }`}
-            onClick={() => setActiveTab('offers')}
+            onClick={() => setActiveTab("offers")}
           >
             Ofertas Propias
           </button>
           <button
             type="button"
             className={`${styles.tab} ${
-              activeTab === 'publish' ? styles.tabActive : ''
+              activeTab === "publish" ? styles.tabActive : ""
             }`}
-            onClick={() => setActiveTab('publish')}
+            onClick={() => setActiveTab("publish")}
           >
             Publicar
           </button>
           <button
             type="button"
             className={`${styles.tab} ${
-              activeTab === 'likes' ? styles.tabActive : ''
+              activeTab === "likes" ? styles.tabActive : ""
             }`}
-            onClick={() => setActiveTab('likes')}
+            onClick={() => setActiveTab("likes")}
           >
             Me gusta
           </button>
           <button
             type="button"
             className={`${styles.tab} ${
-              activeTab === 'events' ? styles.tabActive : ''
+              activeTab === "events" ? styles.tabActive : ""
             }`}
-            onClick={() => setActiveTab('events')}
+            onClick={() => setActiveTab("events")}
           >
             Eventos
           </button>
@@ -223,9 +355,23 @@ export default function UserProfile({ role = 'admin' }: UserProfileProps) {
       </header>
 
       <div className={styles.tabContent}>
-        {activeTab === 'offers' && <OffersSection offers={fakeOffers} />}
+        {loading && (
+          <div className={styles.placeholderTab}>
+            <p>Cargando información del perfil...</p>
+          </div>
+        )}
 
-        {activeTab === 'publish' && (
+        {!loading && error && (
+          <div className={styles.placeholderTab}>
+            <p>{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && activeTab === "offers" && (
+          <OffersSection offers={offers} />
+        )}
+
+        {!loading && !error && activeTab === "publish" && (
           <PublishSection
             publishType={publishType}
             setPublishType={setPublishType}
@@ -246,13 +392,13 @@ export default function UserProfile({ role = 'admin' }: UserProfileProps) {
           />
         )}
 
-        {activeTab === 'likes' && (
+        {!loading && !error && activeTab === "likes" && (
           <div className={styles.placeholderTab}>
             <p>No hay me gustas</p>
           </div>
         )}
 
-        {activeTab === 'events' && (
+        {!loading && !error && activeTab === "events" && (
           <div className={styles.placeholderTab}>
             <p>No hay eventos</p>
           </div>
@@ -286,7 +432,7 @@ export default function UserProfile({ role = 'admin' }: UserProfileProps) {
                     key={item.route}
                     href={item.route}
                     className={`${styles.sideMenuLink} ${
-                      isActive ? styles.sideMenuLinkActive : ''
+                      isActive ? styles.sideMenuLinkActive : ""
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -301,17 +447,37 @@ export default function UserProfile({ role = 'admin' }: UserProfileProps) {
     </section>
   );
 }
-
 interface OffersSectionProps {
   offers: Offer[];
 }
 
 function OffersSection({ offers }: OffersSectionProps) {
+  if (!offers.length) {
+    return (
+      <div className={styles.placeholderTab}>
+        <p>Este usuario aún no tiene ofertas publicadas.</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.offersSection}>
       {offers.map((offer) => (
         <article key={offer.id} className={styles.offerCard}>
-          <div className={styles.offerImage} />
+          <div className={styles.offerImage}>
+            {offer.image && (
+              <img
+                src={offer.image}
+                alt={offer.title}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: "12px",
+                }}
+              />
+            )}
+          </div>
           <div className={styles.offerInfo}>
             <h2 className={styles.offerTitle}>{offer.title}</h2>
             <p className={styles.offerDescription}>{offer.description}</p>
@@ -348,12 +514,12 @@ interface PublishSectionProps {
   handleProductChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => void;
   handleServiceChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => void;
   handleSubmitProduct: (e: React.FormEvent) => void;
   handleSubmitService: (e: React.FormEvent) => void;
@@ -383,24 +549,24 @@ function PublishSection({
         <button
           type="button"
           className={`${styles.publishTab} ${
-            publishType === 'product' ? styles.publishTabActive : ''
+            publishType === "product" ? styles.publishTabActive : ""
           }`}
-          onClick={() => setPublishType('product')}
+          onClick={() => setPublishType("product")}
         >
           Producto
         </button>
         <button
           type="button"
           className={`${styles.publishTab} ${
-            publishType === 'service' ? styles.publishTabActive : ''
+            publishType === "service" ? styles.publishTabActive : ""
           }`}
-          onClick={() => setPublishType('service')}
+          onClick={() => setPublishType("service")}
         >
           Servicio
         </button>
       </div>
 
-      {publishType === 'product' ? (
+      {publishType === "product" ? (
         <form
           onSubmit={handleSubmitProduct}
           className={styles.publishForm}
@@ -522,10 +688,7 @@ function PublishSection({
               <label className={styles.fieldLabel}>
                 Imagen (cuadrada, máx. 100KB)
               </label>
-              <FileInput
-                name="productImage"
-                onChange={onChangeProductImage}
-              />
+              <FileInput name="productImage" onChange={onChangeProductImage} />
             </div>
 
             <div className={styles.formColButtons}>
@@ -621,10 +784,7 @@ function PublishSection({
               <label className={styles.fieldLabel}>
                 Imagen (cuadrada, máx. 100KB)
               </label>
-              <FileInput
-                name="serviceImage"
-                onChange={onChangeServiceImage}
-              />
+              <FileInput name="serviceImage" onChange={onChangeServiceImage} />
             </div>
 
             <div className={styles.formColButtons}>
