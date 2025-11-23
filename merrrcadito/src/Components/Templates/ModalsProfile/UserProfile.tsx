@@ -76,6 +76,10 @@ interface UserApi {
   ap_mat_us?: string | null;
   correo_us: string;
   telefono_us: string;
+  ci_us?: string | null;
+  fecha_nac_us?: string | null;
+  genero_us?: string | null;
+  fecha_registro?: string | null;
 }
 
 interface Category {
@@ -108,6 +112,7 @@ export default function UserProfile({
   const [activeTab, setActiveTab] = useState<Tab>("offers");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [publishType, setPublishType] = useState<PublishType>("product");
+  const [showMoreInfo, setShowMoreInfo] = useState(false); // Estado para expandir/colapsar
 
   const [productForm, setProductForm] = useState<ProductFormState>({
     name: "",
@@ -556,14 +561,131 @@ export default function UserProfile({
 
         <div className={styles.userInfo}>
           <h1 className={styles.userName}>
-            {user?.handle_name ?? (loading ? "Cargando..." : "Sin usuario")}
+            {fullName || (loading ? "Cargando..." : "Sin usuario")}
           </h1>
 
-          <div className={styles.userInfoGrid}>
-            <p className={styles.userInfoText}>{roleLabel}</p>
-            <p className={styles.userInfoText}>{fullName || "—"}</p>
-            <p className={styles.userInfoText}>{user?.telefono_us ?? "—"}</p>
-            <p className={styles.userInfoText}>{user?.correo_us ?? "—"}</p>
+          {/* Información de Contacto */}
+          <div className={styles.infoSection}>
+            <h3 className={styles.infoSectionTitle}>Información de Contacto:</h3>
+
+            <div className={styles.infoGrid}>
+              <div className={styles.infoItem}>
+                <i className="bi bi-person-circle" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Nombre de Usuario:</span>
+                  <span className={styles.infoValue}>@{user?.handle_name ?? "—"}</span>
+                </div>
+              </div>
+
+              <div className={styles.infoItem}>
+                <i className="bi bi-gear" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Rol de Perfil:</span>
+                  <span className={styles.infoValue}>{roleLabel}</span>
+                </div>
+              </div>
+
+              <div className={styles.infoItem}>
+                <i className="bi bi-telephone" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Teléfono/Celular:</span>
+                  <span className={styles.infoValue}>{user?.telefono_us ?? "—"}</span>
+                </div>
+              </div>
+
+              <div className={styles.infoItem}>
+                <i className="bi bi-envelope" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Correo Electrónico:</span>
+                  <span className={styles.infoValue}>{user?.correo_us ?? "—"}</span>
+                </div>
+              </div>
+
+              <div className={styles.infoItem}>
+                <i className="bi bi-calendar-event" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Fecha de Registro:</span>
+                  <span className={styles.infoValue}>
+                    {user?.fecha_registro
+                      ? new Date(user.fecha_registro).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      })
+                      : "—"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Información Adicional (Expandible) */}
+            {showMoreInfo && (
+              <div className={styles.additionalInfo}>
+                <h3 className={styles.infoSectionTitle}>Información Personal:</h3>
+
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoItem}>
+                    <i className="bi bi-card-text" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.infoContent}>
+                      <span className={styles.infoLabel}>Cédula de Identidad:</span>
+                      <span className={styles.infoValue}>{user?.ci_us ?? "—"}</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <i className="bi bi-calendar-check" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.infoContent}>
+                      <span className={styles.infoLabel}>Fecha de Nacimiento:</span>
+                      <span className={styles.infoValue}>
+                        {user?.fecha_nac_us
+                          ? new Date(user.fecha_nac_us).toLocaleDateString('es-ES', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })
+                          : "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <i className="bi bi-gender-ambiguous" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.infoContent}>
+                      <span className={styles.infoLabel}>Género/Sexo:</span>
+                      <span className={styles.infoValue}>
+                        {user?.genero_us
+                          ? (user.genero_us === 'M' ? 'Masculino' : user.genero_us === 'F' ? 'Femenino' : user.genero_us)
+                          : "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <i className="bi bi-check-circle" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.infoContent}>
+                      <span className={styles.infoLabel}>Estado de la Cuenta:</span>
+                      <span className={styles.infoValue} style={{ color: '#1fb7a1', fontWeight: '600' }}>activo</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Botón Ver Más/Menos */}
+            <button
+              className={styles.toggleButton}
+              onClick={() => setShowMoreInfo(!showMoreInfo)}
+            >
+              {showMoreInfo ? (
+                <>
+                  Ver Menos... <i className="bi bi-chevron-up"></i>
+                </>
+              ) : (
+                <>
+                  Ver Más... <i className="bi bi-chevron-down"></i>
+                </>
+              )}
+            </button>
           </div>
         </div>
 
