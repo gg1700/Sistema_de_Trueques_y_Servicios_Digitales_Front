@@ -8,6 +8,7 @@ import styles from "./UserProfile.module.css";
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
 import { getNavItems } from "../../../Utils/navigation";
+import { ReportService } from "@/services";
 
 const USERS_API_BASE =
   process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
@@ -151,6 +152,10 @@ export default function UserProfile({
     Subcategory[]
   >([]);
 
+  // Estado para datos de impacto ambiental
+  const [environmentalData, setEnvironmentalData] = useState<any>(null);
+  const [loadingEnvironmental, setLoadingEnvironmental] = useState(false);
+
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const handleFromUrl = searchParams.get("handle");
@@ -258,6 +263,21 @@ export default function UserProfile({
     }
   };
 
+  const fetchEnvironmentalData = async (codUs: number) => {
+    try {
+      setLoadingEnvironmental(true);
+      const response = await ReportService.get_user_environmental_impact(codUs);
+      if (response.success && response.data) {
+        setEnvironmentalData(response.data);
+      }
+    } catch (err) {
+      console.error("Error al cargar datos de impacto ambiental:", err);
+      setEnvironmentalData(null);
+    } finally {
+      setLoadingEnvironmental(false);
+    }
+  };
+
   useEffect(() => {
     if (!resolvedHandle) {
       setError("No se encontró información de sesión del usuario.");
@@ -290,6 +310,12 @@ export default function UserProfile({
 
         if (userData.cod_us) {
           await fetchOffersForUser(userData.cod_us);
+          // Cargar datos de impacto ambiental sin bloquear el perfil si falla
+          try {
+            await fetchEnvironmentalData(userData.cod_us);
+          } catch (envErr) {
+            console.error("Error al cargar impacto ambiental (no crítico):", envErr);
+          }
         }
       } catch (err: any) {
         console.error(err);
@@ -686,6 +712,88 @@ export default function UserProfile({
                 </>
               )}
             </button>
+
+            {/* Mi Impacto Ambiental */}
+            {!loadingEnvironmental && environmentalData && (
+              <div className={styles.environmentalImpactSection}>
+                <h3 className={styles.infoSectionTitle}>Mi Impacto Ambiental:</h3>
+
+                <div className={styles.impactGrid}>
+                  {/* Impacto Ambiental Total */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-person" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Impacto Ambiental Total:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.huella_co2_total?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Tendencia de Aporte al Medio Ambiente */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-recycle" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Tendencia de Aporte al Medio Ambiente:</span>
+                      <span
+                        className={styles.impactValue}
+                        style={{
+                          color: environmentalData.tendencia === 'bueno' ? '#28a745' :
+                            environmentalData.tendencia === 'medio' ? '#ffc107' : '#dc3545',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        {environmentalData.tendencia ?? '—'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Impacto Promedio por Intercambio */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-arrow-left-right" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Impacto Promedio por Intercambio:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.impacto_promedio_intercambios?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Impacto Promedio por Publicación de Productos Comprada */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-bag-check" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Impacto Promedio por Publicación de Productos Comprada:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.impacto_promedio_productos?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Impacto Promedio por Publicación de Servicios Comprada */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-tools" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Impacto Promedio por Publicación de Servicios Comprada:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.impacto_promedio_servicios?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Aporte de Impacto Ambiental por Participación en Eventos */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-calendar-event" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Aporte de Impacto Ambiental por Participación en Eventos:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.impacto_promedio_eventos?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

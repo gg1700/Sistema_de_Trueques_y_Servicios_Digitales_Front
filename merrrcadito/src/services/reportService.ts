@@ -226,5 +226,18 @@ export const ReportService = {
             console.error("Error al obtener reporte de potenciadores");
             throw error;
         }
+    },
+
+    // IMPACTO AMBIENTAL DE USUARIO
+    get_user_environmental_impact: async (cod_us: number) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/users/${cod_us}/environmental_impact`
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error al obtener impacto ambiental del usuario");
+            throw error;
+        }
     }
 }
