@@ -1,19 +1,21 @@
 .headerPage {
-    background-color: #40E0D0;
+    background: linear-gradient(135deg, #16a085 0%, #138f75 100%);
     color: white;
     padding: 25px 40px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     min-height: 80px;
     display: flex;
     align-items: center;
-    gap: 80px; 
+    gap: 20px;
+    position: relative;
+    z-index: 1000;
 }
 
 .headerContent {
     display: flex;
-    align-items: baseline; 
-    gap: 100px; 
-    margin-left: 100px;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
 }
 
 .hamburgerSpace {
@@ -22,7 +24,7 @@
 }
 
 .headerActions {
-    margin-left: auto; 
+    margin-left: auto;
     display: flex;
     gap: 15px;
 }

@@ -1,9 +1,11 @@
 .gridContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
   padding: 2rem;
   width: 100%;
+  padding-bottom: 100px;
+  /* Espacio extra al final */
 }
 
 .card {
@@ -25,7 +27,8 @@
 
 .imagePlaceholder {
   width: 100%;
-  height: 180px;
+  height: 200px;
+  /* Aumentar un poco la altura base */
   background-color: #f5f7fa;
   display: flex;
   align-items: center;

@@ -1,10 +1,74 @@
 /* Estilos base copiados y adaptados de UserProfile.module.css para consistencia */
 
+/* Top Header Bar */
+.topHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: linear-gradient(135deg, #16a085 0%, #138f75 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+    box-shadow: 0 2px 12px rgba(22, 160, 133, 0.3);
+    z-index: 999;
+}
+
+/* Hamburger Button */
+.hamburgerButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px;
+    transition: transform 0.2s ease;
+}
+
+.hamburgerButton:hover {
+    transform: scale(1.1);
+}
+
+.hamburgerButton:active {
+    transform: scale(0.95);
+}
+
+.hamburgerButton span {
+    width: 28px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburgerButton:hover span {
+    background: #40E0D0;
+}
+
+/* Logo Text */
+.logoText {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.headerActions {
+    margin-left: auto;
+    display: flex;
+    gap: 15px;
+}
+
 .container {
     width: 100%;
     max-width: 960px;
     margin: 0 auto;
-    padding: 32px 40px 48px;
+    padding: 110px 40px 48px;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #f8fffe 0%, #f0f9f7 100%);
     min-height: 100vh;
@@ -409,4 +473,34 @@
     background-color: #e0f2ef;
     color: #1fb7a1;
     font-weight: 600;
+}
+
+/* Sidebar Navigation Links */
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 16px;
+    gap: 8px;
+}
+
+.sidebarLink {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    gap: 12px;
+}
+
+.sidebarLink:hover {
+    background: rgba(64, 224, 208, 0.2);
+    transform: translateX(4px);
+}
+
+.sidebarLink:active {
+    transform: translateX(2px);
 }

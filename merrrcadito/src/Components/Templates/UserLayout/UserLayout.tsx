@@ -23,7 +23,7 @@ export default function UserLayout({
         <NavBar navBar={userNavItems} />
       </SideBar>
 
-      <div className={styles.mainArea}>
+      <div className={styles.mainContent}>
         <HeaderPage pageTitle={pageTitle} pageSubtitle={pageSubtitle} />
         <div className={styles.content}>
           {children}

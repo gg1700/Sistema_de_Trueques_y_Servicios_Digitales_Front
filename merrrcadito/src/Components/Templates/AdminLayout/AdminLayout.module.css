@@ -10,12 +10,16 @@
     flex-direction: column;
     margin-left: 280px;
     transition: margin-left 0.3s ease;
+    min-width: 0;
+    /* Prevent flex overflow */
 }
 
 .childrenContainer {
     flex: 1;
     padding: 24px;
     overflow-y: auto;
+    min-width: 0;
+    /* Prevent flex overflow */
 }
 
 @media (max-width: 768px) {

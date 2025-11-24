@@ -2,7 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./WalletView.module.css";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import SideBar from "@/Components/Organisms/SideBar/SideBar";
+import Link from "next/link";
+import { ButtonIcon } from "@/Components/Atoms";
 
 // Interfaces
 interface WalletData {
@@ -61,6 +64,7 @@ const EVENTS_API_BASE = "http://localhost:5000/api/events";
 const PUBLICATIONS_API_BASE = process.env.NEXT_PUBLIC_POSTS_API_BASE_URL || "http://localhost:5000/api/publications";
 
 export default function WalletView() {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<"info" | "transactions" | "exchanges">("info");
     const [walletData, setWalletData] = useState<WalletData | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -68,6 +72,7 @@ export default function WalletView() {
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState("Usuario");
     const [userId, setUserId] = useState<number | null>(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     // Get user ID (simulated or from local storage/context)
     useEffect(() => {
@@ -256,282 +261,338 @@ export default function WalletView() {
     }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Billetera de {userName}</h1>
+        <>
+            {/* Header Superior */}
+            <header className={styles.topHeader}>
+                <button
+                    className={styles.hamburgerButton}
+                    onClick={() => setSidebarOpen(true)}
+                    aria-label="Abrir menú"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 className={styles.logoText}>MERRRCADITO</h1>
 
-                <div className={styles.tabs}>
-                    <button
-                        className={`${styles.tab} ${activeTab === "info" ? styles.activeTab : ""}`}
-                        onClick={() => setActiveTab("info")}
-                    >
-                        Información de la Billetera
-                    </button>
-                    <button
-                        className={`${styles.tab} ${activeTab === "transactions" ? styles.activeTab : ""}`}
-                        onClick={() => setActiveTab("transactions")}
-                    >
-                        Historial de Transacciones
-                    </button>
-                    <button
-                        className={`${styles.tab} ${activeTab === "exchanges" ? styles.activeTab : ""}`}
-                        onClick={() => setActiveTab("exchanges")}
-                    >
-                        Historial de Intercambios
-                    </button>
+                <div className={styles.headerActions}>
+                    <ButtonIcon
+                        icon='bi-wallet2'
+                        type='profile'
+                        onClick={() => router.push('/billetera')}
+                        name="Billetera"
+                    />
+                    <ButtonIcon
+                        icon='bi-person-circle'
+                        type='profile'
+                        onClick={() => console.log('Abrir profile')}
+                        name="Perfil"
+                    />
                 </div>
+            </header>
+
+            {/* Sidebar */}
+            <SideBar
+                title="Menú"
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+            >
+                <nav className={styles.sidebarNav}>
+                    <Link href="/" className={styles.sidebarLink}>
+                        🏠 Inicio
+                    </Link>
+                    <Link href="/billetera" className={styles.sidebarLink}>
+                        💰 Billetera
+                    </Link>
+                    <Link href="/perfil" className={styles.sidebarLink}>
+                        👤 Perfil
+                    </Link>
+                    <Link href="/promociones" className={styles.sidebarLink}>
+                        🎉 Promociones
+                    </Link>
+                    <Link href="/tokens" className={styles.sidebarLink}>
+                        🪙 Tokens
+                    </Link>
+                </nav>
+            </SideBar>
+
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <h1 className={styles.title}>Billetera de {userName}</h1>
+
+                    <div className={styles.tabs}>
+                        <button
+                            className={`${styles.tab} ${activeTab === "info" ? styles.activeTab : ""}`}
+                            onClick={() => setActiveTab("info")}
+                        >
+                            Información de la Billetera
+                        </button>
+                        <button
+                            className={`${styles.tab} ${activeTab === "transactions" ? styles.activeTab : ""}`}
+                            onClick={() => setActiveTab("transactions")}
+                        >
+                            Historial de Transacciones
+                        </button>
+                        <button
+                            className={`${styles.tab} ${activeTab === "exchanges" ? styles.activeTab : ""}`}
+                            onClick={() => setActiveTab("exchanges")}
+                        >
+                            Historial de Intercambios
+                        </button>
+                    </div>
+                </div>
+
+                {activeTab === "info" && (
+                    <div className={styles.walletInfoGrid}>
+                        <div className={styles.infoCard}>
+                            <div className={styles.iconWrapper}>
+                                <i className="bi bi-piggy-bank"></i>
+                            </div>
+                            <div className={styles.infoContent}>
+                                <span className={styles.label}>Cuenta Bancaria</span>
+                                <span className={styles.value}>{walletData?.cuenta_bancaria || "No registrada"}</span>
+                            </div>
+                        </div>
+
+                        <div className={styles.infoCard}>
+                            <div className={styles.iconWrapper}>
+                                <i className="bi bi-cash-stack"></i>
+                            </div>
+                            <div className={styles.infoContent}>
+                                <span className={styles.label}>Saldo Actual en Bolivianos</span>
+                                <span className={styles.value}>{walletData?.saldo_real || 0} Bs.</span>
+                            </div>
+                        </div>
+
+                        <div className={styles.infoCard}>
+                            <div className={styles.iconWrapper}>
+                                <i className="bi bi-coin"></i>
+                            </div>
+                            <div className={styles.infoContent}>
+                                <span className={styles.label}>Saldo Actual en Créditos Verdes</span>
+                                <span className={styles.value}>{walletData?.saldo_creditos || 0} CV.</span>
+                            </div>
+                        </div>
+
+                        <div className={styles.infoCard}>
+                            <div className={styles.iconWrapper}>
+                                <i className="bi bi-calendar-event"></i>
+                            </div>
+                            <div className={styles.infoContent}>
+                                <span className={styles.label}>Fecha de Última Transacción</span>
+                                <span className={styles.value}>
+                                    {walletData?.fecha_ultima_trans
+                                        ? new Date(walletData.fecha_ultima_trans).toLocaleDateString('es-ES')
+                                        : "Sin movimientos"}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === "transactions" && (
+                    <div className={styles.transactionsList}>
+                        {transactions.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>
+                                No hay transacciones registradas
+                            </div>
+                        ) : (
+                            transactions.map((trans) => (
+                                <div key={trans.cod_trans} className={styles.transactionCard}>
+                                    <div className={styles.cardHeader}>
+                                        <h3 className={styles.transactionTitle}>
+                                            Transacción: {trans.transaction_title || "Sin título"}
+                                        </h3>
+                                    </div>
+
+                                    <div className={styles.cardGrid}>
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-hash ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Código de la Transacción:</span>
+                                                <span className={styles.itemValue}>{trans.cod_trans}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-calendar-check ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Fecha de Realización:</span>
+                                                <span className={styles.itemValue}>
+                                                    {new Date(trans.fecha_trans).toLocaleDateString('es-ES')}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-person-circle ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Vendedor:</span>
+                                                <span className={styles.itemValue}>
+                                                    {trans.vendedor_nombre || "-"} {trans.vendedor_handle ? `(@${trans.vendedor_handle})` : ""}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-currency-dollar ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Monto Pagado:</span>
+                                                <span className={styles.itemValue}>{trans.monto_pagado || 0}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-globe ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Moneda de Pago:</span>
+                                                <span className={styles.itemValue}>{trans.moneda}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-check-circle ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Estado de la Transacción:</span>
+                                                <span className={`${styles.itemValue} ${trans.estado_trans === 'satisfactorio' ? styles.statusSuccess :
+                                                    trans.estado_trans === 'pendiente' ? styles.statusPending : styles.statusFailed
+                                                    }`}>
+                                                    {trans.estado_trans}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-chat-text ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Descripción:</span>
+                                                <span className={styles.itemValue}>{trans.desc_trans || '-'}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-shield-check ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Estado en Escrow:</span>
+                                                <span className={`${styles.itemValue} ${trans.estado_escrow === 'liberado' ? styles.escrowReleased : styles.escrowHeld
+                                                    }`}>
+                                                    {trans.estado_escrow}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
+
+                {activeTab === "exchanges" && (
+                    <div className={styles.transactionList}>
+                        {exchanges.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>
+                                No hay intercambios registrados
+                            </div>
+                        ) : (
+                            exchanges.map((exchange) => (
+                                <div key={exchange.cod_inter} className={styles.transactionCard}>
+                                    <div className={styles.cardHeader}>
+                                        <h3 className={styles.transactionTitle}>
+                                            Intercambio: {exchange.nombre_prod_origen} con {exchange.nombre_prod_destino}
+                                        </h3>
+                                    </div>
+
+                                    <div className={styles.cardGrid}>
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-hash ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Código del Intercambio:</span>
+                                                <span className={styles.itemValue}>{exchange.cod_inter}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-calendar-event ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Fecha de Realización:</span>
+                                                <span className={styles.itemValue}>
+                                                    {new Date(exchange.fecha_inter).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-person-circle ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Usuario del Intercambio:</span>
+                                                <span className={styles.itemValue}>
+                                                    {exchange.nombre_usuario_2} (@{exchange.handle_name_2})
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-rulers ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Unidad de Medida:</span>
+                                                <span className={styles.itemValue}>
+                                                    {exchange.unidad_medida_origen}, {exchange.unidad_medida_destino}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-box-seam ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Producto Ofrecido:</span>
+                                                <span className={styles.itemValue}>{exchange.nombre_prod_origen}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-box-seam ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Producto Obtenido:</span>
+                                                <span className={styles.itemValue}>{exchange.nombre_prod_destino}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-bar-chart ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Cantidad Intercambiada:</span>
+                                                <span className={styles.itemValue}>
+                                                    {exchange.cant_prod_origen}, {exchange.cant_prod_destino}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-tree ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Impacto Ambiental:</span>
+                                                <span className={styles.itemValue}>{exchange.impacto_amb_inter} puntos</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-check-circle ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Estado del Intercambio:</span>
+                                                <span className={`${styles.itemValue} ${exchange.estado_inter === 'satisfactorio' ? styles.statusSuccess :
+                                                    exchange.estado_inter === 'pendiente' ? styles.statusPending : styles.statusFailed
+                                                    }`}>
+                                                    {exchange.estado_inter}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
-
-            {activeTab === "info" && (
-                <div className={styles.walletInfoGrid}>
-                    <div className={styles.infoCard}>
-                        <div className={styles.iconWrapper}>
-                            <i className="bi bi-piggy-bank"></i>
-                        </div>
-                        <div className={styles.infoContent}>
-                            <span className={styles.label}>Cuenta Bancaria</span>
-                            <span className={styles.value}>{walletData?.cuenta_bancaria || "No registrada"}</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.infoCard}>
-                        <div className={styles.iconWrapper}>
-                            <i className="bi bi-cash-stack"></i>
-                        </div>
-                        <div className={styles.infoContent}>
-                            <span className={styles.label}>Saldo Actual en Bolivianos</span>
-                            <span className={styles.value}>{walletData?.saldo_real || 0} Bs.</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.infoCard}>
-                        <div className={styles.iconWrapper}>
-                            <i className="bi bi-coin"></i>
-                        </div>
-                        <div className={styles.infoContent}>
-                            <span className={styles.label}>Saldo Actual en Créditos Verdes</span>
-                            <span className={styles.value}>{walletData?.saldo_creditos || 0} CV.</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.infoCard}>
-                        <div className={styles.iconWrapper}>
-                            <i className="bi bi-calendar-event"></i>
-                        </div>
-                        <div className={styles.infoContent}>
-                            <span className={styles.label}>Fecha de Última Transacción</span>
-                            <span className={styles.value}>
-                                {walletData?.fecha_ultima_trans
-                                    ? new Date(walletData.fecha_ultima_trans).toLocaleDateString('es-ES')
-                                    : "Sin movimientos"}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === "transactions" && (
-                <div className={styles.transactionsList}>
-                    {transactions.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>
-                            No hay transacciones registradas
-                        </div>
-                    ) : (
-                        transactions.map((trans) => (
-                            <div key={trans.cod_trans} className={styles.transactionCard}>
-                                <div className={styles.cardHeader}>
-                                    <h3 className={styles.transactionTitle}>
-                                        Transacción: {trans.transaction_title || "Sin título"}
-                                    </h3>
-                                </div>
-
-                                <div className={styles.cardGrid}>
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-hash ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Código de la Transacción:</span>
-                                            <span className={styles.itemValue}>{trans.cod_trans}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-calendar-check ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Fecha de Realización:</span>
-                                            <span className={styles.itemValue}>
-                                                {new Date(trans.fecha_trans).toLocaleDateString('es-ES')}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-person-circle ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Vendedor:</span>
-                                            <span className={styles.itemValue}>
-                                                {trans.vendedor_nombre || "-"} {trans.vendedor_handle ? `(@${trans.vendedor_handle})` : ""}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-currency-dollar ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Monto Pagado:</span>
-                                            <span className={styles.itemValue}>{trans.monto_pagado || 0}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-globe ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Moneda de Pago:</span>
-                                            <span className={styles.itemValue}>{trans.moneda}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-check-circle ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Estado de la Transacción:</span>
-                                            <span className={`${styles.itemValue} ${trans.estado_trans === 'satisfactorio' ? styles.statusSuccess :
-                                                trans.estado_trans === 'pendiente' ? styles.statusPending : styles.statusFailed
-                                                }`}>
-                                                {trans.estado_trans}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-chat-text ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Descripción:</span>
-                                            <span className={styles.itemValue}>{trans.desc_trans || '-'}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-shield-check ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Estado en Escrow:</span>
-                                            <span className={`${styles.itemValue} ${trans.estado_escrow === 'liberado' ? styles.escrowReleased : styles.escrowHeld
-                                                }`}>
-                                                {trans.estado_escrow}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-            )}
-
-            {activeTab === "exchanges" && (
-                <div className={styles.transactionList}>
-                    {exchanges.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>
-                            No hay intercambios registrados
-                        </div>
-                    ) : (
-                        exchanges.map((exchange) => (
-                            <div key={exchange.cod_inter} className={styles.transactionCard}>
-                                <div className={styles.cardHeader}>
-                                    <h3 className={styles.transactionTitle}>
-                                        Intercambio: {exchange.nombre_prod_origen} con {exchange.nombre_prod_destino}
-                                    </h3>
-                                </div>
-
-                                <div className={styles.cardGrid}>
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-hash ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Código del Intercambio:</span>
-                                            <span className={styles.itemValue}>{exchange.cod_inter}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-calendar-event ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Fecha de Realización:</span>
-                                            <span className={styles.itemValue}>
-                                                {new Date(exchange.fecha_inter).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-person-circle ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Usuario del Intercambio:</span>
-                                            <span className={styles.itemValue}>
-                                                {exchange.nombre_usuario_2} (@{exchange.handle_name_2})
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-rulers ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Unidad de Medida:</span>
-                                            <span className={styles.itemValue}>
-                                                {exchange.unidad_medida_origen}, {exchange.unidad_medida_destino}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-box-seam ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Producto Ofrecido:</span>
-                                            <span className={styles.itemValue}>{exchange.nombre_prod_origen}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-box-seam ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Producto Obtenido:</span>
-                                            <span className={styles.itemValue}>{exchange.nombre_prod_destino}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-bar-chart ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Cantidad Intercambiada:</span>
-                                            <span className={styles.itemValue}>
-                                                {exchange.cant_prod_origen}, {exchange.cant_prod_destino}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-tree ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Impacto Ambiental:</span>
-                                            <span className={styles.itemValue}>{exchange.impacto_amb_inter} puntos</span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.cardItem}>
-                                        <i className={`bi bi-check-circle ${styles.itemIcon}`}></i>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemLabel}>Estado del Intercambio:</span>
-                                            <span className={`${styles.itemValue} ${exchange.estado_inter === 'satisfactorio' ? styles.statusSuccess :
-                                                exchange.estado_inter === 'pendiente' ? styles.statusPending : styles.statusFailed
-                                                }`}>
-                                                {exchange.estado_inter}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-            )}
-        </div>
+        </>
     );
 }
