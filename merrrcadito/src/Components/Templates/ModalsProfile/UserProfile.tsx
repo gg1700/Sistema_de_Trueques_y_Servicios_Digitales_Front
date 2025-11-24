@@ -526,6 +526,17 @@ export default function UserProfile({
     <section className={styles.profilePage}>
       <header className={styles.header}>
         <div className={styles.headerTop}>
+          <button
+            className={styles.menuButton}
+            type="button"
+            aria-label="Menú"
+            onClick={() => setIsMenuOpen(true)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+
           <div className={styles.avatarWrapper}>
             {avatarUrl ? (
               <div className={styles.avatarCircle}>
@@ -546,17 +557,6 @@ export default function UserProfile({
               </div>
             )}
           </div>
-
-          <button
-            className={styles.menuButton}
-            type="button"
-            aria-label="Menú"
-            onClick={() => setIsMenuOpen(true)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
         </div>
 
         <div className={styles.userInfo}>
