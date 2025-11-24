@@ -1,6 +1,6 @@
 import { getNavItems } from '@/Utils/navigation';
-import {SideBar} from '@/Components/Organisms';
-import {NavBar, HeaderPage} from '@/Components/Molecules';
+import { SideBar } from '@/Components/Organisms';
+import { NavBar, HeaderPage } from '@/Components/Molecules';
 import styles from './AdminLayout.module.css';
 
 interface LayoutProps {
@@ -14,7 +14,7 @@ export default function AdminLayout({
   pageTitle,
   pageSubtitle
 }: LayoutProps) {
-  
+
   const adminNavItems = getNavItems('admin');
 
   return (

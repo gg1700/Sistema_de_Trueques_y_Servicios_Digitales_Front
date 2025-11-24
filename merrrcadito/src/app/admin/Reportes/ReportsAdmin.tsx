@@ -28,15 +28,20 @@ export default function ReportsAdmin() {
     const reporteUno = useCategoryProdsReport(currentMonth);
     const safeReporteUno = Array.isArray(reporteUno) ? reporteUno : [];
 
+    // Filtrar categorías que tienen al menos una compra o intercambio
+    const filteredReporteUno = safeReporteUno.filter((dato: any) =>
+        (dato.compras > 0 || dato.intercambios > 0)
+    );
+
     const categoriasData = {
-        labels: safeReporteUno.map((dato: any) => dato.categoria),
+        labels: filteredReporteUno.map((dato: any) => dato.categoria),
         datasets: [{
             label: 'Compras',
-            data: safeReporteUno.map((dato: any) => dato.compras),
+            data: filteredReporteUno.map((dato: any) => dato.compras),
             backgroundColor: 'rgba(255, 99, 132, 0.8)',
         }, {
             label: 'Intercambios',
-            data: safeReporteUno.map((dato: any) => dato.intercambios),
+            data: filteredReporteUno.map((dato: any) => dato.intercambios),
             backgroundColor: 'rgba(54, 162, 235, 0.8)',
         }]
     };
@@ -55,34 +60,35 @@ export default function ReportsAdmin() {
 
     const reporteTres = useActionsUsers(currentMonth);
     const safeReporteTres = Array.isArray(reporteTres) ? reporteTres : [];
+
+    // Extraer el primer elemento si existe (ya que el SP devuelve un solo registro)
+    const actionsData = safeReporteTres.length > 0 ? safeReporteTres[0] : {
+        cant_compras_publicaciones_prod: 0,
+        cant_compras_publicaciones_serv: 0,
+        cant_intercambios: 0,
+        cant_compras_potenciadores: 0,
+        cant_paquetes_tokens: 0
+    };
+
     const usuariosActionsData = {
         labels: ['Productos', 'Servicios', 'Intercambios', 'Potenciadores', 'CV'],
         datasets: [{
-            label: 'Compras Productos',
-            data: safeReporteTres.map((dato: any) => dato.cant_compras_publicaciones_prod),
-            backgroundColor: 'rgba(255, 99, 132, 0.8)',
-        },
-        {
-            label: 'Compras Servicios',
-            data: safeReporteTres.map((dato: any) => dato.cant_compras_publicaciones_serv),
-            backgroundColor: 'rgba(54, 162, 235, 0.8)'
-        },
-        {
-            label: 'Intercambios',
-            data: safeReporteTres.map((dato: any) => dato.cant_intercambios),
-            backgroundColor: 'rgba(75, 192, 192, 0.8)'
-        },
-        {
-            label: 'Compras de Potenciadores',
-            data: safeReporteTres.map((dato: any) => dato.cant_compras_potenciadores),
-            backgroundColor: 'rgba(153, 102, 255, 0.8)'
-        },
-        {
-            label: 'Compras de CV',
-            data: safeReporteTres.map((dato: any) => dato.cant_paquetes_tokens),
-            backgroundColor: 'rgba(255, 159, 64, 0.8)'
-        }
-        ]
+            label: 'Cantidad',
+            data: [
+                actionsData.cant_compras_publicaciones_prod || 0,
+                actionsData.cant_compras_publicaciones_serv || 0,
+                actionsData.cant_intercambios || 0,
+                actionsData.cant_compras_potenciadores || 0,
+                actionsData.cant_paquetes_tokens || 0
+            ],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)',
+                'rgba(255, 159, 64, 0.8)'
+            ],
+        }]
     };
 
     // NUEVOS REPORTES

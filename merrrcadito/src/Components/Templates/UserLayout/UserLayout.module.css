@@ -1,19 +1,29 @@
 .userLayout {
     display: flex;
     min-height: 100vh;
-    background-color: #D9D9D9; 
+    background-color: #f5f7fa;
 }
 
-.mainArea {
+.mainContent {
     flex: 1;
-    background-color: #D9D9D9;
-    min-height: 100vh;
-    margin-left: 290px; 
     display: flex;
     flex-direction: column;
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
 }
 
-.content {
-    padding: 24px;
+.childrenContainer {
     flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        margin-left: 0;
+    }
+
+    .childrenContainer {
+        padding: 16px;
+    }
 }

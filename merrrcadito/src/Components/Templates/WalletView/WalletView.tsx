@@ -33,8 +33,27 @@ interface Transaction {
     estado_escrow: string;
 }
 
+interface Exchange {
+    cod_inter: number;
+    fecha_inter: string;
+    cod_us_2: number;
+    nombre_usuario_2: string;
+    handle_name_2: string;
+    cod_prod_origen: number;
+    nombre_prod_origen: string;
+    cod_prod_destino: number;
+    nombre_prod_destino: string;
+    cant_prod_origen: number;
+    cant_prod_destino: number;
+    unidad_medida_origen: string;
+    unidad_medida_destino: string;
+    impacto_amb_inter: number;
+    estado_inter: string;
+}
+
 const WALLET_API_BASE = "http://localhost:5000/api/wallets";
 const TRANSACTION_API_BASE = "http://localhost:5000/api/transactions";
+const EXCHANGE_API_BASE = "http://localhost:5000/api/exchanges";
 const USERS_API_BASE = "http://localhost:5000/api/users";
 const POSTS_API_BASE = "http://localhost:5000/api/posts";
 const TOKENS_API_BASE = "http://localhost:5000/api/tokens";
@@ -45,6 +64,7 @@ export default function WalletView() {
     const [activeTab, setActiveTab] = useState<"info" | "transactions" | "exchanges">("info");
     const [walletData, setWalletData] = useState<WalletData | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [exchanges, setExchanges] = useState<Exchange[]>([]);
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState("Usuario");
     const [userId, setUserId] = useState<number | null>(null);
@@ -72,14 +92,23 @@ export default function WalletView() {
                 setUserId(user.cod_us);
                 setUserName(`${user.nom_us} ${user.ap_pat_us} ${user.ap_mat_us || ''}`);
 
-                // Once we have user ID, fetch wallet data
-                fetchWalletData(user.cod_us);
-                fetchTransactions(user.cod_us);
+                // The actual fetching of wallet/transactions/exchanges is now handled by the useEffect above
             }
         } catch (error) {
             console.error("Error fetching user:", error);
         }
     };
+
+    useEffect(() => {
+        if (userId) {
+            fetchWalletData(userId);
+            if (activeTab === "transactions") {
+                fetchTransactions(userId);
+            } else if (activeTab === "exchanges") {
+                fetchExchanges(userId);
+            }
+        }
+    }, [userId, activeTab]);
 
     const fetchWalletData = async (codUs: number) => {
         try {
@@ -204,6 +233,21 @@ export default function WalletView() {
             setTransactions(enrichedTransactions);
         } catch (error) {
             console.error("Error fetching transactions:", error);
+        }
+    };
+
+    const fetchExchanges = async (codUs: number) => {
+        try {
+            const res = await fetch(`${EXCHANGE_API_BASE}/get_user_exchange_history?cod_us=${codUs}`);
+            const data = await res.json();
+
+            if (data.success && data.data) {
+                setExchanges(data.data);
+            } else if (Array.isArray(data)) {
+                setExchanges(data);
+            }
+        } catch (error) {
+            console.error("Error fetching exchanges:", error);
         }
     };
 
@@ -384,8 +428,108 @@ export default function WalletView() {
             )}
 
             {activeTab === "exchanges" && (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>
-                    Historial de intercambios próximamente...
+                <div className={styles.transactionList}>
+                    {exchanges.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>
+                            No hay intercambios registrados
+                        </div>
+                    ) : (
+                        exchanges.map((exchange) => (
+                            <div key={exchange.cod_inter} className={styles.transactionCard}>
+                                <div className={styles.cardHeader}>
+                                    <h3 className={styles.transactionTitle}>
+                                        Intercambio: {exchange.nombre_prod_origen} con {exchange.nombre_prod_destino}
+                                    </h3>
+                                </div>
+
+                                <div className={styles.cardGrid}>
+                                    <div className={styles.cardItem}>
+                                        <i className={`bi bi-hash ${styles.itemIcon}`}></i>
+                                        <div className={styles.itemContent}>
+                                            <span className={styles.itemLabel}>Código del Intercambio:</span>
+                                            <span className={styles.itemValue}>{exchange.cod_inter}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.cardItem}>
+                                        <i className={`bi bi-calendar-event ${styles.itemIcon}`}></i>
+                                        <div className={styles.itemContent}>
+                                            <span className={styles.itemLabel}>Fecha de Realización:</span>
+                                            <span className={styles.itemValue}>
+                                                {new Date(exchange.fecha_inter).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.cardItem}>
+                                        <i className={`bi bi-person-circle ${styles.itemIcon}`}></i>
+                                        <div className={styles.itemContent}>
+                                            <span className={styles.itemLabel}>Usuario del Intercambio:</span>
+                                            <span className={styles.itemValue}>
+                                                {exchange.nombre_usuario_2} (@{exchange.handle_name_2})
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.cardItem}>
+                                        <i className={`bi bi-rulers ${styles.itemIcon}`}></i>
+                                        <div className={styles.itemContent}>
+                                            <span className={styles.itemLabel}>Unidad de Medida:</span>
+                                            <span className={styles.itemValue}>
+                                                {exchange.unidad_medida_origen}, {exchange.unidad_medida_destino}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.cardItem}>
+                                        <i className={`bi bi-box-seam ${styles.itemIcon}`}></i>
+                                        <div className={styles.itemContent}>
+                                            <span className={styles.itemLabel}>Producto Ofrecido:</span>
+                                            <span className={styles.itemValue}>{exchange.nombre_prod_origen}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.cardItem}>
+                                        <i className={`bi bi-box-seam ${styles.itemIcon}`}></i>
+                                        <div className={styles.itemContent}>
+                                            <span className={styles.itemLabel}>Producto Obtenido:</span>
+                                            <span className={styles.itemValue}>{exchange.nombre_prod_destino}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.cardItem}>
+                                        <i className={`bi bi-bar-chart ${styles.itemIcon}`}></i>
+                                        <div className={styles.itemContent}>
+                                            <span className={styles.itemLabel}>Cantidad Intercambiada:</span>
+                                            <span className={styles.itemValue}>
+                                                {exchange.cant_prod_origen}, {exchange.cant_prod_destino}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.cardItem}>
+                                        <i className={`bi bi-tree ${styles.itemIcon}`}></i>
+                                        <div className={styles.itemContent}>
+                                            <span className={styles.itemLabel}>Impacto Ambiental:</span>
+                                            <span className={styles.itemValue}>{exchange.impacto_amb_inter} puntos</span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.cardItem}>
+                                        <i className={`bi bi-check-circle ${styles.itemIcon}`}></i>
+                                        <div className={styles.itemContent}>
+                                            <span className={styles.itemLabel}>Estado del Intercambio:</span>
+                                            <span className={`${styles.itemValue} ${exchange.estado_inter === 'satisfactorio' ? styles.statusSuccess :
+                                                exchange.estado_inter === 'pendiente' ? styles.statusPending : styles.statusFailed
+                                                }`}>
+                                                {exchange.estado_inter}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             )}
         </div>
