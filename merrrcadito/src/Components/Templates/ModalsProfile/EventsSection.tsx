@@ -5,7 +5,7 @@ import styles from "./EventsSection.module.css";
 
 const ENROLLMENTS_API_BASE =
     process.env.NEXT_PUBLIC_ENROLLMENTS_API_BASE_URL ??
-    "http://localhost:5000/api/enrollments";
+    "http://localhost:5000/api/event-enrollments";
 
 interface EnrolledEvent {
     cod_evento: number;

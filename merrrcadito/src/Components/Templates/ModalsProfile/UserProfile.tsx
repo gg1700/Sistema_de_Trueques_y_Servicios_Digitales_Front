@@ -198,6 +198,29 @@ export default function UserProfile({
   const navList = getNavItems(navRole);
 
   useEffect(() => {
+    const fetchViewerData = async () => {
+      if (typeof window !== "undefined") {
+        const handle = window.localStorage.getItem("currentUserHandle");
+        if (handle) {
+          try {
+            const res = await fetch(
+                `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(handle)}`
+            );
+            const json = await res.json();
+            if (res.ok && json.success && json.data) {
+              const data = Array.isArray(json.data) ? json.data[0] : json.data;
+              setViewerId(data.cod_us);
+            }
+          } catch (err) {
+            console.error("Error fetching viewer data:", err);
+          }
+        }
+      }
+    };
+    fetchViewerData();
+  }, []);
+
+  useEffect(() => {
     const fetchCategoriesAndSubcats = async () => {
       try {
         const resCat = await fetch(
