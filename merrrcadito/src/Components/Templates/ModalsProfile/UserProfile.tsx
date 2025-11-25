@@ -8,7 +8,7 @@ import styles from "./UserProfile.module.css";
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
 import { getNavItems } from "../../../Utils/navigation";
-import { ReportService } from "@/services";
+import { ReportService, EventService } from "@/services";
 import { ExchangeService } from "@/services/exchangeService";
 
 const USERS_API_BASE =
@@ -38,7 +38,7 @@ const PUBLICATIONS_API_BASE =
   "http://localhost:5000/api/publications";
 
 type Tab = "offers" | "publish" | "likes" | "events";
-type PublishType = "product" | "service" | "exchange";
+type PublishType = "product" | "service" | "exchange" | "event";
 type NavRole = "admin" | "user";
 type Role = NavRole | "entrepreneur";
 
@@ -80,6 +80,16 @@ interface ExchangeFormState {
   subcategory: string;
   quality: string;
   description: string;
+  image: File | null;
+}
+
+interface EventFormState {
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  eventType: string;
+  cost: string;
   image: File | null;
 }
 
@@ -187,6 +197,17 @@ export default function UserProfile({
     subcategory: "",
     quality: "",
     description: "",
+    image: null,
+  });
+
+  // Estado para formulario de evento
+  const [eventForm, setEventForm] = useState<EventFormState>({
+    title: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+    eventType: "",
+    cost: "",
     image: null,
   });
 
@@ -345,6 +366,26 @@ export default function UserProfile({
         });
 
         setOffers(prev => [...prev, ...exchangeOffers]);
+      }
+
+      // Cargar eventos del usuario
+      const eventsResponse = await EventService.get_user_created_events(codUs);
+      if (eventsResponse.success && eventsResponse.data) {
+        // Mapear eventos a formato Offer para mostrarlos en la lista
+        const eventOffers: Offer[] = eventsResponse.data.map((ev: any) => {
+          const imageUrl = ev.tiene_banner ? `${API_BASE_URL}/events/${ev.cod_evento}/image` : null;
+
+          return {
+            id: `event-${ev.cod_evento}`,
+            title: `Evento: ${ev.titulo_evento}`,
+            description: `${ev.descripcion_evento}. Fecha: ${ev.fecha_inicio_evento ? new Date(ev.fecha_inicio_evento).toLocaleDateString('es-ES', { timeZone: 'UTC' }) : 'N/A'} - ${ev.fecha_finalizacion_evento ? new Date(ev.fecha_finalizacion_evento).toLocaleDateString('es-ES', { timeZone: 'UTC' }) : 'N/A'}`,
+            image: imageUrl,
+            price: ev.costo_inscripcion,
+            isExchange: false
+          };
+        });
+
+        setOffers(prev => [...prev, ...eventOffers]);
       }
 
     } catch (err) {
@@ -700,6 +741,85 @@ export default function UserProfile({
     });
   };
 
+  // Handlers para formulario de eventos
+  const handleEventChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setEventForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmitEvent = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!user?.cod_us) {
+      setError("No se encontró el código de usuario");
+      return;
+    }
+
+    if (!eventForm.title || !eventForm.description || !eventForm.startDate || !eventForm.endDate || !eventForm.eventType) {
+      setError("Título, descripción, fechas y tipo de evento son obligatorios");
+      return;
+    }
+
+    // Validar que la fecha de inicio sea anterior a la fecha de finalización
+    if (new Date(eventForm.startDate) >= new Date(eventForm.endDate)) {
+      setError("La fecha de finalización debe ser posterior a la fecha de inicio");
+      return;
+    }
+
+    try {
+      setError(null);
+
+      const formData = new FormData();
+      formData.append("titulo_evento", eventForm.title);
+      formData.append("descripcion_evento", eventForm.description);
+      formData.append("fecha_inicio_evento", eventForm.startDate);
+      formData.append("fecha_finalizacion_evento", eventForm.endDate);
+      formData.append("tipo_evento", eventForm.eventType);
+      formData.append("costo_inscripcion", eventForm.cost || "0");
+
+      if (eventForm.image) {
+        formData.append("banner_evento", eventForm.image);
+      }
+
+      // Agregar cod_us a la URL como query parameter
+      const response = await fetch(`${API_BASE_URL}/events/create?cod_us=${user.cod_us}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("¡Evento creado exitosamente!");
+        handleCancelEvent();
+        setShowSuccessModal(true);
+        // Recargar ofertas para mostrar el nuevo evento
+        if (user.cod_us) {
+          await fetchOffersForUser(user.cod_us);
+        }
+      } else {
+        throw new Error(result.message || "Error al crear el evento");
+      }
+    } catch (err: any) {
+      console.error("Error al crear evento:", err);
+      setError(err?.message || "Error al crear el evento");
+    }
+  };
+
+  const handleCancelEvent = () => {
+    setEventForm({
+      title: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+      eventType: "",
+      cost: "",
+      image: null,
+    });
+  };
+
   const fullName =
     user &&
     `${user.nom_us} ${user.ap_pat_us} ${user.ap_mat_us ?? ""}`.trim();
@@ -1041,6 +1161,13 @@ export default function UserProfile({
             onChangeExchangeImage={(file) =>
               setExchangeForm((prev) => ({ ...prev, image: file }))
             }
+            eventForm={eventForm}
+            handleEventChange={handleEventChange}
+            handleSubmitEvent={handleSubmitEvent}
+            handleCancelEvent={handleCancelEvent}
+            onChangeEventImage={(file) =>
+              setEventForm((prev) => ({ ...prev, image: file }))
+            }
             userProducts={userProducts}
             categories={categories}
             filteredSubcategories={filteredSubcategories}
@@ -1239,6 +1366,13 @@ interface PublishSectionProps {
   handleSubmitExchange: (e: React.FormEvent<HTMLFormElement>) => void;
   handleCancelExchange: () => void;
   onChangeExchangeImage: (file: File | null) => void;
+  eventForm: EventFormState;
+  handleEventChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => void;
+  handleSubmitEvent: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleCancelEvent: () => void;
+  onChangeEventImage: (file: File | null) => void;
   userProducts: Product[];
   categories: Category[];
   filteredSubcategories: Subcategory[];
@@ -1262,6 +1396,11 @@ function PublishSection({
   handleSubmitExchange,
   handleCancelExchange,
   onChangeExchangeImage,
+  eventForm,
+  handleEventChange,
+  handleSubmitEvent,
+  handleCancelEvent,
+  onChangeEventImage,
   userProducts,
   categories,
   filteredSubcategories,
@@ -1294,6 +1433,14 @@ function PublishSection({
           onClick={() => setPublishType("exchange")}
         >
           Intercambio
+        </button>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "event" ? "publishTabActive" : ""
+            }`}
+          onClick={() => setPublishType("event")}
+        >
+          Evento
         </button>
       </div>
 
@@ -1678,6 +1825,116 @@ function PublishSection({
                   type="button"
                   className={styles.cancelButton}
                   onClick={handleCancelExchange}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      )}
+
+      {publishType === "event" && (
+        <form
+          onSubmit={handleSubmitEvent}
+          className={styles.publishForm}
+          noValidate
+        >
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Título del Evento</label>
+              <ProfileInput
+                type="text"
+                name="title"
+                value={eventForm.title}
+                onChange={handleEventChange as any}
+                placeholder="Ej. Festival de Reciclaje 2025"
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Fecha de Inicio</label>
+              <ProfileInput
+                type="date"
+                name="startDate"
+                value={eventForm.startDate}
+                onChange={handleEventChange as any}
+                required
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Fecha de Finalización</label>
+              <ProfileInput
+                type="date"
+                name="endDate"
+                value={eventForm.endDate}
+                onChange={handleEventChange as any}
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Tipo de Evento</label>
+              <select
+                name="eventType"
+                value={eventForm.eventType}
+                onChange={handleEventChange}
+                className={styles.selectInput}
+                required
+              >
+                <option value="">Seleccionar</option>
+                <option value="benefico">Benéfico</option>
+                <option value="monetizable">Monetizable</option>
+              </select>
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Costo de Inscripción (Tokens)</label>
+              <ProfileInput
+                type="text"
+                name="cost"
+                value={eventForm.cost}
+                onChange={handleEventChange as any}
+                placeholder="Ej. 0 (gratis)"
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Descripción</label>
+              <textarea
+                name="description"
+                value={eventForm.description}
+                onChange={handleEventChange}
+                className={styles.textarea}
+                placeholder="Describe tu evento..."
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRowBottom}>
+            <div className={styles.formColImage}>
+              <label className={styles.fieldLabel}>
+                Banner del Evento (cuadrado, máx. 100KB)
+              </label>
+              <FileInput name="eventImage" onChange={onChangeEventImage} />
+            </div>
+
+            <div className={styles.formColButtons}>
+              <div className={styles.actionsRowInline}>
+                <button type="submit" className={styles.submitButton}>
+                  Crear Evento
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={handleCancelEvent}
                 >
                   Cancelar
                 </button>
