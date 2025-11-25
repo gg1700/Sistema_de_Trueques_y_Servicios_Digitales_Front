@@ -9,6 +9,7 @@ import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
 import { getNavItems } from "../../../Utils/navigation";
 import { ReportService } from "@/services";
+import { ExchangeService } from "@/services/exchangeService";
 
 const USERS_API_BASE =
   process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
@@ -26,6 +27,8 @@ const CATEGORIES_API_BASE =
   process.env.NEXT_PUBLIC_CATEGORIES_API_BASE_URL ??
   "http://localhost:5000/api/categories";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
+
 const SUBCATEGORIES_API_BASE =
   process.env.NEXT_PUBLIC_SUBCATEGORIES_API_BASE_URL ??
   "http://localhost:5000/api/subcategories";
@@ -35,7 +38,7 @@ const PUBLICATIONS_API_BASE =
   "http://localhost:5000/api/publications";
 
 type Tab = "offers" | "publish" | "likes" | "events";
-type PublishType = "product" | "service";
+type PublishType = "product" | "service" | "exchange";
 type NavRole = "admin" | "user";
 type Role = NavRole | "entrepreneur";
 
@@ -45,6 +48,7 @@ interface Offer {
   description: string;
   image?: string;
   price?: number;
+  isExchange?: boolean;
 }
 
 interface ProductFormState {
@@ -66,6 +70,24 @@ interface ServiceFormState {
   description: string;
   priceTokens: string;
   image: File | null;
+}
+
+interface ExchangeFormState {
+  name: string;
+  weightKg: string;
+  material: string;
+  category: string;
+  subcategory: string;
+  quality: string;
+  description: string;
+  image: File | null;
+}
+
+interface Product {
+  cod_prod: number;
+  nom_prod: string;
+  desc_prod?: string;
+  precio_prod?: number;
 }
 
 interface UserApi {
@@ -156,6 +178,20 @@ export default function UserProfile({
   const [environmentalData, setEnvironmentalData] = useState<any>(null);
   const [loadingEnvironmental, setLoadingEnvironmental] = useState(false);
 
+  // Estado para formulario de intercambio
+  const [exchangeForm, setExchangeForm] = useState<ExchangeFormState>({
+    name: "",
+    weightKg: "",
+    material: "",
+    category: "",
+    subcategory: "",
+    quality: "",
+    description: "",
+    image: null,
+  });
+
+  const [userProducts, setUserProducts] = useState<Product[]>([]);
+
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const handleFromUrl = searchParams.get("handle");
@@ -226,14 +262,23 @@ export default function UserProfile({
       setFilteredSubcategories([]);
       return;
     }
-    const codCat = parseInt(productForm.category, 10);
-    if (isNaN(codCat)) {
+    const filtered = subcategories.filter(
+      (sc) => sc.cod_cat === parseInt(productForm.category)
+    );
+    setFilteredSubcategories(filtered);
+  }, [productForm.category, subcategories]);
+
+  // Filtrar subcategorías para formulario de intercambio
+  useEffect(() => {
+    if (!exchangeForm.category) {
       setFilteredSubcategories([]);
       return;
     }
-    const filtered = subcategories.filter((s) => s.cod_cat === codCat);
+    const filtered = subcategories.filter(
+      (sc) => sc.cod_cat === parseInt(exchangeForm.category)
+    );
     setFilteredSubcategories(filtered);
-  }, [productForm.category, subcategories]);
+  }, [exchangeForm.category, subcategories]);
 
   const fetchOffersForUser = async (codUs: number) => {
     try {
@@ -257,6 +302,51 @@ export default function UserProfile({
       } else {
         setOffers([]);
       }
+
+      // Cargar productos del usuario para el formulario de intercambio
+      const productsResponse = await ExchangeService.get_user_products(codUs);
+      if (productsResponse.success && productsResponse.data) {
+        const productPosts = Array.isArray(productsResponse.data)
+          ? productsResponse.data.filter((post: any) => post.tipo_publicacion === 'producto')
+          : [];
+
+        const products = productPosts.map((post: any) => ({
+          cod_prod: post.cod_prod,
+          nom_prod: post.nombre_producto || post.nom_prod,
+          desc_prod: post.descripcion,
+          precio_prod: post.precio
+        }));
+        setUserProducts(products);
+      }
+
+      // Cargar intercambios del usuario
+      const exchangesResponse = await ExchangeService.get_user_exchanges(codUs);
+      if (exchangesResponse.success && exchangesResponse.data) {
+        // Mapear intercambios a formato Offer para mostrarlos en la lista
+        const exchangeOffers: Offer[] = exchangesResponse.data.map((ex: any, index: number) => {
+          const isOpenOffer = ex.cod_us_1 === ex.cod_us_2;
+          const description = isOpenOffer
+            ? `Oferta abierta de intercambio. Impacto: ${ex.impacto_amb_inter} pts`
+            : `Con @${ex.cod_us_1 === codUs ? ex.usuario_destino_handle : ex.usuario_origen_handle}. Impacto: ${ex.impacto_amb_inter} pts`;
+
+          // Construir URL de imagen del intercambio
+          const imageUrl = ex.tiene_foto ? `${API_BASE_URL}/exchanges/${ex.cod_inter}/image` : null;
+
+          return {
+            id: `exchange-${ex.cod_inter}`,
+            title: isOpenOffer
+              ? `Intercambio: ${ex.nombre_prod_origen} (Oferta)`
+              : `Intercambio: ${ex.nombre_prod_origen} ⇄ ${ex.nombre_prod_destino}`,
+            description: description,
+            image: imageUrl,
+            price: 0,
+            isExchange: true
+          };
+        });
+
+        setOffers(prev => [...prev, ...exchangeOffers]);
+      }
+
     } catch (err) {
       console.error("Error al cargar publicaciones de productos:", err);
       setOffers([]);
@@ -530,6 +620,82 @@ export default function UserProfile({
       category: "",
       description: "",
       priceTokens: "",
+      image: null,
+    });
+  };
+
+  // Handlers para formulario de intercambio
+  const handleExchangeChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setExchangeForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmitExchange = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!user?.cod_us) {
+      setError("No se encontró el código de usuario");
+      return;
+    }
+
+    if (!exchangeForm.name || !exchangeForm.category) {
+      setError("Nombre y categoría son obligatorios");
+      return;
+    }
+
+    try {
+      setError(null);
+
+      const formData = new FormData();
+      formData.append("cod_us_1", user.cod_us.toString());
+
+      // Datos del producto a crear
+      formData.append("nom_prod", exchangeForm.name);
+      formData.append("peso_prod", exchangeForm.weightKg || "0");
+      formData.append("marca_prod", exchangeForm.material || "");
+      formData.append("cod_subcat_prod", exchangeForm.subcategory || exchangeForm.category); // Fallback a categoría si no hay sub
+      formData.append("calidad_prod", exchangeForm.quality || "nuevo");
+      formData.append("desc_prod", exchangeForm.description || "");
+
+      // La cantidad y unidad se asumen por defecto o se añaden si el backend lo requiere
+      // Para intercambio, asumimos 1 unidad del producto creado
+      formData.append("cant_prod_origen", "1");
+      formData.append("unidad_medida_origen", "unidades");
+
+      if (exchangeForm.image) {
+        formData.append("foto_inter", exchangeForm.image);
+      }
+
+      const response = await ExchangeService.create_exchange(formData);
+
+      if (response.success) {
+        alert("¡Oferta de intercambio publicada exitosamente!");
+        handleCancelExchange();
+        setShowSuccessModal(true);
+        // Recargar ofertas para mostrar el nuevo intercambio
+        if (user.cod_us) {
+          await fetchOffersForUser(user.cod_us);
+        }
+      } else {
+        throw new Error(response.message || "Error al crear el intercambio");
+      }
+    } catch (err: any) {
+      console.error("Error al crear intercambio:", err);
+      setError(err?.message || "Error al crear el intercambio");
+    }
+  };
+
+  const handleCancelExchange = () => {
+    setExchangeForm({
+      name: "",
+      weightKg: "",
+      material: "",
+      category: "",
+      subcategory: "",
+      quality: "",
+      description: "",
       image: null,
     });
   };
@@ -868,6 +1034,14 @@ export default function UserProfile({
             onChangeServiceImage={(file) =>
               setServiceForm((prev) => ({ ...prev, image: file }))
             }
+            exchangeForm={exchangeForm}
+            handleExchangeChange={handleExchangeChange}
+            handleSubmitExchange={handleSubmitExchange}
+            handleCancelExchange={handleCancelExchange}
+            onChangeExchangeImage={(file) =>
+              setExchangeForm((prev) => ({ ...prev, image: file }))
+            }
+            userProducts={userProducts}
             categories={categories}
             filteredSubcategories={filteredSubcategories}
           />
@@ -988,28 +1162,33 @@ function OffersSection({ offers }: OffersSectionProps) {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '12px'
+              gap: '12px',
+              flexWrap: 'wrap'
             }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '4px'
-              }}>
-                <span style={{
-                  fontSize: '20px',
-                  fontWeight: '700',
-                  color: '#1fb7a1'
-                }}>
-                  {offer.price ?? 0}
-                </span>
-                <span style={{
-                  fontSize: '13px',
-                  color: '#6b7785',
-                  fontWeight: '500'
-                }}>
-                  Tokens
-                </span>
-              </div>
+              {!offer.isExchange && (
+                <>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: '4px'
+                  }}>
+                    <span style={{
+                      fontSize: '20px',
+                      fontWeight: '700',
+                      color: '#1fb7a1'
+                    }}>
+                      {offer.price ?? 0}
+                    </span>
+                    <span style={{
+                      fontSize: '13px',
+                      color: '#6b7785',
+                      fontWeight: '500'
+                    }}>
+                      Tokens
+                    </span>
+                  </div>
+                </>
+              )}
               <button
                 type="button"
                 className={styles.iconButton}
@@ -1053,6 +1232,14 @@ interface PublishSectionProps {
   handleSubmitService: (e: React.FormEvent) => void;
   handleCancelProduct: () => void;
   handleCancelService: () => void;
+  exchangeForm: ExchangeFormState;
+  handleExchangeChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => void;
+  handleSubmitExchange: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleCancelExchange: () => void;
+  onChangeExchangeImage: (file: File | null) => void;
+  userProducts: Product[];
   categories: Category[];
   filteredSubcategories: Subcategory[];
 }
@@ -1070,6 +1257,12 @@ function PublishSection({
   handleSubmitService,
   handleCancelProduct,
   handleCancelService,
+  exchangeForm,
+  handleExchangeChange,
+  handleSubmitExchange,
+  handleCancelExchange,
+  onChangeExchangeImage,
+  userProducts,
   categories,
   filteredSubcategories,
 }: PublishSectionProps) {
@@ -1094,9 +1287,17 @@ function PublishSection({
         >
           Servicio
         </button>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "exchange" ? "publishTabActive" : ""
+            }`}
+          onClick={() => setPublishType("exchange")}
+        >
+          Intercambio
+        </button>
       </div>
 
-      {publishType === "product" ? (
+      {publishType === "product" && (
         <form
           onSubmit={handleSubmitProduct}
           className={styles.publishForm}
@@ -1247,7 +1448,8 @@ function PublishSection({
             </div>
           </div>
         </form>
-      ) : (
+      )}
+      {publishType === "service" && (
         <form
           onSubmit={handleSubmitService}
           className={styles.publishForm}
@@ -1336,6 +1538,146 @@ function PublishSection({
                   type="button"
                   className={styles.cancelButton}
                   onClick={handleCancelService}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      )}
+
+      {publishType === "exchange" && (
+        <form
+          onSubmit={handleSubmitExchange}
+          className={styles.publishForm}
+          noValidate
+        >
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Nombre del Producto</label>
+              <ProfileInput
+                type="text"
+                name="name"
+                value={exchangeForm.name}
+                onChange={handleExchangeChange as any}
+                placeholder="Ej. Chocolate bar powder"
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Peso (Kg)</label>
+              <ProfileInput
+                type="text"
+                name="weightKg"
+                value={exchangeForm.weightKg}
+                onChange={handleExchangeChange as any}
+                placeholder="Ej. 0.5"
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Marca / Material</label>
+              <ProfileInput
+                type="text"
+                name="material"
+                value={exchangeForm.material}
+                onChange={handleExchangeChange as any}
+                placeholder="Ej. COCA"
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Categoría</label>
+              <select
+                name="category"
+                value={exchangeForm.category}
+                onChange={handleExchangeChange}
+                className={styles.selectInput}
+              >
+                <option value="">Seleccionar</option>
+                {categories.map((cat) => (
+                  <option
+                    key={cat.cod_cat}
+                    value={cat.cod_cat.toString()}
+                  >
+                    {cat.nom_cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Subcategoría</label>
+              <select
+                name="subcategory"
+                value={exchangeForm.subcategory}
+                onChange={handleExchangeChange}
+                className={styles.selectInput}
+                disabled={!exchangeForm.category}
+              >
+                <option value="">Seleccionar</option>
+                {filteredSubcategories.map((sub) => (
+                  <option
+                    key={sub.cod_subcat_prod}
+                    value={sub.cod_subcat_prod.toString()}
+                  >
+                    {sub.nom_subcat_prod}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Calidad</label>
+              <select
+                name="quality"
+                value={exchangeForm.quality}
+                onChange={handleExchangeChange}
+                className={styles.selectInput}
+              >
+                <option value="">Seleccionar</option>
+                <option value="nuevo">Nuevo</option>
+                <option value="usado">Usado</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Descripción</label>
+              <textarea
+                name="description"
+                value={exchangeForm.description}
+                onChange={handleExchangeChange}
+                className={styles.textarea}
+                placeholder="Describe tu producto..."
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRowBottom}>
+            <div className={styles.formColImage}>
+              <label className={styles.fieldLabel}>
+                Imagen (cuadrada, máx. 100KB)
+              </label>
+              <FileInput name="exchangeImage" onChange={onChangeExchangeImage} />
+            </div>
+
+            <div className={styles.formColButtons}>
+              <div className={styles.actionsRowInline}>
+                <button type="submit" className={styles.submitButton}>
+                  Publicar Intercambio
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={handleCancelExchange}
                 >
                   Cancelar
                 </button>
