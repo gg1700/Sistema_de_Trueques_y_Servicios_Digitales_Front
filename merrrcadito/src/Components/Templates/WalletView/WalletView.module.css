@@ -504,3 +504,176 @@
 .sidebarLink:active {
     transform: translateX(2px);
 }
+
+/* Pending Collections Section */
+.pendingCollectionsSection {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 2px dashed #e0f2ef;
+}
+
+.sectionTitle {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 24px;
+    padding-left: 16px;
+    border-left: 5px solid #f59e0b;
+    /* Amber for pending */
+    line-height: 1.2;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 48px;
+    color: #94a3b8;
+    background: #f8fafc;
+    border-radius: 16px;
+    border: 2px dashed #e2e8f0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Card Actions */
+.cardActions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e0f2ef;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.receivePaymentButton {
+    background: #1fb7a1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.receivePaymentButton:hover {
+    background: #16a085;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(31, 183, 161, 0.2);
+}
+
+/* Modals */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+    background: white;
+    padding: 32px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: scaleIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modalTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.modalText {
+    color: #64748b;
+    margin-bottom: 24px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.modalDetails {
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid #e2e8f0;
+}
+
+.modalDetails p {
+    margin: 8px 0;
+    color: #334155;
+}
+
+.modalWarning {
+    color: #f59e0b;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.modalActions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.confirmButton {
+    background: #1fb7a1;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.confirmButton:hover {
+    background: #16a085;
+    transform: translateY(-2px);
+}
+
+.cancelButton {
+    background: white;
+    color: #64748b;
+    border: 2px solid #e2e8f0;
+    padding: 12px 32px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.successIcon {
+    font-size: 64px;
+    color: #1fb7a1;
+    text-align: center;
+    margin-bottom: 24px;
+}

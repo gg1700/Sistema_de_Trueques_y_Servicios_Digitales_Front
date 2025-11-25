@@ -54,6 +54,19 @@ interface Exchange {
     estado_inter: string;
 }
 
+interface PendingCollection {
+    cod_escrow: number;
+    monto_pagado: number;
+    monto_comision: number;
+    estado_escrow: string;
+    cod_trans: number;
+    fecha_trans: string;
+    moneda: string;
+    desc_trans: string;
+    nombre_origen: string;
+    handle_origen: string;
+}
+
 const WALLET_API_BASE = "http://localhost:5000/api/wallets";
 const TRANSACTION_API_BASE = "http://localhost:5000/api/transactions";
 const EXCHANGE_API_BASE = "http://localhost:5000/api/exchanges";
@@ -69,6 +82,7 @@ export default function WalletView() {
     const [walletData, setWalletData] = useState<WalletData | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [exchanges, setExchanges] = useState<Exchange[]>([]);
+    const [pendingCollections, setPendingCollections] = useState<PendingCollection[]>([]);
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState("Usuario");
     const [userId, setUserId] = useState<number | null>(null);
@@ -106,8 +120,10 @@ export default function WalletView() {
 
     useEffect(() => {
         if (userId) {
-            fetchWalletData(userId);
-            if (activeTab === "transactions") {
+            if (activeTab === "info") {
+                fetchWalletData(userId);
+                fetchPendingCollections(userId);
+            } else if (activeTab === "transactions") {
                 fetchTransactions(userId);
             } else if (activeTab === "exchanges") {
                 fetchExchanges(userId);
@@ -127,6 +143,68 @@ export default function WalletView() {
             console.error("Error fetching wallet data:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchPendingCollections = async (codUs: number) => {
+        try {
+            const res = await fetch(`${TRANSACTION_API_BASE}/pending_collections/${codUs}`);
+            const data = await res.json();
+
+            if (data.success && data.data) {
+                setPendingCollections(data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching pending collections:", error);
+        }
+    };
+
+    // Payment Confirmation Logic
+    const [selectedPayment, setSelectedPayment] = useState<PendingCollection | null>(null);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+    const handleReceivePayment = (collection: PendingCollection) => {
+        setSelectedPayment(collection);
+        setShowConfirmModal(true);
+    };
+
+    const confirmPayment = async () => {
+        if (!selectedPayment || !userId) return;
+
+        try {
+            const res = await fetch(`${TRANSACTION_API_BASE}/confirm_payment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cod_us: userId,
+                    cod_escrow: selectedPayment.cod_escrow
+                }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                setShowConfirmModal(false);
+                setShowSuccessModal(true);
+
+                // Update local state
+                setPendingCollections(prev => prev.map(item =>
+                    item.cod_escrow === selectedPayment.cod_escrow
+                        ? { ...item, estado_escrow: 'liberado' }
+                        : item
+                ));
+
+                // Refresh wallet data to show new balance
+                fetchWalletData(userId);
+            } else {
+                alert('Error al confirmar el pago: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error confirming payment:', error);
+            alert('Error de conexión al confirmar el pago.');
         }
     };
 
@@ -390,6 +468,86 @@ export default function WalletView() {
                     </div>
                 )}
 
+                {activeTab === "info" && (
+                    <div className={styles.pendingCollectionsSection}>
+                        <h2 className={styles.sectionTitle}>Cobros Pendientes</h2>
+                        {pendingCollections.length === 0 ? (
+                            <div className={styles.emptyState}>No tienes cobros pendientes</div>
+                        ) : (
+                            <div className={styles.transactionsList}>
+                                {pendingCollections.map((collection) => (
+                                    <div key={collection.cod_escrow} className={styles.transactionCard}>
+                                        <div className={styles.cardHeader}>
+                                            <h3 className={styles.transactionTitle}>
+                                                Cobro Pendiente: {collection.desc_trans || "Transacción"}
+                                            </h3>
+                                        </div>
+
+                                        <div className={styles.cardGrid}>
+                                            <div className={styles.cardItem}>
+                                                <i className={`bi bi-hash ${styles.itemIcon}`}></i>
+                                                <div className={styles.itemContent}>
+                                                    <span className={styles.itemLabel}>Código Escrow:</span>
+                                                    <span className={styles.itemValue}>{collection.cod_escrow}</span>
+                                                </div>
+                                            </div>
+
+                                            <div className={styles.cardItem}>
+                                                <i className={`bi bi-calendar-check ${styles.itemIcon}`}></i>
+                                                <div className={styles.itemContent}>
+                                                    <span className={styles.itemLabel}>Fecha de Pago:</span>
+                                                    <span className={styles.itemValue}>
+                                                        {new Date(collection.fecha_trans).toLocaleDateString('es-ES')}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className={styles.cardItem}>
+                                                <i className={`bi bi-person-circle ${styles.itemIcon}`}></i>
+                                                <div className={styles.itemContent}>
+                                                    <span className={styles.itemLabel}>Pagador:</span>
+                                                    <span className={styles.itemValue}>
+                                                        {collection.nombre_origen} (@{collection.handle_origen})
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className={styles.cardItem}>
+                                                <i className={`bi bi-currency-dollar ${styles.itemIcon}`}></i>
+                                                <div className={styles.itemContent}>
+                                                    <span className={styles.itemLabel}>Monto a Recibir:</span>
+                                                    <span className={styles.itemValue}>{collection.monto_pagado} {collection.moneda}</span>
+                                                </div>
+                                            </div>
+
+                                            <div className={styles.cardItem}>
+                                                <i className={`bi bi-shield-lock ${styles.itemIcon}`}></i>
+                                                <div className={styles.itemContent}>
+                                                    <span className={styles.itemLabel}>Estado:</span>
+                                                    <span className={`${styles.itemValue} ${collection.estado_escrow === 'liberado' ? styles.escrowReleased : styles.escrowHeld}`}>
+                                                        {collection.estado_escrow}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {collection.estado_escrow === 'retenido' && (
+                                            <div className={styles.cardActions}>
+                                                <button
+                                                    className={styles.receivePaymentButton}
+                                                    onClick={() => handleReceivePayment(collection)}
+                                                >
+                                                    Recibir Pago
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {activeTab === "transactions" && (
                     <div className={styles.transactionsList}>
                         {transactions.length === 0 ? (
@@ -593,6 +751,62 @@ export default function WalletView() {
                     </div>
                 )}
             </div>
+
+            {/* Confirm Modal */}
+            {showConfirmModal && selectedPayment && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h3 className={styles.modalTitle}>Confirmar Recepción de Pago</h3>
+                        <p className={styles.modalText}>
+                            Estás a punto de recibir el pago por: <strong>{selectedPayment.desc_trans || "Transacción"}</strong>
+                        </p>
+                        <div className={styles.modalDetails}>
+                            <p><strong>Monto:</strong> {selectedPayment.monto_pagado} {selectedPayment.moneda}</p>
+                            <p><strong>Pagador:</strong> {selectedPayment.nombre_origen}</p>
+                        </div>
+                        <p className={styles.modalWarning}>
+                            ¿Está seguro de recibir el monto especificado como pago?
+                        </p>
+                        <div className={styles.modalActions}>
+                            <button
+                                className={styles.cancelButton}
+                                onClick={() => setShowConfirmModal(false)}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                className={styles.confirmButton}
+                                onClick={confirmPayment}
+                            >
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Success Modal */}
+            {showSuccessModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <div className={styles.successIcon}>
+                            <i className="bi bi-check-circle-fill"></i>
+                        </div>
+                        <h3 className={styles.modalTitle}>¡Pago Recibido!</h3>
+                        <p className={styles.modalText}>
+                            El pago ha sido liberado y acreditado a tu billetera exitosamente.
+                        </p>
+                        <div className={styles.modalActions}>
+                            <button
+                                className={styles.confirmButton}
+                                onClick={() => setShowSuccessModal(false)}
+                            >
+                                Aceptar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
