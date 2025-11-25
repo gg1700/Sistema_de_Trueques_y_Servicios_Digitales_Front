@@ -87,20 +87,20 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
             // Check if response is ok before trying to parse JSON
             if (!res.ok) {
                 if (res.status === 404) {
-                    throw new Error("El endpoint de servicios no estÃ¡ disponible. Verifica que el backend estÃ© corriendo.");
+                    throw new Error("El endpoint de servicios no está disponible. Verifica que el backend esté corriendo.");
                 }
-                
+
                 // Handle duplicate service (409)
                 if (res.status === 409 && onDuplicate) {
                     onDuplicate();
                     setLoading(false);
                     return;
                 }
-                
+
                 const errorText = await res.text();
                 console.error("Service creation error response:", errorText);
-                
-                let errorMessage = Error del servidor (): ;
+
+                let errorMessage = "Error del servidor";
                 try {
                     const errorJson = JSON.parse(errorText);
                     if (errorJson.message) {
@@ -109,7 +109,7 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
                 } catch (e) {
                     // Not JSON, keep default message
                 }
-                
+
                 throw new Error(errorMessage);
             }
 
@@ -162,12 +162,12 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
                         onChange={handleChange}
                         required
                         className={styles.input}
-                        placeholder="Ej. Clase de MatemÃ¡ticas"
+                        placeholder="Ej. Clase de Matemáticas"
                     />
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label>CategorÃ­a</label>
+                    <label>Categoría</label>
                     <select
                         name="cod_cat"
                         value={formData.cod_cat}
@@ -175,7 +175,7 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
                         required
                         className={styles.select}
                     >
-                        <option value="">Seleccione una categorÃ­a</option>
+                        <option value="">Seleccione una categoría</option>
                         {categories.map((cat) => (
                             <option key={cat.cod_cat} value={cat.cod_cat}>
                                 {cat.nom_cat}
@@ -185,7 +185,7 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label>DescripciÃ³n</label>
+                    <label>Descripción</label>
                     <textarea
                         name="desc_serv"
                         value={formData.desc_serv}
@@ -212,7 +212,7 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label>DuraciÃ³n (minutos)</label>
+                        <label>Duración (minutos)</label>
                         <input
                             type="number"
                             name="duracion_serv"
