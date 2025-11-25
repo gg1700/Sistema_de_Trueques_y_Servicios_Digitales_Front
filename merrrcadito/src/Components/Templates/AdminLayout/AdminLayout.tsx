@@ -1,6 +1,12 @@
+'use client';
+
+import React, { useState } from 'react';
 import { getNavItems } from '@/Utils/navigation';
-import {SideBar} from '@/Components/Organisms';
-import {NavBar, HeaderPage} from '@/Components/Molecules';
+import { SideBar } from '@/Components/Organisms';
+import { NavBar } from '@/Components/Molecules';
+import { ButtonIcon } from '@/Components/Atoms';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from './AdminLayout.module.css';
 
 interface LayoutProps {
@@ -14,17 +20,46 @@ export default function AdminLayout({
   pageTitle,
   pageSubtitle
 }: LayoutProps) {
-  
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const adminNavItems = getNavItems('admin');
+  const router = useRouter();
 
   return (
     <div className={styles.adminLayout}>
-      <SideBar title="MERRRCADITO">
+      {/* Top Header Fixed */}
+      <header className={styles.topHeader}>
+        <button
+          className={styles.hamburgerButton}
+          onClick={() => setSidebarOpen(true)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <h1 className={styles.logoText}>MERRRCADITO</h1>
+
+        <div className={styles.headerActions}>
+          <ButtonIcon type="profile" icon="bi-wallet2" name="Billetera" onClick={() => router.push('/billetera')} />
+          <ButtonIcon type="profile" icon="bi-person-circle" name="Perfil" onClick={() => router.push('/mi-perfil')} />
+        </div>
+      </header>
+
+      {/* Sub Header */}
+      <div className={styles.subHeader}>
+        <h2 className={styles.pageTitle}>{pageTitle}</h2>
+        <p className={styles.pageSubtitle}>{pageSubtitle}</p>
+      </div>
+
+      {/* Sidebar Overlay */}
+      <SideBar
+        title="MERRRCADITO"
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      >
         <NavBar navBar={adminNavItems} />
       </SideBar>
 
       <main className={styles.mainContent}>
-        <HeaderPage pageTitle={pageTitle} pageSubtitle={pageSubtitle} />
         <div className={styles.childrenContainer}>
           {children}
         </div>

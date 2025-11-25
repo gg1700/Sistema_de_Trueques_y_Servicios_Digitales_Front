@@ -8,6 +8,7 @@ import styles from "./UserProfile.module.css";
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
 import { getNavItems } from "../../../Utils/navigation";
+import { ReportService } from "@/services";
 
 const USERS_API_BASE =
   process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
@@ -76,6 +77,10 @@ interface UserApi {
   ap_mat_us?: string | null;
   correo_us: string;
   telefono_us: string;
+  ci_us?: string | null;
+  fecha_nac_us?: string | null;
+  genero_us?: string | null;
+  fecha_registro?: string | null;
 }
 
 interface Category {
@@ -108,6 +113,7 @@ export default function UserProfile({
   const [activeTab, setActiveTab] = useState<Tab>("offers");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [publishType, setPublishType] = useState<PublishType>("product");
+  const [showMoreInfo, setShowMoreInfo] = useState(false); // Estado para expandir/colapsar
 
   const [productForm, setProductForm] = useState<ProductFormState>({
     name: "",
@@ -145,6 +151,10 @@ export default function UserProfile({
   const [filteredSubcategories, setFilteredSubcategories] = useState<
     Subcategory[]
   >([]);
+
+  // Estado para datos de impacto ambiental
+  const [environmentalData, setEnvironmentalData] = useState<any>(null);
+  const [loadingEnvironmental, setLoadingEnvironmental] = useState(false);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -253,6 +263,21 @@ export default function UserProfile({
     }
   };
 
+  const fetchEnvironmentalData = async (codUs: number) => {
+    try {
+      setLoadingEnvironmental(true);
+      const response = await ReportService.get_user_environmental_impact(codUs);
+      if (response.success && response.data) {
+        setEnvironmentalData(response.data);
+      }
+    } catch (err) {
+      console.error("Error al cargar datos de impacto ambiental:", err);
+      setEnvironmentalData(null);
+    } finally {
+      setLoadingEnvironmental(false);
+    }
+  };
+
   useEffect(() => {
     if (!resolvedHandle) {
       setError("No se encontró información de sesión del usuario.");
@@ -285,6 +310,12 @@ export default function UserProfile({
 
         if (userData.cod_us) {
           await fetchOffersForUser(userData.cod_us);
+          // Cargar datos de impacto ambiental sin bloquear el perfil si falla
+          try {
+            await fetchEnvironmentalData(userData.cod_us);
+          } catch (envErr) {
+            console.error("Error al cargar impacto ambiental (no crítico):", envErr);
+          }
         }
       } catch (err: any) {
         console.error(err);
@@ -556,21 +587,220 @@ export default function UserProfile({
 
         <div className={styles.userInfo}>
           <h1 className={styles.userName}>
-            {user?.handle_name ?? (loading ? "Cargando..." : "Sin usuario")}
+            {fullName || (loading ? "Cargando..." : "Sin usuario")}
           </h1>
 
-          <div className={styles.userInfoGrid}>
-            <p className={styles.userInfoText}>{roleLabel}</p>
-            <p className={styles.userInfoText}>{fullName || "—"}</p>
-            <p className={styles.userInfoText}>{user?.telefono_us ?? "—"}</p>
-            <p className={styles.userInfoText}>{user?.correo_us ?? "—"}</p>
+          {/* Información de Contacto */}
+          <div className={styles.infoSection}>
+            <h3 className={styles.infoSectionTitle}>Información de Contacto:</h3>
+
+            <div className={styles.infoGrid}>
+              <div className={styles.infoItem}>
+                <i className="bi bi-person-circle" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Nombre de Usuario:</span>
+                  <span className={styles.infoValue}>@{user?.handle_name ?? "—"}</span>
+                </div>
+              </div>
+
+              <div className={styles.infoItem}>
+                <i className="bi bi-gear" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Rol de Perfil:</span>
+                  <span className={styles.infoValue}>{roleLabel}</span>
+                </div>
+              </div>
+
+              <div className={styles.infoItem}>
+                <i className="bi bi-telephone" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Teléfono/Celular:</span>
+                  <span className={styles.infoValue}>{user?.telefono_us ?? "—"}</span>
+                </div>
+              </div>
+
+              <div className={styles.infoItem}>
+                <i className="bi bi-envelope" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Correo Electrónico:</span>
+                  <span className={styles.infoValue}>{user?.correo_us ?? "—"}</span>
+                </div>
+              </div>
+
+              <div className={styles.infoItem}>
+                <i className="bi bi-calendar-event" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                <div className={styles.infoContent}>
+                  <span className={styles.infoLabel}>Fecha de Registro:</span>
+                  <span className={styles.infoValue}>
+                    {user?.fecha_registro
+                      ? new Date(user.fecha_registro).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      })
+                      : "—"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Información Adicional (Expandible) */}
+            {showMoreInfo && (
+              <div className={styles.additionalInfo}>
+                <h3 className={styles.infoSectionTitle}>Información Personal:</h3>
+
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoItem}>
+                    <i className="bi bi-card-text" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.infoContent}>
+                      <span className={styles.infoLabel}>Cédula de Identidad:</span>
+                      <span className={styles.infoValue}>{user?.ci_us ?? "—"}</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <i className="bi bi-calendar-check" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.infoContent}>
+                      <span className={styles.infoLabel}>Fecha de Nacimiento:</span>
+                      <span className={styles.infoValue}>
+                        {user?.fecha_nac_us
+                          ? new Date(user.fecha_nac_us).toLocaleDateString('es-ES', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })
+                          : "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <i className="bi bi-gender-ambiguous" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.infoContent}>
+                      <span className={styles.infoLabel}>Género/Sexo:</span>
+                      <span className={styles.infoValue}>
+                        {user?.genero_us
+                          ? (user.genero_us === 'M' ? 'Masculino' : user.genero_us === 'F' ? 'Femenino' : user.genero_us)
+                          : "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <i className="bi bi-check-circle" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.infoContent}>
+                      <span className={styles.infoLabel}>Estado de la Cuenta:</span>
+                      <span className={styles.infoValue} style={{ color: '#1fb7a1', fontWeight: '600' }}>activo</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Botón Ver Más/Menos */}
+            <button
+              className={styles.toggleButton}
+              onClick={() => setShowMoreInfo(!showMoreInfo)}
+            >
+              {showMoreInfo ? (
+                <>
+                  Ver Menos... <i className="bi bi-chevron-up"></i>
+                </>
+              ) : (
+                <>
+                  Ver Más... <i className="bi bi-chevron-down"></i>
+                </>
+              )}
+            </button>
+
+            {/* Mi Impacto Ambiental */}
+            {!loadingEnvironmental && environmentalData && (
+              <div className={styles.environmentalImpactSection}>
+                <h3 className={styles.infoSectionTitle}>Mi Impacto Ambiental:</h3>
+
+                <div className={styles.impactGrid}>
+                  {/* Impacto Ambiental Total */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-person" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Impacto Ambiental Total:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.huella_co2_total?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Tendencia de Aporte al Medio Ambiente */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-recycle" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Tendencia de Aporte al Medio Ambiente:</span>
+                      <span
+                        className={styles.impactValue}
+                        style={{
+                          color: environmentalData.tendencia === 'bueno' ? '#28a745' :
+                            environmentalData.tendencia === 'medio' ? '#ffc107' : '#dc3545',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        {environmentalData.tendencia ?? '—'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Impacto Promedio por Intercambio */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-arrow-left-right" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Impacto Promedio por Intercambio:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.impacto_promedio_intercambios?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Impacto Promedio por Publicación de Productos Comprada */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-bag-check" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Impacto Promedio por Publicación de Productos Comprada:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.impacto_promedio_productos?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Impacto Promedio por Publicación de Servicios Comprada */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-tools" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Impacto Promedio por Publicación de Servicios Comprada:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.impacto_promedio_servicios?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Aporte de Impacto Ambiental por Participación en Eventos */}
+                  <div className={styles.impactItem}>
+                    <i className="bi bi-calendar-event" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                    <div className={styles.impactContent}>
+                      <span className={styles.impactLabel}>Aporte de Impacto Ambiental por Participación en Eventos:</span>
+                      <span className={styles.impactValue}>
+                        {environmentalData.impacto_promedio_eventos?.toFixed(2) ?? '—'} puntos
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         <nav className={styles.tabs}>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "offers" ? styles.tabActive : ""
+            className={`${styles.tab} ${activeTab === "offers" ? "tabActive" : ""
               }`}
             onClick={() => setActiveTab("offers")}
           >
@@ -578,7 +808,7 @@ export default function UserProfile({
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "publish" ? styles.tabActive : ""
+            className={`${styles.tab} ${activeTab === "publish" ? "tabActive" : ""
               }`}
             onClick={() => setActiveTab("publish")}
           >
@@ -586,7 +816,7 @@ export default function UserProfile({
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "likes" ? styles.tabActive : ""
+            className={`${styles.tab} ${activeTab === "likes" ? "tabActive" : ""
               }`}
             onClick={() => setActiveTab("likes")}
           >
@@ -594,7 +824,7 @@ export default function UserProfile({
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "events" ? styles.tabActive : ""
+            className={`${styles.tab} ${activeTab === "events" ? "tabActive" : ""
               }`}
             onClick={() => setActiveTab("events")}
           >
@@ -682,7 +912,7 @@ export default function UserProfile({
                   <Link
                     key={item.route}
                     href={item.route}
-                    className={`${styles.sideMenuLink} ${isActive ? styles.sideMenuLinkActive : ""
+                    className={`${styles.sideMenuLink} ${isActive ? "sideMenuLinkActive" : ""
                       }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -850,7 +1080,7 @@ function PublishSection({
       <div className={styles.publishTabs}>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""
+          className={`${styles.publishTab} ${publishType === "product" ? "publishTabActive" : ""
             }`}
           onClick={() => setPublishType("product")}
         >
@@ -858,7 +1088,7 @@ function PublishSection({
         </button>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""
+          className={`${styles.publishTab} ${publishType === "service" ? "publishTabActive" : ""
             }`}
           onClick={() => setPublishType("service")}
         >

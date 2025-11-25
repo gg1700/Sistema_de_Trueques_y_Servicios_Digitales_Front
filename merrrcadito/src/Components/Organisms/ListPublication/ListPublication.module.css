@@ -1,7 +1,7 @@
 .listContainer {
   width: 100%;
-  max-width: 100%;  
-  overflow: hidden;  
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .sectionContainer {
@@ -26,9 +26,9 @@
 
 .scrollWrapper {
   position: relative;
-  width: 100%;  
+  width: 100%;
   max-width: 100%;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 
@@ -39,7 +39,7 @@
   scroll-behavior: smooth;
   padding: 0 10px;
   scrollbar-width: none;
-  -ms-overflow-style: none; 
+  -ms-overflow-style: none;
 }
 
 
@@ -59,7 +59,7 @@
   color: white;
   font-size: 24px;
   cursor: pointer;
-  z-index: 10;
+  z-index: 20;
   transition: background-color 0.3s ease;
 }
 

@@ -14,7 +14,7 @@ export default function UserLayout({
   pageTitle,
   pageSubtitle
 }: LayoutProps) {
-  
+
   const userNavItems = getNavItems('user');
 
   return (
@@ -22,8 +22,8 @@ export default function UserLayout({
       <SideBar title="MERRRCADITO">
         <NavBar navBar={userNavItems} />
       </SideBar>
-      
-      <div className={styles.mainArea}>
+
+      <div className={styles.mainContent}>
         <HeaderPage pageTitle={pageTitle} pageSubtitle={pageSubtitle} />
         <div className={styles.content}>
           {children}

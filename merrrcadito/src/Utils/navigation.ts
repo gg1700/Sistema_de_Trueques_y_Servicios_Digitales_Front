@@ -3,8 +3,13 @@ export const navItems = {
     { name: 'Dashboard', route: '/Home' },
     { name: 'Ranking CO2', route: '/RankingCO2' },
     { name: 'Mi Perfil', route: '/perfil' },
+<<<<<<< HEAD
     { name: 'Rankig Emprendedores', route: '/RankingSells'},
     { name: 'Tienda', route: '/tokens'}
+=======
+    { name: 'Rankig Emprendedores', route: '/RankingSells' },
+    { name: 'Tienda', route: '/tokens' }
+>>>>>>> origin/test/reportes
   ],
   admin: [
     { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias' },

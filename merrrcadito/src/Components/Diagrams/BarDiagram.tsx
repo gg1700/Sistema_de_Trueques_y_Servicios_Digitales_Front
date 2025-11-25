@@ -48,6 +48,7 @@ const defaultOptions = {
 export default function BarDiagram({ data, title, height = 400 }: BarDiagramProps) {
   const options = {
     ...defaultOptions,
+    maintainAspectRatio: false, // Importante para que respete la altura del contenedor
     plugins: {
       ...defaultOptions.plugins,
       title: {
@@ -57,5 +58,9 @@ export default function BarDiagram({ data, title, height = 400 }: BarDiagramProp
     },
   };
 
-  return <Bar options={options} data={data} height={height} />;
+  return (
+    <div style={{ height: `${height}px`, width: '100%', position: 'relative' }}>
+      <Bar options={options} data={data} />
+    </div>
+  );
 }

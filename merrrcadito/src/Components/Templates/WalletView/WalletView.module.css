@@ -1,0 +1,506 @@
+/* Estilos base copiados y adaptados de UserProfile.module.css para consistencia */
+
+/* Top Header Bar */
+.topHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: linear-gradient(135deg, #16a085 0%, #138f75 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+    box-shadow: 0 2px 12px rgba(22, 160, 133, 0.3);
+    z-index: 999;
+}
+
+/* Hamburger Button */
+.hamburgerButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px;
+    transition: transform 0.2s ease;
+}
+
+.hamburgerButton:hover {
+    transform: scale(1.1);
+}
+
+.hamburgerButton:active {
+    transform: scale(0.95);
+}
+
+.hamburgerButton span {
+    width: 28px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburgerButton:hover span {
+    background: #40E0D0;
+}
+
+/* Logo Text */
+.logoText {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.headerActions {
+    margin-left: auto;
+    display: flex;
+    gap: 15px;
+}
+
+.container {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 110px 40px 48px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f8fffe 0%, #f0f9f7 100%);
+    min-height: 100vh;
+}
+
+.header {
+    margin-bottom: 32px;
+    background: white;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(31, 183, 161, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Centrar contenido horizontalmente */
+    text-align: center;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 20px;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #1fb7a1 0%, #16a085 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Tabs centrados */
+.tabs {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    /* Centrar tabs */
+    gap: 32px;
+    border-bottom: 2px solid #e0f2ef;
+    padding-bottom: 4px;
+    width: 100%;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 15px;
+    color: #7c8a99;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.tab:hover {
+    color: #1fb7a1;
+}
+
+.activeTab {
+    font-weight: 600;
+    color: #1fb7a1;
+}
+
+.activeTab::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1fb7a1 0%, #16a085 100%);
+    box-shadow: 0 2px 8px rgba(31, 183, 161, 0.4);
+}
+
+/* Wallet Info Section - Estilo Simplificado pero con Hover Sutil */
+.walletInfoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 28px;
+}
+
+.infoCard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(31, 183, 161, 0.08);
+    border: 1px solid rgba(31, 183, 161, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* Transición suave restaurada */
+}
+
+.infoCard:hover {
+    transform: translateY(-3px);
+    /* Movimiento sutil */
+    box-shadow: 0 8px 20px rgba(31, 183, 161, 0.12);
+    /* Sombra suave */
+    border-color: rgba(31, 183, 161, 0.3);
+}
+
+.iconWrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f0f9f7 0%, #e8f5f3 100%);
+    border: 2px solid rgba(31, 183, 161, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1fb7a1;
+    font-size: 24px;
+    /* Sin efectos hover en iconos */
+}
+
+/* Eliminado hover de iconWrapper */
+
+/* Eliminados selectores :hover que cambiaban colores y escala */
+
+.infoContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.label {
+    font-size: 13px;
+    color: #6b7785;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.value {
+    font-size: 18px;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+/* Transaction History Section - Estilo OfferCard del perfil */
+.transactionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.transactionCard {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(31, 183, 161, 0.08);
+    border: 1px solid rgba(31, 183, 161, 0.1);
+    transition: all 0.3s ease;
+}
+
+.transactionCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(31, 183, 161, 0.15);
+    border-color: rgba(31, 183, 161, 0.3);
+}
+
+.cardHeader {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e0f2ef;
+}
+
+.transactionTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.cardItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.itemIcon {
+    font-size: 20px;
+    color: #1fb7a1;
+    /* Color teal consistente */
+    min-width: 24px;
+}
+
+.itemContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.itemLabel {
+    font-size: 12px;
+    color: #6b7785;
+    margin-bottom: 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.itemValue {
+    font-size: 15px;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.statusSuccess {
+    color: #1fb7a1;
+    font-weight: 700;
+}
+
+.statusPending {
+    color: #f59e0b;
+    font-weight: 700;
+}
+
+.statusFailed {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.escrowHeld {
+    color: #f59e0b;
+    font-weight: 700;
+}
+
+.escrowReleased {
+    color: #1fb7a1;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 24px 20px;
+    }
+
+    .walletInfoGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .cardGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Botón hamburguesa */
+.menuButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    background-color: #1fb7a1;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.menuButton span {
+    width: 20px;
+    height: 2.5px;
+    border-radius: 999px;
+    background-color: white;
+}
+
+/* Sidebar Menu */
+.menuOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.sideMenu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 300px;
+    height: 100vh;
+    background: white;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.sideMenuHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 2px solid #e0f2ef;
+    position: relative;
+}
+
+.sideMenuHeader::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 24px;
+    right: 24px;
+    height: 2px;
+    background: linear-gradient(135deg, #1fb7a1 0%, #16a085 100%);
+    z-index: 1;
+}
+
+.sideMenuTitle {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1fb7a1;
+}
+
+.sideMenuClose {
+    background: none;
+    border: none;
+    font-size: 32px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #6b7785;
+    transition: all 0.2s ease;
+    border-radius: 50%;
+}
+
+.sideMenuClose:hover {
+    background-color: #f0f9f7;
+    color: #1fb7a1;
+}
+
+.sideMenuClose:active {
+    transform: scale(0.95);
+}
+
+.sideMenuNav {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sideMenuLink {
+    display: block;
+    padding: 14px 20px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.sideMenuLink:hover {
+    background-color: #f0f9f7;
+    color: #1fb7a1;
+    transform: translateX(4px);
+}
+
+.sideMenuLink:active {
+    transform: translateX(2px);
+}
+
+.sideMenuLinkActive {
+    background-color: #e0f2ef;
+    color: #1fb7a1;
+    font-weight: 600;
+}
+
+/* Sidebar Navigation Links */
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 16px;
+    gap: 8px;
+}
+
+.sidebarLink {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    gap: 12px;
+}
+
+.sidebarLink:hover {
+    background: rgba(64, 224, 208, 0.2);
+    transform: translateX(4px);
+}
+
+.sidebarLink:active {
+    transform: translateX(2px);
+}

@@ -8,17 +8,79 @@
     top: 0;
     overflow-y: auto;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+}
+
+/* Overlay mode for sidebar */
+.sidebarOverlay {
+    animation: slideInFromLeft 0.3s ease-out;
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Overlay background */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .sidebarHeader {
     padding: 25px 20px;
     border-bottom: 1px solid #4a6278;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.sidebarHeader h2 {
+.sidebarTitle {
     margin: 0;
     font-size: 22px;
     font-weight: 700;
     color: #40E0D0;
+}
+
+/* Close button for overlay mode */
+.closeButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg);
+}
+
+.closeButton:active {
+    transform: rotate(90deg) scale(0.9);
 }
