@@ -685,3 +685,23 @@
     opacity: 1;
   }
 }
+/* Subsection titles for Products and Services */
+.subsectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #18c0a6;
+  margin: 1.5rem 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.subsectionTitle:first-child {
+  margin-top: 0;
+}
+
+.offersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
