@@ -1,0 +1,301 @@
+.exploreContainer {
+    width: 100%;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #1fb7a1 0%, #16a085 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.publicationsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.publicationCard {
+    background: white;
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(31, 183, 161, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(31, 183, 161, 0.1);
+}
+
+.publicationCard:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(31, 183, 161, 0.2);
+    border-color: rgba(31, 183, 161, 0.5);
+}
+
+.imageContainer {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1fb7a1 0%, #16a085 100%);
+}
+
+.publicationImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.publicationCard:hover .publicationImage {
+    transform: scale(1.1);
+}
+
+.noImage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+}
+
+.typeBadge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(31, 183, 161, 0.9);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.publicationContent {
+    padding: 1.2rem;
+    position: relative;
+}
+
+.publicationTitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.publicationDescription {
+    font-size: 0.9rem;
+    color: #6b7785;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+}
+
+.publicationFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.authorInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.authorAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(31, 183, 161, 0.5);
+}
+
+.authorAvatarPlaceholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1fb7a1 0%, #16a085 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 1rem;
+}
+
+.authorDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.authorName {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.authorHandle {
+    font-size: 0.75rem;
+    color: #6b7785;
+    margin: 0;
+}
+
+.priceContainer {
+    display: flex;
+    align-items: center;
+}
+
+.price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1fb7a1 0%, #16a085 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.ratingContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.rating {
+    font-size: 0.9rem;
+    color: #ffd700;
+    font-weight: 600;
+}
+
+.likeButton {
+    position: absolute;
+    top: -50px;
+    right: 12px;
+    background: rgba(31, 183, 161, 0.9);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+.likeButton i {
+    font-size: 1.3rem;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.likeButton:hover {
+    transform: scale(1.1);
+    background: rgba(31, 183, 161, 1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.likeButton.liked {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    border-color: rgba(255, 107, 107, 0.6);
+    animation: heartBeat 0.3s ease;
+}
+
+.likeButton.liked i {
+    color: #fff;
+}
+
+.likeButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@keyframes heartBeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.2);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    75% {
+        transform: scale(1.15);
+    }
+}
+
+.loading,
+.error,
+.empty {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.1rem;
+    color: #6b7785;
+}
+
+.error {
+    color: #ff6b6b;
+}
+
+.empty {
+    background: white;
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 2px dashed rgba(31, 183, 161, 0.3);
+    color: #6b7785;
+}
+
+@media (max-width: 768px) {
+    .publicationsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .exploreContainer {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+}

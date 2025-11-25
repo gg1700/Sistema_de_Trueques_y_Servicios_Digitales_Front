@@ -7,6 +7,11 @@ import styles from "./UserProfile.module.css";
 
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
+import LikesSection from "./LikesSection";
+import EventsSection from "./EventsSection";
+import ExploreSection from "./ExploreSection";
+import ExchangeRegistrationForm from "./ExchangeRegistrationForm";
+import ServiceRegistrationForm from "./ServiceRegistrationForm";
 import { getNavItems } from "../../../Utils/navigation";
 
 const USERS_API_BASE =
@@ -33,7 +38,7 @@ const PUBLICATIONS_API_BASE =
   process.env.NEXT_PUBLIC_PUBLICATIONS_API_BASE_URL ??
   "http://localhost:5000/api/publications";
 
-type Tab = "offers" | "publish" | "likes" | "events";
+type Tab = "offers" | "publish" | "likes" | "events" | "explore";
 type PublishType = "product" | "service";
 type NavRole = "admin" | "user";
 type Role = NavRole | "entrepreneur";
@@ -111,6 +116,8 @@ export default function UserProfile({
 }: UserProfileProps) {
   const [activeTab, setActiveTab] = useState<Tab>("offers");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("Â¡PublicaciÃ³n Exitosa!");
+  const [modalMessage, setModalMessage] = useState("Tu producto ha sido publicado correctamente y ya estÃ¡ visible en el mercado.");
   const [publishType, setPublishType] = useState<PublishType>("product");
   const [showMoreInfo, setShowMoreInfo] = useState(false); // Estado para expandir/colapsar
 
@@ -138,8 +145,10 @@ export default function UserProfile({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<UserApi | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [services, setServices] = useState<Offer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewerId, setViewerId] = useState<number | null>(null);
   const [resolvedHandle, setResolvedHandle] = useState<string | null>(null);
   const [resolvedRoleFromStorage, setResolvedRoleFromStorage] =
     useState<Role | null>(null);
@@ -255,6 +264,29 @@ export default function UserProfile({
     } catch (err) {
       console.error("Error al cargar publicaciones de productos:", err);
       setOffers([]);
+    }
+  };
+
+  const fetchServicesForUser = async (codUs: number) => {
+    try {
+      const resServices = await fetch(`${SERVICES_API_BASE}/user/${codUs}`);
+      const jsonServices = await resServices.json().catch(() => ({} as any));
+
+      if (resServices.ok && jsonServices.data && Array.isArray(jsonServices.data)) {
+        const mappedServices: Offer[] = jsonServices.data.map((s: any) => ({
+          id: s.cod_serv ?? s.id ?? 0,
+          title: s.nom_serv ?? "Sin tÃ­tulo",
+          description: s.descr_serv ?? "",
+          image: s.foto_serv ? `data:image/jpeg;base64,${Buffer.from(s.foto_serv).toString('base64')}` : undefined,
+          price: s.precio_serv_token ?? 0,
+        }));
+        setServices(mappedServices);
+      } else {
+        setServices([]);
+      }
+    } catch (err) {
+      console.error("Error al cargar servicios:", err);
+      setServices([]);
     }
   };
 
@@ -722,6 +754,14 @@ export default function UserProfile({
           >
             Eventos
           </button>
+          <button
+            type="button"
+            className={`${styles.tab} ${activeTab === "explore" ? "tabActive" : ""
+              }`}
+            onClick={() => setActiveTab("explore")}
+          >
+            Explorar
+          </button>
         </nav>
       </header>
 
@@ -739,7 +779,7 @@ export default function UserProfile({
         )}
 
         {!loading && !error && activeTab === "offers" && (
-          <OffersSection offers={offers} />
+          <OffersSection offers={offers} services={services} />
         )}
 
         {!loading && !error && activeTab === "publish" && (
@@ -762,26 +802,32 @@ export default function UserProfile({
             }
             categories={categories}
             filteredSubcategories={filteredSubcategories}
+            userId={user?.cod_us ?? 0}
+            setModalTitle={setModalTitle}
+            setModalMessage={setModalMessage}
+            setShowSuccessModal={setShowSuccessModal}
           />
         )}
 
         {!loading && !error && activeTab === "likes" && (
-          <div className={styles.placeholderTab}>
-            <p>No hay me gustas</p>
-          </div>
+          <LikesSection userId={user?.cod_us ?? 0} />
+
+
         )}
 
         {!loading && !error && activeTab === "events" && (
-          <div className={styles.placeholderTab}>
-            <p>No hay eventos</p>
-          </div>
+          <EventsSection userId={viewerId ?? 0} />
+        )}
+
+        {!loading && !error && activeTab === "explore" && (
+          <ExploreSection currentUserId={viewerId ?? 0} />
         )}
       </div>
 
-      {isMenuOpen && (
-        <>
-          <div
-            className={styles.menuOverlay}
+        {isMenuOpen && (
+          <>
+            <div
+              className={styles.menuOverlay}
             onClick={() => setIsMenuOpen(false)}
           />
           <aside className={styles.sideMenu}>
@@ -843,9 +889,10 @@ export default function UserProfile({
 
 interface OffersSectionProps {
   offers: Offer[];
+  services: Offer[];
 }
 
-function OffersSection({ offers }: OffersSectionProps) {
+function OffersSection({ offers, services }: OffersSectionProps) {
   if (!offers.length) {
     return (
       <div className={styles.placeholderTab}>
@@ -947,6 +994,10 @@ interface PublishSectionProps {
   handleCancelService: () => void;
   categories: Category[];
   filteredSubcategories: Subcategory[];
+  userId: number;
+  setModalTitle: (title: string) => void;
+  setModalMessage: (msg: string) => void;
+  setShowSuccessModal: (show: boolean) => void;
 }
 
 function PublishSection({
