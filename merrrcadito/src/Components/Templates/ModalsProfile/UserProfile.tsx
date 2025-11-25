@@ -90,6 +90,7 @@ interface EventFormState {
   endDate: string;
   eventType: string;
   cost: string;
+  rewardId: string;
   image: File | null;
 }
 
@@ -208,10 +209,12 @@ export default function UserProfile({
     endDate: "",
     eventType: "",
     cost: "",
+    rewardId: "",
     image: null,
   });
 
   const [userProducts, setUserProducts] = useState<Product[]>([]);
+  const [availableRewards, setAvailableRewards] = useState<Array<{ cod_rec: number, monto_rec: number }>>([]);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -271,11 +274,23 @@ export default function UserProfile({
           setSubcategories([]);
         }
       } catch (err) {
-        console.error("Error cargando categorías/subcategorías:", err);
+        console.error("Error cargando subcategorías:", err);
+      }
+    };
+
+    const fetchRewards = async () => {
+      try {
+        const response = await EventService.get_all_rewards();
+        if (response.success && response.data) {
+          setAvailableRewards(response.data);
+        }
+      } catch (error) {
+        console.error("Error al cargar recompensas:", error);
       }
     };
 
     fetchCategoriesAndSubcats();
+    fetchRewards();
   }, []);
 
   useEffect(() => {
@@ -303,6 +318,8 @@ export default function UserProfile({
 
   const fetchOffersForUser = async (codUs: number) => {
     try {
+      const allOffers: Offer[] = [];
+
       const resPosts = await fetch(
         `${POSTS_API_BASE}/all_active_product_posts`
       );
@@ -311,17 +328,35 @@ export default function UserProfile({
       if (resPosts.ok && jsonPosts.data && Array.isArray(jsonPosts.data)) {
         const mappedOffers: Offer[] = jsonPosts.data
           .filter((p: any) => p.cod_us === codUs)
-          .map((p: any) => ({
-            id: p.cod_pub ?? p.id ?? 0,
-            title: p.nom_prod ?? p.titulo_pub ?? p.title ?? "Sin título",
-            description: p.descr_pub ?? p.desc_prod ?? p.contenido ?? "",
-            image: `${PUBLICATIONS_API_BASE}/${p.cod_pub ?? p.id ?? 0}/image`,
-            price: p.precio_pub ?? p.precio_prod ?? 0,
-          }));
+          .map((p: any) => {
+            let descriptionLines = [];
 
-        setOffers(mappedOffers);
-      } else {
-        setOffers([]);
+            // Descripción del producto
+            const productDesc = p.desc_prod ?? "";
+            if (productDesc) {
+              descriptionLines.push(`📝 ${productDesc.length > 40 ? productDesc.slice(0, 40) + '...' : productDesc}`);
+            }
+
+            // Contenido de la publicación (si existe)
+            const pubContent = p.contenido ?? "";
+            if (pubContent) {
+              descriptionLines.push(`📝 ${pubContent.length > 40 ? pubContent.slice(0, 40) + '...' : pubContent}`)
+            }
+
+            // Siempre mostrar impacto (usar valor del backend o 5 por defecto)
+            const impacto = p.impacto_amb_pub ?? 5;
+            descriptionLines.push(`🌱 Impacto: ${impacto} pts`);
+
+            return {
+              id: p.cod_pub ?? p.id ?? 0,
+              title: p.nom_prod ?? p.title ?? "Sin título",
+              description: descriptionLines.join('\n'),
+              image: `${PUBLICATIONS_API_BASE}/${p.cod_pub ?? p.id ?? 0}/image`,
+              price: p.precio_prod ?? 0,
+            };
+          });
+
+        allOffers.push(...mappedOffers);
       }
 
       // Cargar productos del usuario para el formulario de intercambio
@@ -346,11 +381,17 @@ export default function UserProfile({
         // Mapear intercambios a formato Offer para mostrarlos en la lista
         const exchangeOffers: Offer[] = exchangesResponse.data.map((ex: any, index: number) => {
           const isOpenOffer = ex.cod_us_1 === ex.cod_us_2;
-          const description = isOpenOffer
-            ? `Oferta abierta de intercambio. Impacto: ${ex.impacto_amb_inter} pts`
-            : `Con @${ex.cod_us_1 === codUs ? ex.usuario_destino_handle : ex.usuario_origen_handle}. Impacto: ${ex.impacto_amb_inter} pts`;
 
-          // Construir URL de imagen del intercambio
+          let descriptionLines = [];
+
+          if (isOpenOffer) {
+            descriptionLines.push('📝 Oferta abierta de intercambio');
+          } else {
+            descriptionLines.push(`📝 Con @${ex.cod_us_1 === codUs ? ex.usuario_destino_handle : ex.usuario_origen_handle}`);
+          }
+
+          descriptionLines.push(`🌱 Impacto: ${ex.impacto_amb_inter} pts`);
+
           const imageUrl = ex.tiene_foto ? `${API_BASE_URL}/exchanges/${ex.cod_inter}/image` : null;
 
           return {
@@ -358,14 +399,14 @@ export default function UserProfile({
             title: isOpenOffer
               ? `Intercambio: ${ex.nombre_prod_origen} (Oferta)`
               : `Intercambio: ${ex.nombre_prod_origen} ⇄ ${ex.nombre_prod_destino}`,
-            description: description,
+            description: descriptionLines.join('\n'),
             image: imageUrl,
             price: 0,
             isExchange: true
           };
         });
 
-        setOffers(prev => [...prev, ...exchangeOffers]);
+        allOffers.push(...exchangeOffers);
       }
 
       // Cargar eventos del usuario
@@ -375,18 +416,43 @@ export default function UserProfile({
         const eventOffers: Offer[] = eventsResponse.data.map((ev: any) => {
           const imageUrl = ev.tiene_banner ? `${API_BASE_URL}/events/${ev.cod_evento}/image` : null;
 
+          // Construir descripción con líneas separadas
+          let descriptionLines = [];
+
+          if (ev.descripcion_evento) {
+            descriptionLines.push(`📝 ${ev.descripcion_evento.length > 50 ? ev.descripcion_evento.slice(0, 50) + '...' : ev.descripcion_evento}`);
+          }
+
+          if (ev.fecha_inicio_evento && ev.fecha_finalizacion_evento) {
+            descriptionLines.push(`📅 ${new Date(ev.fecha_inicio_evento).toLocaleDateString('es-ES', { timeZone: 'UTC' })} - ${new Date(ev.fecha_finalizacion_evento).toLocaleDateString('es-ES', { timeZone: 'UTC' })}`);
+          }
+
+          if (ev.monto_recompensa && ev.monto_recompensa > 0) {
+            descriptionLines.push(`🎁 Recompensa: ${ev.monto_recompensa} CV`);
+          }
+
+          descriptionLines.push(`🌱 Impacto: 10 pts`);
+
           return {
             id: `event-${ev.cod_evento}`,
             title: `Evento: ${ev.titulo_evento}`,
-            description: `${ev.descripcion_evento}. Fecha: ${ev.fecha_inicio_evento ? new Date(ev.fecha_inicio_evento).toLocaleDateString('es-ES', { timeZone: 'UTC' }) : 'N/A'} - ${ev.fecha_finalizacion_evento ? new Date(ev.fecha_finalizacion_evento).toLocaleDateString('es-ES', { timeZone: 'UTC' }) : 'N/A'}`,
+            description: descriptionLines.join('\n'),
             image: imageUrl,
             price: ev.costo_inscripcion,
             isExchange: false
           };
         });
 
-        setOffers(prev => [...prev, ...eventOffers]);
+        allOffers.push(...eventOffers);
       }
+
+      // Eliminar duplicados basados en ID (mantener el primero encontrado)
+      const uniqueOffers = allOffers.filter((offer, index, self) =>
+        index === self.findIndex((o) => o.id === offer.id)
+      );
+
+      // Establecer todas las ofertas de una sola vez
+      setOffers(uniqueOffers);
 
     } catch (err) {
       console.error("Error al cargar publicaciones de productos:", err);
@@ -746,7 +812,17 @@ export default function UserProfile({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setEventForm((prev) => ({ ...prev, [name]: value }));
+
+    // Si se cambia el tipo de evento a "benefico", resetear el costo a 0
+    if (name === 'eventType' && value === 'benefico') {
+      setEventForm(prev => ({
+        ...prev,
+        [name]: value,
+        cost: "0" // Changed to string "0" to match the type of eventForm.cost
+      }));
+    } else {
+      setEventForm(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmitEvent = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -778,6 +854,10 @@ export default function UserProfile({
       formData.append("fecha_finalizacion_evento", eventForm.endDate);
       formData.append("tipo_evento", eventForm.eventType);
       formData.append("costo_inscripcion", eventForm.cost || "0");
+
+      if (eventForm.rewardId) {
+        formData.append("cod_rec", eventForm.rewardId);
+      }
 
       if (eventForm.image) {
         formData.append("banner_evento", eventForm.image);
@@ -816,6 +896,7 @@ export default function UserProfile({
       endDate: "",
       eventType: "",
       cost: "",
+      rewardId: "",
       image: null,
     });
   };
@@ -1086,32 +1167,28 @@ export default function UserProfile({
         <nav className={styles.tabs}>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "offers" ? "tabActive" : ""
-              }`}
+            className={`${styles.tab} ${activeTab === "offers" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("offers")}
           >
             Ofertas Propias
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "publish" ? "tabActive" : ""
-              }`}
+            className={`${styles.tab} ${activeTab === "publish" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("publish")}
           >
             Publicar
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "likes" ? "tabActive" : ""
-              }`}
+            className={`${styles.tab} ${activeTab === "likes" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("likes")}
           >
             Me gusta
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "events" ? "tabActive" : ""
-              }`}
+            className={`${styles.tab} ${activeTab === "events" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("events")}
           >
             Eventos
@@ -1171,6 +1248,7 @@ export default function UserProfile({
             userProducts={userProducts}
             categories={categories}
             filteredSubcategories={filteredSubcategories}
+            availableRewards={availableRewards}
           />
         )}
 
@@ -1278,12 +1356,15 @@ function OffersSection({ offers }: OffersSectionProps) {
                   objectFit: "cover",
                   borderRadius: "12px",
                 }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
           </div>
           <div className={styles.offerInfo}>
             <h2 className={styles.offerTitle}>{offer.title}</h2>
-            <p className={styles.offerDescription}>{offer.description}</p>
+            <p className={styles.offerDescription} style={{ whiteSpace: 'pre-line' }}>{offer.description}</p>
           </div>
           <div className={styles.offerActions}>
             <div style={{
@@ -1376,6 +1457,7 @@ interface PublishSectionProps {
   userProducts: Product[];
   categories: Category[];
   filteredSubcategories: Subcategory[];
+  availableRewards: Array<{ cod_rec: number, monto_rec: number }>;
 }
 
 function PublishSection({
@@ -1404,6 +1486,7 @@ function PublishSection({
   userProducts,
   categories,
   filteredSubcategories,
+  availableRewards,
 }: PublishSectionProps) {
   return (
     <section className={styles.publishSection}>
@@ -1412,32 +1495,28 @@ function PublishSection({
       <div className={styles.publishTabs}>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "product" ? "publishTabActive" : ""
-            }`}
+          className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""}`}
           onClick={() => setPublishType("product")}
         >
           Producto
         </button>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "service" ? "publishTabActive" : ""
-            }`}
+          className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""}`}
           onClick={() => setPublishType("service")}
         >
           Servicio
         </button>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "exchange" ? "publishTabActive" : ""
-            }`}
+          className={`${styles.publishTab} ${publishType === "exchange" ? styles.publishTabActive : ""}`}
           onClick={() => setPublishType("exchange")}
         >
           Intercambio
         </button>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "event" ? "publishTabActive" : ""
-            }`}
+          className={`${styles.publishTab} ${publishType === "event" ? styles.publishTabActive : ""}`}
           onClick={() => setPublishType("event")}
         >
           Evento
@@ -1894,13 +1973,34 @@ function PublishSection({
             </div>
             <div className={styles.formCol}>
               <label className={styles.fieldLabel}>Costo de Inscripción (Tokens)</label>
-              <ProfileInput
-                type="text"
+              <input
+                type="number"
                 name="cost"
                 value={eventForm.cost}
-                onChange={handleEventChange as any}
-                placeholder="Ej. 0 (gratis)"
-              />
+                onChange={handleEventChange}
+                className={styles.profileInput}
+                placeholder="Ej. 10"
+                min="0"
+                disabled={eventForm.eventType === 'benefico'}
+              /></div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Recompensa (Créditos Verdes CV)</label>
+              <select
+                name="rewardId"
+                value={eventForm.rewardId}
+                onChange={handleEventChange}
+                className={styles.selectInput}
+              >
+                <option value="">Sin recompensa</option>
+                {availableRewards.map((reward: { cod_rec: number, monto_rec: number }) => (
+                  <option key={reward.cod_rec} value={reward.cod_rec}>
+                    {reward.monto_rec} CV
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

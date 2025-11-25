@@ -67,5 +67,23 @@ export const EventService = {
                 error: error instanceof Error ? error.message : 'Error desconocido'
             };
         }
+    },
+
+    /**
+     * Obtener todas las recompensas disponibles
+     */
+    get_all_rewards: async (): Promise<EventResponse> => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/events/rewards`);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching rewards:', error);
+            return {
+                success: false,
+                message: 'Error al obtener recompensas',
+                error: error instanceof Error ? error.message : 'Error desconocido'
+            };
+        }
     }
 };
