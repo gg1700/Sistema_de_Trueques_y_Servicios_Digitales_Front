@@ -7,11 +7,11 @@
   color: #fff;
   cursor: pointer;
   display: inline-block;
-  font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-  font-size: 14px;
+  font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 13px;
   font-weight: 600;
-  line-height: 20px;
-  padding: 6px 16px;
+  line-height: 18px;
+  padding: 5px 12px;
   position: relative;
   text-align: center;
   text-decoration: none;
@@ -20,7 +20,7 @@
   touch-action: manipulation;
   vertical-align: middle;
   white-space: nowrap;
-  min-width: 120px;
+  min-width: 90px;
   margin: 4px;
   transition: all 0.2s ease;
 }

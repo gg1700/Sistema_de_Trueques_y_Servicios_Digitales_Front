@@ -76,13 +76,14 @@ export default function PublicationCard({
                             backgroundColor: '#1fb7a1',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '8px',
-                            padding: '10px 20px',
-                            fontSize: '14px',
+                            borderRadius: '6px',
+                            padding: '5px 12px',
+                            fontSize: '13px',
                             fontWeight: '600',
                             cursor: 'pointer',
                             marginBottom: '8px',
-                            width: '100%'
+                            width: '100%',
+                            minWidth: '90px'
                         }}
                     >
                         Comprar

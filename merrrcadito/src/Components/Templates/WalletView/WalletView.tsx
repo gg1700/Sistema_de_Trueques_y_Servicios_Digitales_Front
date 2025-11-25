@@ -83,6 +83,7 @@ export default function WalletView() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [exchanges, setExchanges] = useState<Exchange[]>([]);
     const [pendingCollections, setPendingCollections] = useState<PendingCollection[]>([]);
+    const [collectionFilter, setCollectionFilter] = useState<'retenido' | 'liberado'>('retenido');
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState("Usuario");
     const [userId, setUserId] = useState<number | null>(null);
@@ -470,79 +471,102 @@ export default function WalletView() {
 
                 {activeTab === "info" && (
                     <div className={styles.pendingCollectionsSection}>
-                        <h2 className={styles.sectionTitle}>Cobros Pendientes</h2>
-                        {pendingCollections.length === 0 ? (
-                            <div className={styles.emptyState}>No tienes cobros pendientes</div>
+                        <h2 className={styles.sectionTitle}>Cobros</h2>
+
+                        {/* Filter Tabs */}
+                        <div className={styles.collectionFilters}>
+                            <button
+                                className={`${styles.filterTab} ${collectionFilter === 'retenido' ? styles.activeFilterTab : ''}`}
+                                onClick={() => setCollectionFilter('retenido')}
+                            >
+                                Cobros Pendientes
+                            </button>
+                            <button
+                                className={`${styles.filterTab} ${collectionFilter === 'liberado' ? styles.activeFilterTab : ''}`}
+                                onClick={() => setCollectionFilter('liberado')}
+                            >
+                                Cobros Recibidos
+                            </button>
+                        </div>
+
+                        {pendingCollections.filter(c => c.estado_escrow === collectionFilter).length === 0 ? (
+                            <div className={styles.emptyState}>
+                                {collectionFilter === 'retenido'
+                                    ? 'No tienes cobros pendientes'
+                                    : 'No tienes cobros recibidos'}
+                            </div>
                         ) : (
                             <div className={styles.transactionsList}>
-                                {pendingCollections.map((collection) => (
-                                    <div key={collection.cod_escrow} className={styles.transactionCard}>
-                                        <div className={styles.cardHeader}>
-                                            <h3 className={styles.transactionTitle}>
-                                                Cobro Pendiente: {collection.desc_trans || "Transacción"}
-                                            </h3>
+                                {pendingCollections
+                                    .filter(c => c.estado_escrow === collectionFilter)
+                                    .map((collection) => (
+                                        <div key={collection.cod_escrow} className={styles.transactionCard}>
+                                            <div className={styles.cardHeader}>
+                                                <h3 className={styles.transactionTitle}>
+                                                    Cobro Pendiente: {collection.desc_trans || "Transacción"}
+                                                </h3>
+                                            </div>
+
+                                            <div className={styles.cardGrid}>
+                                                <div className={styles.cardItem}>
+                                                    <i className={`bi bi-hash ${styles.itemIcon}`}></i>
+                                                    <div className={styles.itemContent}>
+                                                        <span className={styles.itemLabel}>Código Escrow:</span>
+                                                        <span className={styles.itemValue}>{collection.cod_escrow}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className={styles.cardItem}>
+                                                    <i className={`bi bi-calendar-check ${styles.itemIcon}`}></i>
+                                                    <div className={styles.itemContent}>
+                                                        <span className={styles.itemLabel}>Fecha de Pago:</span>
+                                                        <span className={styles.itemValue}>
+                                                            {new Date(collection.fecha_trans).toLocaleDateString('es-ES')}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className={styles.cardItem}>
+                                                    <i className={`bi bi-person-circle ${styles.itemIcon}`}></i>
+                                                    <div className={styles.itemContent}>
+                                                        <span className={styles.itemLabel}>Pagador:</span>
+                                                        <span className={styles.itemValue}>
+                                                            {collection.nombre_origen} (@{collection.handle_origen})
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className={styles.cardItem}>
+                                                    <i className={`bi bi-currency-dollar ${styles.itemIcon}`}></i>
+                                                    <div className={styles.itemContent}>
+                                                        <span className={styles.itemLabel}>Monto a Recibir:</span>
+                                                        <span className={styles.itemValue}>{collection.monto_pagado} {collection.moneda}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className={styles.cardItem}>
+                                                    <i className={`bi bi-shield-lock ${styles.itemIcon}`}></i>
+                                                    <div className={styles.itemContent}>
+                                                        <span className={styles.itemLabel}>Estado:</span>
+                                                        <span className={`${styles.itemValue} ${collection.estado_escrow === 'liberado' ? styles.escrowReleased : styles.escrowHeld}`}>
+                                                            {collection.estado_escrow}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {collection.estado_escrow === 'retenido' && (
+                                                <div className={styles.cardActions}>
+                                                    <button
+                                                        className={styles.receivePaymentButton}
+                                                        onClick={() => handleReceivePayment(collection)}
+                                                    >
+                                                        Recibir Pago
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
-
-                                        <div className={styles.cardGrid}>
-                                            <div className={styles.cardItem}>
-                                                <i className={`bi bi-hash ${styles.itemIcon}`}></i>
-                                                <div className={styles.itemContent}>
-                                                    <span className={styles.itemLabel}>Código Escrow:</span>
-                                                    <span className={styles.itemValue}>{collection.cod_escrow}</span>
-                                                </div>
-                                            </div>
-
-                                            <div className={styles.cardItem}>
-                                                <i className={`bi bi-calendar-check ${styles.itemIcon}`}></i>
-                                                <div className={styles.itemContent}>
-                                                    <span className={styles.itemLabel}>Fecha de Pago:</span>
-                                                    <span className={styles.itemValue}>
-                                                        {new Date(collection.fecha_trans).toLocaleDateString('es-ES')}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <div className={styles.cardItem}>
-                                                <i className={`bi bi-person-circle ${styles.itemIcon}`}></i>
-                                                <div className={styles.itemContent}>
-                                                    <span className={styles.itemLabel}>Pagador:</span>
-                                                    <span className={styles.itemValue}>
-                                                        {collection.nombre_origen} (@{collection.handle_origen})
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <div className={styles.cardItem}>
-                                                <i className={`bi bi-currency-dollar ${styles.itemIcon}`}></i>
-                                                <div className={styles.itemContent}>
-                                                    <span className={styles.itemLabel}>Monto a Recibir:</span>
-                                                    <span className={styles.itemValue}>{collection.monto_pagado} {collection.moneda}</span>
-                                                </div>
-                                            </div>
-
-                                            <div className={styles.cardItem}>
-                                                <i className={`bi bi-shield-lock ${styles.itemIcon}`}></i>
-                                                <div className={styles.itemContent}>
-                                                    <span className={styles.itemLabel}>Estado:</span>
-                                                    <span className={`${styles.itemValue} ${collection.estado_escrow === 'liberado' ? styles.escrowReleased : styles.escrowHeld}`}>
-                                                        {collection.estado_escrow}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {collection.estado_escrow === 'retenido' && (
-                                            <div className={styles.cardActions}>
-                                                <button
-                                                    className={styles.receivePaymentButton}
-                                                    onClick={() => handleReceivePayment(collection)}
-                                                >
-                                                    Recibir Pago
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         )}
                     </div>

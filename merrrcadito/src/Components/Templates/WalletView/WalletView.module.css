@@ -512,6 +512,36 @@
     border-top: 2px dashed #e0f2ef;
 }
 
+/* Collection Filters */
+.collectionFilters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e0f2ef;
+}
+
+.filterTab {
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filterTab:hover {
+    color: #1fb7a1;
+    background: rgba(31, 183, 161, 0.05);
+}
+
+.activeFilterTab {
+    color: #1fb7a1;
+    border-bottom-color: #1fb7a1;
+}
+
 .sectionTitle {
     font-size: 22px;
     font-weight: 700;
