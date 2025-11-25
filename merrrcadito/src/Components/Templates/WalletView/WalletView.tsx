@@ -516,7 +516,7 @@ export default function WalletView() {
                                             <div className={styles.itemContent}>
                                                 <span className={styles.itemLabel}>Fecha de Realización:</span>
                                                 <span className={styles.itemValue}>
-                                                    {new Date(exchange.fecha_inter).toLocaleDateString()}
+                                                    {new Date(exchange.fecha_inter || Date.now()).toLocaleDateString()}
                                                 </span>
                                             </div>
                                         </div>
@@ -526,7 +526,7 @@ export default function WalletView() {
                                             <div className={styles.itemContent}>
                                                 <span className={styles.itemLabel}>Usuario del Intercambio:</span>
                                                 <span className={styles.itemValue}>
-                                                    {exchange.nombre_usuario_2} (@{exchange.handle_name_2})
+                                                    {exchange.nombre_usuario_2 || 'Usuario'} (@{exchange.handle_name_2 || 'pendiente'})
                                                 </span>
                                             </div>
                                         </div>
@@ -536,7 +536,7 @@ export default function WalletView() {
                                             <div className={styles.itemContent}>
                                                 <span className={styles.itemLabel}>Unidad de Medida:</span>
                                                 <span className={styles.itemValue}>
-                                                    {exchange.unidad_medida_origen}, {exchange.unidad_medida_destino}
+                                                    {exchange.unidad_medida_origen}, {exchange.unidad_medida_destino || 'N/A'}
                                                 </span>
                                             </div>
                                         </div>
@@ -553,7 +553,7 @@ export default function WalletView() {
                                             <i className={`bi bi-box-seam ${styles.itemIcon}`}></i>
                                             <div className={styles.itemContent}>
                                                 <span className={styles.itemLabel}>Producto Obtenido:</span>
-                                                <span className={styles.itemValue}>{exchange.nombre_prod_destino}</span>
+                                                <span className={styles.itemValue}>{exchange.nombre_prod_destino || 'Por definir'}</span>
                                             </div>
                                         </div>
 
@@ -562,7 +562,7 @@ export default function WalletView() {
                                             <div className={styles.itemContent}>
                                                 <span className={styles.itemLabel}>Cantidad Intercambiada:</span>
                                                 <span className={styles.itemValue}>
-                                                    {exchange.cant_prod_origen}, {exchange.cant_prod_destino}
+                                                    {exchange.cant_prod_origen}, {exchange.cant_prod_destino || 0}
                                                 </span>
                                             </div>
                                         </div>
@@ -582,7 +582,7 @@ export default function WalletView() {
                                                 <span className={`${styles.itemValue} ${exchange.estado_inter === 'satisfactorio' ? styles.statusSuccess :
                                                     exchange.estado_inter === 'pendiente' ? styles.statusPending : styles.statusFailed
                                                     }`}>
-                                                    {exchange.estado_inter}
+                                                    {exchange.estado_inter || 'satisfactorio'}
                                                 </span>
                                             </div>
                                         </div>
