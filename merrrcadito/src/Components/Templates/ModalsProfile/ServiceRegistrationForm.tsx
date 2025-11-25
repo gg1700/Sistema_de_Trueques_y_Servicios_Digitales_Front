@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./ServiceRegistrationForm.module.css";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
+import FileInput from "./FileInput";
 
 const SERVICES_API_BASE =
     process.env.NEXT_PUBLIC_SERVICES_API_BASE_URL ??
@@ -61,6 +62,8 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const [image, setImage] = useState<File | null>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -68,22 +71,26 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
         setSuccess(false);
 
         try {
-            const payload = {
-                ...formData,
-                cod_us: userId,
-                precio_serv: parseFloat(formData.precio_serv),
-                duracion_serv: parseInt(formData.duracion_serv),
-                dif_dist_serv: parseFloat(formData.dif_dist_serv),
-                cod_cat: parseInt(formData.cod_cat),
-            };
+            const formDataToSend = new FormData();
+            formDataToSend.append("cod_us", userId.toString());
+            formDataToSend.append("nom_serv", formData.nom_serv);
+            formDataToSend.append("desc_serv", formData.desc_serv);
+            formDataToSend.append("precio_serv", formData.precio_serv);
+            formDataToSend.append("duracion_serv", formData.duracion_serv);
+            formDataToSend.append("dif_dist_serv", formData.dif_dist_serv);
+            formDataToSend.append("cod_cat", formData.cod_cat);
+            formDataToSend.append("hrs_ini_dia_serv", formData.hrs_ini_dia_serv);
+            formDataToSend.append("hrs_fin_dia_serv", formData.hrs_fin_dia_serv);
+
+            if (image) {
+                formDataToSend.append("foto_serv", image);
+            }
 
             const res = await fetch(`${SERVICES_API_BASE}/create`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
+                body: formDataToSend,
             });
+
             // Check if response is ok before trying to parse JSON
             if (!res.ok) {
                 if (res.status === 404) {
@@ -130,6 +137,7 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
                 hrs_ini_dia_serv: "08:00",
                 hrs_fin_dia_serv: "18:00",
             });
+            setImage(null);
 
             if (onSuccess) onSuccess();
         } catch (err: any) {
@@ -142,7 +150,6 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>Registrar Nuevo Servicio</h2>
 
 
             {error && (
@@ -153,6 +160,14 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
             )}
 
             <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.formGroup}>
+                    <label>Imagen del Servicio</label>
+                    <FileInput
+                        name="foto_serv"
+                        onChange={(file) => setImage(file)}
+                    />
+                </div>
+
                 <div className={styles.formGroup}>
                     <label>Nombre del Servicio</label>
                     <input

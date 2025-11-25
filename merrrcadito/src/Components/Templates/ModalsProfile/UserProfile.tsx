@@ -43,7 +43,7 @@ const SERVICES_API_BASE =
   "http://localhost:5000/api/services";
 
 type Tab = "offers" | "publish" | "likes" | "events" | "explore";
-type PublishType = "product" | "service";
+type PublishType = "product" | "service" | "exchange";
 type NavRole = "admin" | "user";
 type Role = NavRole | "entrepreneur";
 
@@ -65,6 +65,7 @@ interface ProductFormState {
   description: string;
   priceTokens: string;
   image: File | null;
+  condition?: string;
 }
 
 interface ServiceFormState {
@@ -430,7 +431,7 @@ export default function UserProfile({
         if (handle) {
           try {
             const res = await fetch(
-                `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(handle)}`
+              `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(handle)}`
             );
             const json = await res.json();
             if (res.ok && json.success && json.data) {
@@ -484,14 +485,14 @@ export default function UserProfile({
       setFilteredSubcategories([]);
       return;
     }
-      const filtered = subcategories.filter((s) => s.cod_cat === codCat);
-      
-      // Eliminar duplicados
-      const uniqueFiltered = Array.from(
-        new Map(filtered.map((item) => [item.cod_subcat_prod, item])).values()
-      );
-      
-      setFilteredSubcategories(uniqueFiltered);
+    const filtered = subcategories.filter((s) => s.cod_cat === codCat);
+
+    // Eliminar duplicados
+    const uniqueFiltered = Array.from(
+      new Map(filtered.map((item) => [item.cod_subcat_prod, item])).values()
+    );
+
+    setFilteredSubcategories(uniqueFiltered);
   }, [productForm.category, subcategories]);
 
   const fetchOffersForUser = async (codUs: number) => {
@@ -524,8 +525,10 @@ export default function UserProfile({
 
   const fetchServicesForUser = async (codUs: number) => {
     try {
+      console.log(`Fetching services for user: ${codUs}`);
       const resServices = await fetch(`${SERVICES_API_BASE}/user/${codUs}`);
       const jsonServices = await resServices.json().catch(() => ({} as any));
+      console.log("Services response:", jsonServices);
 
       if (resServices.ok && jsonServices.data && Array.isArray(jsonServices.data)) {
         const mappedServices: Offer[] = jsonServices.data.map((s: any) => ({
@@ -533,10 +536,12 @@ export default function UserProfile({
           title: s.nom_serv ?? "Sin título",
           description: s.descr_serv ?? "",
           image: s.foto_serv ? `data:image/jpeg;base64,${Buffer.from(s.foto_serv).toString('base64')}` : undefined,
-          price: s.precio_serv_token ?? 0,
+          price: s.precio_serv ?? s.precio_serv_token ?? 0,
         }));
+        console.log("Mapped services:", mappedServices);
         setServices(mappedServices);
       } else {
+        console.warn("No services found or invalid response format");
         setServices([]);
       }
     } catch (err) {
@@ -577,6 +582,7 @@ export default function UserProfile({
 
         if (userData.cod_us) {
           await fetchOffersForUser(userData.cod_us);
+          await fetchServicesForUser(userData.cod_us);
         }
       } catch (err: any) {
         console.error(err);
@@ -1130,10 +1136,10 @@ export default function UserProfile({
         )}
       </div>
 
-        {isMenuOpen && (
-          <>
-            <div
-              className={styles.menuOverlay}
+      {isMenuOpen && (
+        <>
+          <div
+            className={styles.menuOverlay}
             onClick={() => setIsMenuOpen(false)}
           />
           <aside className={styles.sideMenu}>
@@ -1201,7 +1207,7 @@ interface OffersSectionProps {
 function OffersSection({ offers, services }: OffersSectionProps) {
   const hasProducts = offers.length > 0;
   const hasServices = services.length > 0;
-  
+
   if (!hasProducts && !hasServices) {
     return (
       <div className={styles.placeholderTab}>
