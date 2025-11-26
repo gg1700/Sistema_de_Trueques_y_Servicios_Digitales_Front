@@ -557,12 +557,6 @@ export default function UserProfile({
       setFilteredSubcategories([]);
       return;
     }
-<<<<<<< HEAD
-    const filtered = subcategories.filter(
-      (sc) => sc.cod_cat === parseInt(productForm.category)
-    );
-    setFilteredSubcategories(filtered);
-=======
     const codCat = parseInt(productForm.category, 10);
     if (isNaN(codCat)) {
       setFilteredSubcategories([]);
@@ -576,7 +570,6 @@ export default function UserProfile({
     );
 
     setFilteredSubcategories(uniqueFiltered);
->>>>>>> origin/Frontend-Mateo
   }, [productForm.category, subcategories]);
 
   // Filtrar subcategorías para formulario de intercambio
@@ -735,20 +728,6 @@ export default function UserProfile({
     }
   };
 
-<<<<<<< HEAD
-  const fetchEnvironmentalData = async (codUs: number) => {
-    try {
-      setLoadingEnvironmental(true);
-      const response = await ReportService.get_user_environmental_impact(codUs);
-      if (response.success && response.data) {
-        setEnvironmentalData(response.data);
-      }
-    } catch (err) {
-      console.error("Error al cargar datos de impacto ambiental:", err);
-      setEnvironmentalData(null);
-    } finally {
-      setLoadingEnvironmental(false);
-=======
   const fetchServicesForUser = async (codUs: number) => {
     try {
       console.log(`Fetching services for user: ${codUs}`);
@@ -773,7 +752,6 @@ export default function UserProfile({
     } catch (err) {
       console.error("Error al cargar servicios:", err);
       setServices([]);
->>>>>>> origin/Frontend-Mateo
     }
   };
 
@@ -809,16 +787,7 @@ export default function UserProfile({
 
         if (userData.cod_us) {
           await fetchOffersForUser(userData.cod_us);
-<<<<<<< HEAD
-          // Cargar datos de impacto ambiental sin bloquear el perfil si falla
-          try {
-            await fetchEnvironmentalData(userData.cod_us);
-          } catch (envErr) {
-            console.error("Error al cargar impacto ambiental (no crítico):", envErr);
-          }
-=======
           await fetchServicesForUser(userData.cod_us);
->>>>>>> origin/Frontend-Mateo
         }
       } catch (err: any) {
         console.error(err);
