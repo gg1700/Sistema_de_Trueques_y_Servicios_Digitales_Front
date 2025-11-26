@@ -1,10 +1,11 @@
 'use client'
-import { createContext, useState, ReactNode, useContext } from 'react';
+import { createContext, useState, ReactNode, useContext, useEffect } from 'react';
+import { getUserSession, saveUserSession, clearUserSession } from '@/lib/authStorage';
 
 interface User {
-    cod_us: number,
-    handlename: string,
-    cod_rol: number
+  cod_us: number,
+  handlename: string,
+  cod_rol: number
 }
 
 interface UserContextType {
@@ -15,25 +16,49 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export default function UserContextProvide({children}: { children: ReactNode }){
+export default function UserContextProvide({ children }: { children: ReactNode }) {
 
-    const [user, setUser]=useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-    const clearUser = () => {
-        setUser(null);
-    };
+  // Cargar usuario desde localStorage al montar el componente
+  useEffect(() => {
+    const session = getUserSession();
+    if (session) {
+      setUser({
+        cod_us: session.cod_us,
+        handlename: session.handle_name,
+        cod_rol: session.cod_rol
+      });
+    }
+  }, []);
 
-    const valor = {
-        user,
-        setUser,
-        clearUser
-    };
+  // Función para establecer usuario y guardarlo en localStorage
+  const setUserWithPersistence = (newUser: User) => {
+    setUser(newUser);
+    saveUserSession({
+      cod_us: newUser.cod_us,
+      handle_name: newUser.handlename,
+      cod_rol: newUser.cod_rol,
+      role: newUser.cod_rol === 3 ? 'admin' : newUser.cod_rol === 2 ? 'entrepreneur' : 'user'
+    });
+  };
 
-    return (
-        <UserContext.Provider value={valor} >
-            {children}
-        </UserContext.Provider>
-    );
+  const clearUser = () => {
+    setUser(null);
+    clearUserSession();
+  };
+
+  const valor = {
+    user,
+    setUser: setUserWithPersistence,
+    clearUser
+  };
+
+  return (
+    <UserContext.Provider value={valor} >
+      {children}
+    </UserContext.Provider>
+  );
 }
 
 export const useUser = () => {

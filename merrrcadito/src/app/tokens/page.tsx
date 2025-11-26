@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
 import { getAllTokenPackages, TokenPackageDB } from '@/services/tokenService';
 import { purchaseTokens } from '@/services/transactionService';
+import { useUser } from '@/Contexts/userContext';
 import styles from './tokens.module.css';
 import { FaCoins, FaCheckCircle, FaTimesCircle, FaTimes } from 'react-icons/fa';
 
@@ -485,6 +486,7 @@ const TokenItem = ({
 };
 
 export default function TokensPage() {
+  const { user } = useUser();
   const [paquetes, setPaquetes] = useState<TokenPackageDB[]>([]);
   const [loading, setLoading] = useState(true);
   const [comprandoId, setComprandoId] = useState<number | null>(null);
@@ -525,13 +527,19 @@ export default function TokensPage() {
   const handleConfirmPurchase = async () => {
     if (!selectedPaquete) return;
 
+    // Validar que el usuario esté autenticado
+    if (!user || !user.cod_us) {
+      showNotification(false, 'Debes iniciar sesión para realizar compras.');
+      setSelectedPaquete(null);
+      setComprandoId(null);
+      return;
+    }
+
     setComprandoId(selectedPaquete.id);
 
     try {
-      // TODO: Obtener el cod_us del usuario autenticado
-      // Por ahora usaremos un valor de ejemplo
-      // Usuario 1 tiene saldo_real = 0, Usuario 18 tiene saldo_real = 100000
-      const cod_us_origen = 1; // CAMBIAR POR EL ID DEL USUARIO ACTUAL
+      // Usar el ID del usuario autenticado
+      const cod_us_origen = user.cod_us;
 
       const result = await purchaseTokens(
         cod_us_origen,
