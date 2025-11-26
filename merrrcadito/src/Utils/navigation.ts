@@ -2,7 +2,7 @@ export const navItems = {
   common: [
     { name: 'Dashboard', route: '/Home' },
     { name: 'Ranking CO2', route: '/RankingCO2' },
-    { name: 'Mi Perfil', route: '/perfil' },
+
     { name: 'Rankig Emprendedores', route: '/RankingSells' },
     { name: 'Intercambios', route: '/intercambios' },
     { name: 'Tienda', route: '/tokens' },

@@ -82,7 +82,7 @@ export default function AppLayout({
 
       {/* Sidebar Overlay */}
       <SideBar
-        title="MERRRCADITO"
+        title="MENU"
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       >

@@ -12,7 +12,7 @@ import EventsSection from "./EventsSection";
 import ExploreSection from "./ExploreSection";
 import ExchangeRegistrationForm from "./ExchangeRegistrationForm";
 import ServiceRegistrationForm from "./ServiceRegistrationForm";
-import { getNavItems } from "../../../Utils/navigation";
+
 import { ReportService, EventService } from "@/services";
 import { ExchangeService } from "@/services/exchangeService";
 import { getUserSession } from "@/lib/authStorage";
@@ -404,7 +404,7 @@ export default function UserProfile({
     image: null,
   });
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const [user, setUser] = useState<UserApi | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [services, setServices] = useState<Offer[]>([]);
@@ -481,8 +481,7 @@ export default function UserProfile({
   const effectiveRole: Role =
     resolvedRoleFromStorage || roleFromBackend || roleProp || "user";
 
-  const navRole: NavRole = effectiveRole === "admin" ? "admin" : "user";
-  const navList = getNavItems(navRole);
+
 
   useEffect(() => {
     const fetchCategoriesAndSubcats = async () => {
@@ -773,6 +772,30 @@ export default function UserProfile({
 
     fetchData();
   }, [resolvedHandle]);
+
+  // Fetch environmental data when user is loaded
+  useEffect(() => {
+    const fetchEnvironmentalData = async () => {
+      if (!user?.cod_us) return;
+
+      try {
+        setLoadingEnvironmental(true);
+        const response = await ReportService.get_user_environmental_impact(user.cod_us);
+
+        if (response.success && response.data) {
+          setEnvironmentalData(response.data);
+        } else {
+          console.error('Error al obtener datos ambientales:', response.message);
+        }
+      } catch (error) {
+        console.error('Error al cargar impacto ambiental:', error);
+      } finally {
+        setLoadingEnvironmental(false);
+      }
+    };
+
+    fetchEnvironmentalData();
+  }, [user?.cod_us]);
 
   const handleProductChange = (
     e: React.ChangeEvent<
@@ -1238,16 +1261,7 @@ export default function UserProfile({
             )}
           </div>
 
-          <button
-            className={styles.menuButton}
-            type="button"
-            aria-label="Menú"
-            onClick={() => setIsMenuOpen(true)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
+
         </div>
 
         <div className={styles.userInfo}>
@@ -1561,44 +1575,7 @@ export default function UserProfile({
         )}
       </div>
 
-      {isMenuOpen && (
-        <>
-          <div
-            className={styles.menuOverlay}
-            onClick={() => setIsMenuOpen(false)}
-          />
-          <aside className={styles.sideMenu}>
-            <div className={styles.sideMenuHeader}>
-              <span className={styles.sideMenuTitle}>MERRRCADITO</span>
-              <button
-                type="button"
-                className={styles.sideMenuClose}
-                onClick={() => setIsMenuOpen(false)}
-                aria-label="Cerrar menú"
-              >
-                ×
-              </button>
-            </div>
 
-            <nav className={styles.sideMenuNav}>
-              {navList.map((item) => {
-                const isActive = pathname === item.route;
-                return (
-                  <Link
-                    key={item.route}
-                    href={item.route}
-                    className={`${styles.sideMenuLink} ${isActive ? "sideMenuLinkActive" : ""
-                      }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </nav>
-          </aside>
-        </>
-      )}
 
       {showSuccessModal && (
         <div className={styles.successModalOverlay}>
