@@ -868,9 +868,9 @@ export default function WalletView() {
                                             <div className={styles.itemContent}>
                                                 <span className={styles.itemLabel}>Estado del Intercambio:</span>
                                                 <span className={`${styles.itemValue} ${exchange.estado_inter === 'satisfactorio' ? styles.statusSuccess :
-                                                    exchange.estado_inter === 'pendiente' ? styles.statusPending : styles.statusFailed
+                                                    exchange.estado_inter === 'no_satisfactorio' ? styles.statusFailed : styles.statusPending
                                                     }`}>
-                                                    {exchange.estado_inter || 'satisfactorio'}
+                                                    {exchange.estado_inter || 'pendiente'}
                                                 </span>
                                             </div>
                                         </div>
@@ -1042,7 +1042,7 @@ export default function WalletView() {
                         <p className={styles.modalText}>
                             {exchangeAction === 'accept'
                                 ? `¿Estás seguro de aceptar esta propuesta de intercambio de ${selectedExchangeRequest.nombre_usuario_origen}?`
-                                : `¿Estás seguro de rechazar esta propuesta? La propuesta será marcada como rechazada.`
+                                : `¿Estás seguro de rechazar esta propuesta? El intercambio volverá a estar disponible y quedará registrado como rechazado en el historial.`
                             }
                         </p>
                         <div className={styles.modalDetails}>
@@ -1077,7 +1077,7 @@ export default function WalletView() {
                         <p className={styles.modalText}>
                             {exchangeAction === 'accept'
                                 ? 'La propuesta de intercambio ha sido aceptada exitosamente.'
-                                : 'La propuesta ha sido rechazada y quedará registrada en el historial.'
+                                : 'La propuesta ha sido rechazada. El intercambio vuelve a estar disponible y queda registrado en tu historial.'
                             }
                         </p>
                         <div className={styles.modalActions}>
