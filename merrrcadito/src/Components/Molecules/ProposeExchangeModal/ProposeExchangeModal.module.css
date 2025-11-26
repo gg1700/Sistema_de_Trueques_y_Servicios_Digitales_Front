@@ -175,3 +175,97 @@
     cursor: not-allowed;
     transform: none;
 }
+
+.statusContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.statusIcon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.successIcon {
+    color: #16a085;
+}
+
+.errorIcon {
+    color: #ef4444;
+}
+
+.statusTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.statusMessage {
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.statusDetails {
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+}
+
+.detailItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.detailLabel {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.detailValue {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.statusButton {
+    background: #16a085;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.statusButton:hover {
+    background: #138f75;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 160, 133, 0.3);
+}
+
+.errorButton {
+    background: #64748b;
+}
+
+.errorButton:hover {
+    background: #475569;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

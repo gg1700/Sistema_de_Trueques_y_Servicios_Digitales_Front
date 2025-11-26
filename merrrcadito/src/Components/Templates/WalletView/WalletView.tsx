@@ -43,6 +43,8 @@ interface Exchange {
     cod_us_2: number;
     nombre_usuario_2: string;
     handle_name_2: string;
+    nombre_usuario_origen?: string;
+    handle_name_origen?: string;
     cod_prod_origen: number;
     nombre_prod_origen: string;
     cod_prod_destino: number;
@@ -79,10 +81,11 @@ const PUBLICATIONS_API_BASE = process.env.NEXT_PUBLIC_POSTS_API_BASE_URL || "htt
 
 export default function WalletView() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<"info" | "transactions" | "exchanges">("info");
+    const [activeTab, setActiveTab] = useState<"info" | "transactions" | "exchanges" | "pending">("info");
     const [walletData, setWalletData] = useState<WalletData | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [exchanges, setExchanges] = useState<Exchange[]>([]);
+    const [pendingRequests, setPendingRequests] = useState<Exchange[]>([]);
     const [pendingCollections, setPendingCollections] = useState<PendingCollection[]>([]);
     const [collectionFilter, setCollectionFilter] = useState<'retenido' | 'liberado'>('retenido');
     const [loading, setLoading] = useState(true);
@@ -132,6 +135,8 @@ export default function WalletView() {
                 fetchTransactions(userId);
             } else if (activeTab === "exchanges") {
                 fetchExchanges(userId);
+            } else if (activeTab === "pending") {
+                fetchPendingRequests(userId);
             }
         }
     }, [userId, activeTab]);
@@ -168,6 +173,12 @@ export default function WalletView() {
     const [selectedPayment, setSelectedPayment] = useState<PendingCollection | null>(null);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+    // Exchange Request Confirmation Logic
+    const [selectedExchangeRequest, setSelectedExchangeRequest] = useState<Exchange | null>(null);
+    const [exchangeAction, setExchangeAction] = useState<'accept' | 'reject' | null>(null);
+    const [showExchangeConfirmModal, setShowExchangeConfirmModal] = useState(false);
+    const [showExchangeSuccessModal, setShowExchangeSuccessModal] = useState(false);
 
     const handleReceivePayment = (collection: PendingCollection) => {
         setSelectedPayment(collection);
@@ -339,6 +350,91 @@ export default function WalletView() {
         }
     };
 
+    const fetchPendingRequests = async (codUs: number) => {
+        try {
+            const res = await fetch(`${EXCHANGE_API_BASE}/pending?cod_us=${codUs}`);
+            const data = await res.json();
+
+            if (data.success && data.data) {
+                setPendingRequests(data.data);
+            } else if (Array.isArray(data)) {
+                setPendingRequests(data);
+            }
+        } catch (error) {
+            console.error("Error fetching pending requests:", error);
+        }
+    };
+
+    const acceptExchangeRequest = async (codInter: number) => {
+        if (!userId) return;
+
+        try {
+            const res = await fetch(`${EXCHANGE_API_BASE}/${codInter}/accept`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ cod_us: userId }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                setShowExchangeConfirmModal(false);
+                setShowExchangeSuccessModal(true);
+                fetchPendingRequests(userId);
+            } else {
+                alert('Error al aceptar propuesta: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error accepting request:', error);
+            alert('Error de conexión al aceptar la propuesta.');
+        }
+    };
+
+    const rejectExchangeRequest = async (codInter: number) => {
+        if (!userId) return;
+
+        try {
+            const res = await fetch(`${EXCHANGE_API_BASE}/${codInter}/reject`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ cod_us: userId }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                setShowExchangeConfirmModal(false);
+                setShowExchangeSuccessModal(true);
+                fetchPendingRequests(userId);
+            } else {
+                alert('Error al rechazar propuesta: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error rejecting request:', error);
+            alert('Error de conexión al rechazar la propuesta.');
+        }
+    };
+
+    const handleExchangeAction = (request: Exchange, action: 'accept' | 'reject') => {
+        setSelectedExchangeRequest(request);
+        setExchangeAction(action);
+        setShowExchangeConfirmModal(true);
+    };
+
+    const confirmExchangeAction = async () => {
+        if (!selectedExchangeRequest || !exchangeAction) return;
+
+        if (exchangeAction === 'accept') {
+            await acceptExchangeRequest(selectedExchangeRequest.cod_inter);
+        } else {
+            await rejectExchangeRequest(selectedExchangeRequest.cod_inter);
+        }
+    };
+
     if (loading) {
         return <div className={styles.container}>Cargando billetera...</div>;
     }
@@ -421,6 +517,12 @@ export default function WalletView() {
                             onClick={() => setActiveTab("exchanges")}
                         >
                             Historial de Intercambios
+                        </button>
+                        <button
+                            className={`${styles.tab} ${activeTab === "pending" ? styles.activeTab : ""}`}
+                            onClick={() => setActiveTab("pending")}
+                        >
+                            Solicitudes Pendientes
                         </button>
                     </div>
                 </div>
@@ -680,8 +782,8 @@ export default function WalletView() {
                                 No hay intercambios registrados
                             </div>
                         ) : (
-                            exchanges.map((exchange) => (
-                                <div key={exchange.cod_inter} className={styles.transactionCard}>
+                            exchanges.map((exchange, index) => (
+                                <div key={`exchange-${exchange.cod_inter}-${index}`} className={styles.transactionCard}>
                                     <div className={styles.cardHeader}>
                                         <h3 className={styles.transactionTitle}>
                                             Intercambio: {exchange.nombre_prod_origen} con {exchange.nombre_prod_destino}
@@ -778,6 +880,100 @@ export default function WalletView() {
                         )}
                     </div>
                 )}
+
+                {activeTab === "pending" && (
+                    <div className={styles.transactionsList}>
+                        {pendingRequests.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>
+                                No hay solicitudes de intercambio pendientes
+                            </div>
+                        ) : (
+                            pendingRequests.map((request, index) => (
+                                <div key={`pending-${request.cod_inter}-${index}`} className={styles.transactionCard}>
+                                    <div className={styles.cardHeader}>
+                                        <h3 className={styles.transactionTitle}>
+                                            Solicitud: {request.nombre_usuario_origen} quiere intercambiar
+                                        </h3>
+                                    </div>
+
+                                    <div className={styles.cardGrid}>
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-hash ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Código del Intercambio:</span>
+                                                <span className={styles.itemValue}>{request.cod_inter}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-calendar-event ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Fecha de Solicitud:</span>
+                                                <span className={styles.itemValue}>
+                                                    {new Date(request.fecha_inter || Date.now()).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-person-circle ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Usuario Solicitante:</span>
+                                                <span className={styles.itemValue}>
+                                                    {request.nombre_usuario_origen} (@{request.handle_name_origen})
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-box-seam ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Ofrece:</span>
+                                                <span className={styles.itemValue}>
+                                                    {request.nombre_prod_origen} ({request.cant_prod_origen} {request.unidad_medida_origen})
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-box-seam ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Por tu producto:</span>
+                                                <span className={styles.itemValue}>
+                                                    {request.nombre_prod_destino} ({request.cant_prod_destino} {request.unidad_medida_destino})
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cardItem}>
+                                            <i className={`bi bi-tree ${styles.itemIcon}`}></i>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemLabel}>Impacto Ambiental:</span>
+                                                <span className={styles.itemValue}>{request.impacto_amb_inter} puntos</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.cardActions} style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                                        <button
+                                            className={styles.cancelButton}
+                                            onClick={() => handleExchangeAction(request, 'reject')}
+                                            style={{ backgroundColor: '#dc3545', color: 'white' }}
+                                        >
+                                            Rechazar
+                                        </button>
+                                        <button
+                                            className={styles.receivePaymentButton}
+                                            onClick={() => handleExchangeAction(request, 'accept')}
+                                        >
+                                            Aceptar
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Confirm Modal */}
@@ -828,6 +1024,66 @@ export default function WalletView() {
                             <button
                                 className={styles.confirmButton}
                                 onClick={() => setShowSuccessModal(false)}
+                            >
+                                Aceptar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Exchange Request Confirm Modal */}
+            {showExchangeConfirmModal && selectedExchangeRequest && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h3 className={styles.modalTitle}>
+                            {exchangeAction === 'accept' ? 'Confirmar Aceptación' : 'Confirmar Rechazo'}
+                        </h3>
+                        <p className={styles.modalText}>
+                            {exchangeAction === 'accept'
+                                ? `¿Estás seguro de aceptar esta propuesta de intercambio de ${selectedExchangeRequest.nombre_usuario_origen}?`
+                                : `¿Estás seguro de rechazar esta propuesta? La propuesta será marcada como rechazada.`
+                            }
+                        </p>
+                        <div className={styles.modalDetails}>
+                            <p><strong>Ofrece:</strong> {selectedExchangeRequest.nombre_prod_origen} ({selectedExchangeRequest.cant_prod_origen} {selectedExchangeRequest.unidad_medida_origen})</p>
+                            <p><strong>Por tu:</strong> {selectedExchangeRequest.nombre_prod_destino} ({selectedExchangeRequest.cant_prod_destino} {selectedExchangeRequest.unidad_medida_destino})</p>
+                        </div>
+                        <div className={styles.modalActions}>
+                            <button
+                                className={styles.cancelButton}
+                                onClick={() => setShowExchangeConfirmModal(false)}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                className={styles.confirmButton}
+                                onClick={confirmExchangeAction}
+                            >
+                                {exchangeAction === 'accept' ? 'Aceptar' : 'Rechazar'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Exchange Request Success Modal */}
+            {showExchangeSuccessModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h3 className={styles.modalTitle}>
+                            {exchangeAction === 'accept' ? '¡Propuesta Aceptada!' : '¡Propuesta Rechazada!'}
+                        </h3>
+                        <p className={styles.modalText}>
+                            {exchangeAction === 'accept'
+                                ? 'La propuesta de intercambio ha sido aceptada exitosamente.'
+                                : 'La propuesta ha sido rechazada y quedará registrada en el historial.'
+                            }
+                        </p>
+                        <div className={styles.modalActions}>
+                            <button
+                                className={styles.confirmButton}
+                                onClick={() => setShowExchangeSuccessModal(false)}
                             >
                                 Aceptar
                             </button>
