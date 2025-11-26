@@ -1,0 +1,131 @@
+'use client'
+
+import { useState, useEffect } from 'react';
+import { AdminLayout } from '@/Components/Templates';
+import ProposeExchangeModal from '@/Components/Molecules/ProposeExchangeModal/ProposeExchangeModal';
+import { ExchangeService } from '@/services/exchangeService';
+import styles from './page.module.css';
+
+interface Exchange {
+    cod_inter: number;
+    nombre_prod_origen: string;
+    desc_prod: string;
+    nombre_usuario_1: string;
+    handle_name_1: string;
+    cant_prod_origen: number;
+    unidad_medida_origen: string;
+    impacto_amb_inter: number;
+    tiene_foto: boolean;
+}
+
+export default function ExchangesPage() {
+    const [exchanges, setExchanges] = useState<Exchange[]>([]);
+    const [selectedExchange, setSelectedExchange] = useState<any | null>(null);
+    const [showModal, setShowModal] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchExchanges();
+    }, []);
+
+    const fetchExchanges = async () => {
+        try {
+            setLoading(true);
+            const response = await ExchangeService.get_all_exchanges();
+            if (response.success && response.data) {
+                setExchanges(response.data);
+            }
+        } catch (error) {
+            console.error('Error loading exchanges:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleProposeClick = (exchange: Exchange) => {
+        setSelectedExchange(exchange);
+        setShowModal(true);
+    };
+
+    const handleSuccess = () => {
+        fetchExchanges();
+    };
+
+    return (
+        <AdminLayout pageTitle="Intercambios" pageSubtitle="Explora todas las oportunidades de intercambio">
+            <div className={styles.container}>
+                {loading ? (
+                    <div className={styles.loading}>
+                        <div className={styles.spinner}></div>
+                        <p>Cargando intercambios...</p>
+                    </div>
+                ) : exchanges.length === 0 ? (
+                    <div className={styles.empty}>
+                        <div className={styles.emptyIcon}>
+                            <i className="bi bi-arrow-left-right"></i>
+                        </div>
+                        <h3>No hay intercambios disponibles</h3>
+                        <p>Sé el primero en publicar una oferta de intercambio</p>
+                    </div>
+                ) : (
+                    <div className={styles.grid}>
+                        {exchanges.map((exchange) => (
+                            <div key={exchange.cod_inter} className={styles.card}>
+                                <div className={styles.imageContainer}>
+                                    <img
+                                        src={`${process.env.NEXT_PUBLIC_API_URL}/exchanges/${exchange.cod_inter}/image`}
+                                        alt={exchange.nombre_prod_origen}
+                                        className={styles.image}
+                                    />
+                                </div>
+
+                                <div className={styles.cardContent}>
+                                    <h3 className={styles.productName}>{exchange.nombre_prod_origen}</h3>
+                                    <p className={styles.userHandle}>Por @{exchange.handle_name_1}</p>
+
+                                    <div className={styles.offerDetails}>
+                                        <div className={styles.detailRow}>
+                                            <span className={styles.label}>Ofrece:</span>
+                                            <span className={styles.value}>
+                                                {exchange.cant_prod_origen} {exchange.unidad_medida_origen}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.badges}>
+                                        <div className={styles.co2Badge}>
+                                            <i className="bi bi-tree"></i>
+                                            <span>{exchange.impacto_amb_inter} pts CO2</span>
+                                        </div>
+                                        <div className={styles.statusBadge}>
+                                            Satisfactorio
+                                        </div>
+                                    </div>
+
+                                    <p className={styles.description}>
+                                        {exchange.desc_prod || 'Sin descripción disponible'}
+                                    </p>
+
+                                    <button
+                                        className={styles.proposeButton}
+                                        onClick={() => handleProposeClick(exchange)}
+                                    >
+                                        + Proponer Intercambio
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {showModal && selectedExchange && (
+                    <ProposeExchangeModal
+                        exchange={selectedExchange}
+                        onClose={() => setShowModal(false)}
+                        onSuccess={handleSuccess}
+                    />
+                )}
+            </div>
+        </AdminLayout>
+    );
+}
