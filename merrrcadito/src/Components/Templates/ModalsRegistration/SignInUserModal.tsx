@@ -15,6 +15,7 @@ import Label from "@/Components/Atoms/Label/Label";
 import ButtonIcon from "@/Components/Atoms/Buttons/ButtonIcon/ButtonIcon";
 
 import EntrepreneurAvailabilityModal from "@/Components/Templates/ModalsRegistration/EntrepreneurAvailabilityModal";
+import { saveUserSession } from "@/lib/authStorage";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api/users";
@@ -106,8 +107,8 @@ const SignInUserModal: React.FC<Props> = ({
 
   const setField =
     (k: keyof SignInForm) =>
-    (v: string): void =>
-      setForm((prev) => ({ ...prev, [k]: v }));
+      (v: string): void =>
+        setForm((prev) => ({ ...prev, [k]: v }));
 
   const validateMainForm = (): boolean => {
     const errors: SignInErrors = {};
@@ -230,6 +231,38 @@ const SignInUserModal: React.FC<Props> = ({
         type: "success",
         message: successMessage,
       });
+
+      // 🔹 Auto-login después del registro exitoso
+      try {
+        const loginRes = await fetch(
+          `${API_BASE}/get_user_data?handle_name=${encodeURIComponent(
+            credentials.username
+          )}`
+        );
+        const loginJson = await loginRes.json();
+
+        if (loginRes.ok && loginJson.success && loginJson.data) {
+          const userData = Array.isArray(loginJson.data)
+            ? loginJson.data[0]
+            : loginJson.data;
+
+          // Guardar sesión completa en localStorage
+          saveUserSession({
+            cod_us: userData.cod_us,
+            handle_name: credentials.username,
+            cod_rol: codRol,
+            role:
+              credMode === "admin"
+                ? "admin"
+                : credMode === "entrepreneur"
+                  ? "entrepreneur"
+                  : "user",
+          });
+        }
+      } catch (err) {
+        console.error("Error en auto-login después del registro:", err);
+        // No mostramos error al usuario, solo logueamos en consola
+      }
 
       if (onConfirm) {
         await onConfirm({ ...form, photo: photoFile });
@@ -460,8 +493,8 @@ const SignInUserModal: React.FC<Props> = ({
                 {credMode === "admin"
                   ? "Registrar administrador"
                   : credMode === "entrepreneur"
-                  ? "Registrar emprendedor"
-                  : "Registrar usuario"}
+                    ? "Registrar emprendedor"
+                    : "Registrar usuario"}
               </h2>
               <button
                 type="button"

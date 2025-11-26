@@ -1,13 +1,13 @@
-import { AdminLayout } from "@/Components/Templates";
+import { AppLayout } from "@/Components/Templates";
 import ReportsAdmin from "./ReportsAdmin";
 
-export default function Reportes(){
-    return(
-        <AdminLayout
-           pageTitle="Reportes de la Plataforma"
-           pageSubtitle="Mejorar por lo que veas en los diagramas"
+export default function Reportes() {
+    return (
+        <AppLayout
+            pageTitle="Reportes de la Plataforma"
+            pageSubtitle="Mejorar por lo que veas en los diagramas"
         >
-           <ReportsAdmin />
-        </AdminLayout>
+            <ReportsAdmin />
+        </AppLayout>
     );
 }

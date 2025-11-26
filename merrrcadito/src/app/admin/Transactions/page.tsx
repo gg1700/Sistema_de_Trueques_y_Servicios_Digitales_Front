@@ -1,17 +1,17 @@
 'use client'
 import { TransactionCard } from "@/Components/Molecules";
-import { AdminLayout } from "@/Components/Templates";
+import { AppLayout } from "@/Components/Templates";
 import { ReportService } from "@/services";
 import { useEffect, useState } from "react";
 
 
-export default function Transactions(codUs : number){
-    const [dataTrans, setData]= useState([]);
+export default function Transactions(codUs: number) {
+    const [dataTrans, setData] = useState([]);
     useEffect(() => {
-        async function getTransactions(){
-            const response= await ReportService.get_user_transaction_history(18);
+        async function getTransactions() {
+            const response = await ReportService.get_user_transaction_history(18);
             const trans = response.data;
-            const mapTrans = trans.map((tra : any) => ({
+            const mapTrans = trans.map((tra: any) => ({
                 codTrans: tra.cod_trans,
                 cod_us_ori: tra.cod_us_origen,
                 cod_us_des: tra.cod_us_destino,
@@ -26,27 +26,27 @@ export default function Transactions(codUs : number){
             setData(mapTrans);
         }
         getTransactions();
-    },[]);
-    return(
-        <AdminLayout pageTitle="Transacciones" pageSubtitle="Registradas">
+    }, []);
+    return (
+        <AppLayout pageTitle="Transacciones" pageSubtitle="Registradas">
             <div>
-                {dataTrans.map((tran : any ) => (
-                    <TransactionCard 
-                    key={tran.codTrans}
-                    cod_trans={tran.codTrans}
-                    cod_us_origen={tran.cod_us_ori}
-                    cod_us_destino={tran.cod_us_des}
-                    monto_total={tran.monto}
-                    moneda_trans={tran.monedaTrans}
-                    cod_pub= {tran.cod_pub}
-                    id_token={tran.token}
-                    fecha_trans={tran.fecha}
-                    handlename_ori_dest={tran.handlename}
-                    descr_trans={tran.descripcion}
-                    cod_us={18}
+                {dataTrans.map((tran: any) => (
+                    <TransactionCard
+                        key={tran.codTrans}
+                        cod_trans={tran.codTrans}
+                        cod_us_origen={tran.cod_us_ori}
+                        cod_us_destino={tran.cod_us_des}
+                        monto_total={tran.monto}
+                        moneda_trans={tran.monedaTrans}
+                        cod_pub={tran.cod_pub}
+                        id_token={tran.token}
+                        fecha_trans={tran.fecha}
+                        handlename_ori_dest={tran.handlename}
+                        descr_trans={tran.descripcion}
+                        cod_us={18}
                     />
                 ))}
             </div>
-        </AdminLayout>
+        </AppLayout>
     );
 }

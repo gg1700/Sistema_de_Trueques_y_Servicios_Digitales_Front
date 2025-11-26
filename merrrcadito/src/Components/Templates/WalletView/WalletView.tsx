@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import SideBar from "@/Components/Organisms/SideBar/SideBar";
 import Link from "next/link";
 import { ButtonIcon } from "@/Components/Atoms";
+import { getCodUs, getHandleName } from "@/lib/authStorage";
 
 // Interfaces
 interface WalletData {
@@ -91,11 +92,17 @@ export default function WalletView() {
 
     // Get user ID (simulated or from local storage/context)
     useEffect(() => {
-        // Try to get from localStorage first
-        const storedHandle = typeof window !== 'undefined' ? localStorage.getItem("currentUserHandle") : null;
+        // Obtener directamente de localStorage usando las utilidades
+        const codUs = getCodUs();
+        const storedHandle = getHandleName();
 
-        if (storedHandle) {
-            fetchUserByHandle(storedHandle);
+        if (codUs) {
+            setUserId(codUs);
+
+            // Si hay handle, obtener el nombre completo para mostrar
+            if (storedHandle) {
+                fetchUserByHandle(storedHandle);
+            }
         } else {
             // Fallback or redirect to login
             setLoading(false);
@@ -109,10 +116,7 @@ export default function WalletView() {
 
             if (data.success && data.data) {
                 const user = Array.isArray(data.data) ? data.data[0] : data.data;
-                setUserId(user.cod_us);
                 setUserName(`${user.nom_us} ${user.ap_pat_us} ${user.ap_mat_us || ''}`);
-
-                // The actual fetching of wallet/transactions/exchanges is now handled by the useEffect above
             }
         } catch (error) {
             console.error("Error fetching user:", error);

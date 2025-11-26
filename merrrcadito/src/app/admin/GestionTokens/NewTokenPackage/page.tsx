@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import styles from "./newToken.module.css";
-import AdminLayout from "@/Components/Templates/AdminLayout/AdminLayout";
+import AppLayout from "@/Components/Templates/AppLayout/AppLayout";
 import { createTokenPackage } from "@/services/tokenService";
 
 export default function NewTokenPackagePage() {
@@ -39,10 +39,10 @@ export default function NewTokenPackagePage() {
       formData.append("nombre", form.nombre);
       formData.append("tokens", form.tokens);
       formData.append("precio_real", form.precio_real);
-      formData.append("image", file); 
+      formData.append("image", file);
 
       await createTokenPackage(formData);
-      
+
       alert("Paquete registrado con éxito");
       // Reset form
       setForm({ nombre: "", tokens: "", precio_real: "" });
@@ -57,14 +57,14 @@ export default function NewTokenPackagePage() {
   };
 
   return (
-    <AdminLayout 
-      pageTitle="Gestión de Tokens" 
+    <AppLayout
+      pageTitle="Gestión de Tokens"
       pageSubtitle="Registrar nuevo paquete de tokens"
     >
       <div className={styles.container}>
         <h2 className={styles.title}>Registrar Nuevo Paquete</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
-          
+
           <div className={styles.field}>
             <label className={styles.label}>Nombre del Paquete</label>
             <input
@@ -120,6 +120,6 @@ export default function NewTokenPackagePage() {
           </div>
         </form>
       </div>
-    </AdminLayout>
+    </AppLayout>
   );
 }

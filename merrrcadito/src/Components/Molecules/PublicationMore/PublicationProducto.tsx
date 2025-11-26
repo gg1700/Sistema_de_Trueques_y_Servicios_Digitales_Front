@@ -3,6 +3,7 @@ import styles from './PublicationMore.module.css'
 import { useState, useEffect } from 'react';
 import { purchaseProduct, PurchaseProductResponse } from '@/services/transactionService';
 import { FaCheckCircle, FaTimes } from 'react-icons/fa';
+import { getCodUs } from '@/lib/authStorage';
 
 const USERS_API_BASE = process.env.NEXT_PUBLIC_USERS_API_BASE_URL ?? "http://localhost:5000/api/users";
 
@@ -37,23 +38,17 @@ export default function PublicationProducto({
     const [userId, setUserId] = useState<number | null>(null);
 
     useEffect(() => {
-        const getUserId = async () => {
-            if (typeof window !== 'undefined') {
-                const storedHandle = window.localStorage.getItem('currentUserHandle');
-                if (storedHandle) {
-                    try {
-                        const response = await fetch(`${USERS_API_BASE}/handle/${storedHandle}`);
-                        const data = await response.json();
-                        if (data.success && data.data) {
-                            setUserId(data.data.cod_us);
-                        }
-                    } catch (error) {
-                        console.error('Error obteniendo user ID:', error);
-                    }
-                }
+        const fetchUserId = () => {
+            // Obtener cod_us directamente de localStorage
+            const codUs = getCodUs();
+            if (codUs) {
+                setUserId(codUs);
+            } else {
+                console.log('No hay sesión activa');
             }
         };
-        getUserId();
+
+        fetchUserId();
     }, []);
 
     async function handleConfirmPurchase() {

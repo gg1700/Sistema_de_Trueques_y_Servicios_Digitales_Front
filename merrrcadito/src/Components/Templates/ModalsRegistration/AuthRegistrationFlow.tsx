@@ -9,6 +9,7 @@ import SignInChoiceModal from "@/Components/Templates/ModalsRegistration/SignInC
 import SignInOrganizationModal from "@/Components/Templates/ModalsRegistration/SignInOrganizationModal";
 import SignInUserModal from "@/Components/Templates/ModalsRegistration/SignInUserModal";
 import EntrepreneurRegister from "@/Components/Templates/ModalsRegistration/EntrepreneurRegister";
+import { saveUserSession } from "@/lib/authStorage";
 
 type Step =
   | "landing"
@@ -66,22 +67,16 @@ const AuthRegistrationFlow: React.FC = () => {
       if (userFound) {
         const role = mapCodRolToRole(userData.cod_rol);
 
-        // 🔹 Guardamos info en localStorage para que /Home pueda leerla
-        if (typeof window !== "undefined") {
-          try {
-            window.localStorage.setItem("currentUserHandle", username);
-            window.localStorage.setItem("currentUserRole", role);
-          } catch {
-            // si falla localStorage no rompemos el flujo
-          }
-        }
+        // 🔹 Guardamos sesión completa en localStorage
+        saveUserSession({
+          cod_us: userData.cod_us,
+          handle_name: username,
+          cod_rol: userData.cod_rol,
+          role: role,
+        });
 
-        // puedes dejar la URL “limpia” o con query, ambas sirven ahora
-        router.push(
-          `${PROFILE_ROUTE_BASE}?type=user&role=${role}&handle=${encodeURIComponent(
-            username
-          )}`
-        );
+        // Redirigir a Home - los datos ya están en localStorage
+        router.push(`${PROFILE_ROUTE_BASE}`);
         return;
       }
 

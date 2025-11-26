@@ -15,6 +15,7 @@ import ServiceRegistrationForm from "./ServiceRegistrationForm";
 import { getNavItems } from "../../../Utils/navigation";
 import { ReportService, EventService } from "@/services";
 import { ExchangeService } from "@/services/exchangeService";
+import { getUserSession } from "@/lib/authStorage";
 
 const USERS_API_BASE =
   process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
@@ -458,27 +459,21 @@ export default function UserProfile({
   const roleFromUrl = searchParams.get("role") as Role | null;
 
   useEffect(() => {
-    if (handleFromUrl) {
+    // Priorizar localStorage sobre URL params
+    const session = getUserSession();
+
+    if (session) {
+      // Usar datos de localStorage (más rápido, sin fetch)
+      setResolvedHandle(session.handle_name);
+      setResolvedRoleFromStorage(session.role);
+      setViewerId(session.cod_us); // Ya tenemos cod_us, no necesitamos fetch adicional
+    } else if (handleFromUrl) {
+      // Fallback a URL params si no hay localStorage
       setResolvedHandle(handleFromUrl);
-    } else if (typeof window !== "undefined") {
-      const storedHandle = window.localStorage.getItem("currentUserHandle");
-      if (storedHandle) {
-        setResolvedHandle(storedHandle);
-      }
     }
-    if (roleFromUrl) {
+
+    if (roleFromUrl && !session) {
       setResolvedRoleFromStorage(roleFromUrl);
-    } else if (typeof window !== "undefined") {
-      const storedRole = window.localStorage.getItem(
-        "currentUserRole"
-      ) as Role | null;
-      if (
-        storedRole === "admin" ||
-        storedRole === "user" ||
-        storedRole === "entrepreneur"
-      ) {
-        setResolvedRoleFromStorage(storedRole);
-      }
     }
   }, [handleFromUrl, roleFromUrl]);
 
@@ -488,29 +483,6 @@ export default function UserProfile({
 
   const navRole: NavRole = effectiveRole === "admin" ? "admin" : "user";
   const navList = getNavItems(navRole);
-
-  useEffect(() => {
-    const fetchViewerData = async () => {
-      if (typeof window !== "undefined") {
-        const handle = window.localStorage.getItem("currentUserHandle");
-        if (handle) {
-          try {
-            const res = await fetch(
-              `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(handle)}`
-            );
-            const json = await res.json();
-            if (res.ok && json.success && json.data) {
-              const data = Array.isArray(json.data) ? json.data[0] : json.data;
-              setViewerId(data.cod_us);
-            }
-          } catch (err) {
-            console.error("Error fetching viewer data:", err);
-          }
-        }
-      }
-    };
-    fetchViewerData();
-  }, []);
 
   useEffect(() => {
     const fetchCategoriesAndSubcats = async () => {

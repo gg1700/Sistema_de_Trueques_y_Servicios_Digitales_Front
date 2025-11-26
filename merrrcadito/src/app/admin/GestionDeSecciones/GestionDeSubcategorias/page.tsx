@@ -1,16 +1,16 @@
 'use client'
-import {AdminLayout} from '@/Components/Templates';
+import { AppLayout } from '@/Components/Templates';
 import ViewSubcategories from './ViewSubcategories/ViewSubcategories';
 
-export default function Subcategorias(){
+export default function Subcategorias() {
 
-    return(
+    return (
         <>
-         <div>
-            <AdminLayout pageTitle='Gestion de Secciones' pageSubtitle='Subcategorias'>
-                <ViewSubcategories/>
-            </AdminLayout>
-         </div>
+            <div>
+                <AppLayout pageTitle='Gestion de Secciones' pageSubtitle='Subcategorias'>
+                    <ViewSubcategories />
+                </AppLayout>
+            </div>
         </>
     );
 }

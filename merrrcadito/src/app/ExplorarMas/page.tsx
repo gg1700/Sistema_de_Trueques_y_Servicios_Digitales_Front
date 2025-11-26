@@ -1,5 +1,5 @@
 'use client'
-import { AdminLayout } from '@/Components/Templates';
+import { AppLayout } from '@/Components/Templates';
 import { useState, useEffect } from 'react';
 import Publication from '@/Components/Organisms/Publication/Publication';
 import styles from './ExplorarMas.module.css';
@@ -42,14 +42,14 @@ export default function ExplorarMas() {
 
     if (loading) {
         return (
-            <AdminLayout pageTitle="Explorar Más" pageSubtitle="Cargando...">
+            <AppLayout pageTitle="Explorar Más" pageSubtitle="Cargando...">
                 <div className={styles.loading}>Cargando...</div>
-            </AdminLayout>
+            </AppLayout>
         );
     }
 
     return (
-        <AdminLayout
+        <AppLayout
             pageTitle="Explorar Más"
             pageSubtitle="Descubre productos y servicios"
         >
@@ -136,6 +136,6 @@ export default function ExplorarMas() {
                     </div>
                 )}
             </div>
-        </AdminLayout>
+        </AppLayout>
     );
 }

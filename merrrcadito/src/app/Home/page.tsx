@@ -1,13 +1,13 @@
 'use client'
 import { ListPublication } from "@/Components/Organisms";
-import { AdminLayout } from "@/Components/Templates";
+import { AppLayout } from "@/Components/Templates";
 import { usePublicationsProds, usePublicationsServs } from "./PublicationViewHome";
 export default function Home() {
     const dataPubProd = usePublicationsProds();
     const dataPubServ = usePublicationsServs();
 
     return (
-        <AdminLayout
+        <AppLayout
             pageTitle="Hoy por mi"
             pageSubtitle="Mañana por mi"
         >
@@ -24,6 +24,6 @@ export default function Home() {
                     publications={dataPubServ}
                 />
             </div>
-        </AdminLayout>
+        </AppLayout>
     );
 }
