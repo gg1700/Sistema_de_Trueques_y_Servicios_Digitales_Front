@@ -69,7 +69,6 @@ export default function PublicationCard({
                 }
             </div>
             <div className={styles.buttonContainer}>
-
                 <ButtonForm
                     type='open'
                     action='watch'

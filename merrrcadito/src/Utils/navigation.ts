@@ -4,7 +4,8 @@ export const navItems = {
     { name: 'Ranking CO2', route: '/RankingCO2' },
     { name: 'Mi Perfil', route: '/perfil' },
     { name: 'Rankig Emprendedores', route: '/RankingSells' },
-    { name: 'Tienda', route: '/tokens' }
+    { name: 'Tienda', route: '/tokens' },
+    { name: 'Explorar Más', route: '/ExplorarMas' }
   ],
   admin: [
     { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias' },

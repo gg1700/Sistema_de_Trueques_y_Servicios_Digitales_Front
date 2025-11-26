@@ -98,3 +98,8 @@
     font-size: 20px;
   }
 }
+
+.cardWrapper {
+  min-width: 350px;
+  flex-shrink: 0;
+}

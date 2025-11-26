@@ -56,41 +56,42 @@ export default function ListPublication({
                 </button>
                 <div ref={scrollContainerRef} className={styles.scrollContainer}>
                     {publications.map(pub => (
-                        <Publication
-                            key={pub.cod_pub}
-                            clase={clase}
-                            pub={{
-                                cod_pub: pub.cod_pub,
-                                nombre_publicacion: pub.nombre_publicacion,
-                                nombre_categoria: pub.nombre_categoria,
-                                nombre_subcat: pub.nombre_subcat,
-                                precio_pub: pub.precio_pub,
-                                foto_pub: pub.foto_pub,
-                                calif_pond_pub: pub.calif_pond_pub,
-                                calidad: pub.calidad,
-                                estado_pub: pub.estado_pub,
-                                handlename: pub.handlename
-                            }}
-                            pubP={clase === 'Producto' ? {
-                                descripcion: pub.descripcion,
-                                fecha_ini_pub: pub.fecha_ini_pub,
-                                contacto_correo: pub.contacto_correo,
-                                contacto_numero: pub.contacto_numero,
-                                cantidad: pub.cantidad!,
-                                marca: pub.marca,
-                                handlename: pub.handlename
-                            } : null}
-                            pubS={clase === 'Servicio' ? {
-                                descripcion: pub.descripcion,
-                                fecha_ini_pub: pub.fecha_ini_pub,
-                                contacto_correo: pub.contacto_correo,
-                                contacto_numero: pub.contacto_numero,
-                                handlename: pub.handlename,
-                                hrs_ini_serv: pub.hrs_ini_serv!,
-                                hrs_fin_serv: pub.hrs_fin_serv!,
-                                duracion: pub.duracion!
-                            } : null}
-                        />
+                        <div key={pub.cod_pub} className={styles.cardWrapper}>
+                            <Publication
+                                clase={clase}
+                                pub={{
+                                    cod_pub: pub.cod_pub,
+                                    nombre_publicacion: pub.nombre_publicacion,
+                                    nombre_categoria: pub.nombre_categoria,
+                                    nombre_subcat: pub.nombre_subcat,
+                                    precio_pub: pub.precio_pub,
+                                    foto_pub: pub.foto_pub,
+                                    calif_pond_pub: pub.calif_pond_pub,
+                                    calidad: pub.calidad,
+                                    estado_pub: pub.estado_pub,
+                                    handlename: pub.handlename
+                                }}
+                                pubP={clase === 'Producto' ? {
+                                    descripcion: pub.descripcion,
+                                    fecha_ini_pub: pub.fecha_ini_pub,
+                                    contacto_correo: pub.contacto_correo,
+                                    contacto_numero: pub.contacto_numero,
+                                    cantidad: pub.cantidad!,
+                                    marca: pub.marca,
+                                    handlename: pub.handlename
+                                } : null}
+                                pubS={clase === 'Servicio' ? {
+                                    descripcion: pub.descripcion,
+                                    fecha_ini_pub: pub.fecha_ini_pub,
+                                    contacto_correo: pub.contacto_correo,
+                                    contacto_numero: pub.contacto_numero,
+                                    handlename: pub.handlename,
+                                    hrs_ini_serv: pub.hrs_ini_serv!,
+                                    hrs_fin_serv: pub.hrs_fin_serv!,
+                                    duracion: pub.duracion!
+                                } : null}
+                            />
+                        </div>
                     ))}
                 </div>
                 <button

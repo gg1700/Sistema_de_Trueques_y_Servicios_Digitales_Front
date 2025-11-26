@@ -8,7 +8,8 @@ import styles from "./UserProfile.module.css";
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
 import { getNavItems } from "../../../Utils/navigation";
-import { ReportService } from "@/services";
+import { ReportService, EventService } from "@/services";
+import { ExchangeService } from "@/services/exchangeService";
 
 const USERS_API_BASE =
   process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
@@ -26,6 +27,8 @@ const CATEGORIES_API_BASE =
   process.env.NEXT_PUBLIC_CATEGORIES_API_BASE_URL ??
   "http://localhost:5000/api/categories";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
+
 const SUBCATEGORIES_API_BASE =
   process.env.NEXT_PUBLIC_SUBCATEGORIES_API_BASE_URL ??
   "http://localhost:5000/api/subcategories";
@@ -35,7 +38,7 @@ const PUBLICATIONS_API_BASE =
   "http://localhost:5000/api/publications";
 
 type Tab = "offers" | "publish" | "likes" | "events";
-type PublishType = "product" | "service";
+type PublishType = "product" | "service" | "exchange" | "event";
 type NavRole = "admin" | "user";
 type Role = NavRole | "entrepreneur";
 
@@ -45,6 +48,7 @@ interface Offer {
   description: string;
   image?: string;
   price?: number;
+  isExchange?: boolean;
 }
 
 interface ProductFormState {
@@ -66,6 +70,35 @@ interface ServiceFormState {
   description: string;
   priceTokens: string;
   image: File | null;
+}
+
+interface ExchangeFormState {
+  name: string;
+  weightKg: string;
+  material: string;
+  category: string;
+  subcategory: string;
+  quality: string;
+  description: string;
+  image: File | null;
+}
+
+interface EventFormState {
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  eventType: string;
+  cost: string;
+  rewardId: string;
+  image: File | null;
+}
+
+interface Product {
+  cod_prod: number;
+  nom_prod: string;
+  desc_prod?: string;
+  precio_prod?: number;
 }
 
 interface UserApi {
@@ -156,6 +189,33 @@ export default function UserProfile({
   const [environmentalData, setEnvironmentalData] = useState<any>(null);
   const [loadingEnvironmental, setLoadingEnvironmental] = useState(false);
 
+  // Estado para formulario de intercambio
+  const [exchangeForm, setExchangeForm] = useState<ExchangeFormState>({
+    name: "",
+    weightKg: "",
+    material: "",
+    category: "",
+    subcategory: "",
+    quality: "",
+    description: "",
+    image: null,
+  });
+
+  // Estado para formulario de evento
+  const [eventForm, setEventForm] = useState<EventFormState>({
+    title: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+    eventType: "",
+    cost: "",
+    rewardId: "",
+    image: null,
+  });
+
+  const [userProducts, setUserProducts] = useState<Product[]>([]);
+  const [availableRewards, setAvailableRewards] = useState<Array<{ cod_rec: number, monto_rec: number }>>([]);
+
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const handleFromUrl = searchParams.get("handle");
@@ -214,11 +274,23 @@ export default function UserProfile({
           setSubcategories([]);
         }
       } catch (err) {
-        console.error("Error cargando categorías/subcategorías:", err);
+        console.error("Error cargando subcategorías:", err);
+      }
+    };
+
+    const fetchRewards = async () => {
+      try {
+        const response = await EventService.get_all_rewards();
+        if (response.success && response.data) {
+          setAvailableRewards(response.data);
+        }
+      } catch (error) {
+        console.error("Error al cargar recompensas:", error);
       }
     };
 
     fetchCategoriesAndSubcats();
+    fetchRewards();
   }, []);
 
   useEffect(() => {
@@ -226,17 +298,28 @@ export default function UserProfile({
       setFilteredSubcategories([]);
       return;
     }
-    const codCat = parseInt(productForm.category, 10);
-    if (isNaN(codCat)) {
-      setFilteredSubcategories([]);
-      return;
-    }
-    const filtered = subcategories.filter((s) => s.cod_cat === codCat);
+    const filtered = subcategories.filter(
+      (sc) => sc.cod_cat === parseInt(productForm.category)
+    );
     setFilteredSubcategories(filtered);
   }, [productForm.category, subcategories]);
 
+  // Filtrar subcategorías para formulario de intercambio
+  useEffect(() => {
+    if (!exchangeForm.category) {
+      setFilteredSubcategories([]);
+      return;
+    }
+    const filtered = subcategories.filter(
+      (sc) => sc.cod_cat === parseInt(exchangeForm.category)
+    );
+    setFilteredSubcategories(filtered);
+  }, [exchangeForm.category, subcategories]);
+
   const fetchOffersForUser = async (codUs: number) => {
     try {
+      const allOffers: Offer[] = [];
+
       const resPosts = await fetch(
         `${POSTS_API_BASE}/all_active_product_posts`
       );
@@ -245,18 +328,132 @@ export default function UserProfile({
       if (resPosts.ok && jsonPosts.data && Array.isArray(jsonPosts.data)) {
         const mappedOffers: Offer[] = jsonPosts.data
           .filter((p: any) => p.cod_us === codUs)
-          .map((p: any) => ({
-            id: p.cod_pub ?? p.id ?? 0,
-            title: p.nom_prod ?? p.titulo_pub ?? p.title ?? "Sin título",
-            description: p.descr_pub ?? p.desc_prod ?? p.contenido ?? "",
-            image: `${PUBLICATIONS_API_BASE}/${p.cod_pub ?? p.id ?? 0}/image`,
-            price: p.precio_pub ?? p.precio_prod ?? 0,
-          }));
+          .map((p: any) => {
+            let descriptionLines = [];
 
-        setOffers(mappedOffers);
-      } else {
-        setOffers([]);
+            // Descripción del producto
+            const productDesc = p.desc_prod ?? "";
+            if (productDesc) {
+              descriptionLines.push(`📝 ${productDesc.length > 40 ? productDesc.slice(0, 40) + '...' : productDesc}`);
+            }
+
+            // Contenido de la publicación (si existe)
+            const pubContent = p.contenido ?? "";
+            if (pubContent) {
+              descriptionLines.push(`📝 ${pubContent.length > 40 ? pubContent.slice(0, 40) + '...' : pubContent}`)
+            }
+
+            // Siempre mostrar impacto (usar valor del backend o 5 por defecto)
+            const impacto = p.impacto_amb_pub ?? 5;
+            descriptionLines.push(`🌱 Impacto: ${impacto} pts`);
+
+            return {
+              id: p.cod_pub ?? p.id ?? 0,
+              title: p.nom_prod ?? p.title ?? "Sin título",
+              description: descriptionLines.join('\n'),
+              image: `${PUBLICATIONS_API_BASE}/${p.cod_pub ?? p.id ?? 0}/image`,
+              price: p.precio_prod ?? 0,
+            };
+          });
+
+        allOffers.push(...mappedOffers);
       }
+
+      // Cargar productos del usuario para el formulario de intercambio
+      const productsResponse = await ExchangeService.get_user_products(codUs);
+      if (productsResponse.success && productsResponse.data) {
+        const productPosts = Array.isArray(productsResponse.data)
+          ? productsResponse.data.filter((post: any) => post.tipo_publicacion === 'producto')
+          : [];
+
+        const products = productPosts.map((post: any) => ({
+          cod_prod: post.cod_prod,
+          nom_prod: post.nombre_producto || post.nom_prod,
+          desc_prod: post.descripcion,
+          precio_prod: post.precio
+        }));
+        setUserProducts(products);
+      }
+
+      // Cargar intercambios del usuario
+      const exchangesResponse = await ExchangeService.get_user_exchanges(codUs);
+      if (exchangesResponse.success && exchangesResponse.data) {
+        // Mapear intercambios a formato Offer para mostrarlos en la lista
+        const exchangeOffers: Offer[] = exchangesResponse.data.map((ex: any, index: number) => {
+          const isOpenOffer = ex.cod_us_1 === ex.cod_us_2;
+
+          let descriptionLines = [];
+
+          if (isOpenOffer) {
+            descriptionLines.push('📝 Oferta abierta de intercambio');
+          } else {
+            descriptionLines.push(`📝 Con @${ex.cod_us_1 === codUs ? ex.usuario_destino_handle : ex.usuario_origen_handle}`);
+          }
+
+          descriptionLines.push(`🌱 Impacto: ${ex.impacto_amb_inter} pts`);
+
+          const imageUrl = ex.tiene_foto ? `${API_BASE_URL}/exchanges/${ex.cod_inter}/image` : null;
+
+          return {
+            id: `exchange-${ex.cod_inter}`,
+            title: isOpenOffer
+              ? `Intercambio: ${ex.nombre_prod_origen} (Oferta)`
+              : `Intercambio: ${ex.nombre_prod_origen} ⇄ ${ex.nombre_prod_destino}`,
+            description: descriptionLines.join('\n'),
+            image: imageUrl,
+            price: 0,
+            isExchange: true
+          };
+        });
+
+        allOffers.push(...exchangeOffers);
+      }
+
+      // Cargar eventos del usuario
+      const eventsResponse = await EventService.get_user_created_events(codUs);
+      if (eventsResponse.success && eventsResponse.data) {
+        // Mapear eventos a formato Offer para mostrarlos en la lista
+        const eventOffers: Offer[] = eventsResponse.data.map((ev: any) => {
+          const imageUrl = ev.tiene_banner ? `${API_BASE_URL}/events/${ev.cod_evento}/image` : null;
+
+          // Construir descripción con líneas separadas
+          let descriptionLines = [];
+
+          if (ev.descripcion_evento) {
+            descriptionLines.push(`📝 ${ev.descripcion_evento.length > 50 ? ev.descripcion_evento.slice(0, 50) + '...' : ev.descripcion_evento}`);
+          }
+
+          if (ev.fecha_inicio_evento && ev.fecha_finalizacion_evento) {
+            descriptionLines.push(`📅 ${new Date(ev.fecha_inicio_evento).toLocaleDateString('es-ES', { timeZone: 'UTC' })} - ${new Date(ev.fecha_finalizacion_evento).toLocaleDateString('es-ES', { timeZone: 'UTC' })}`);
+          }
+
+          if (ev.monto_recompensa && ev.monto_recompensa > 0) {
+            descriptionLines.push(`🎁 Recompensa: ${ev.monto_recompensa} CV`);
+          }
+
+          descriptionLines.push(`🌱 Impacto: 10 pts`);
+
+          return {
+            id: `event-${ev.cod_evento}`,
+            title: `Evento: ${ev.titulo_evento}`,
+            description: descriptionLines.join('\n'),
+            image: imageUrl,
+            price: ev.costo_inscripcion,
+            isExchange: false
+          };
+        });
+
+        allOffers.push(...eventOffers);
+      }
+
+      // Eliminar duplicados basados en ID (mantener el primero encontrado)
+      const uniqueOffers = allOffers.filter((offer, index, self) =>
+        index === self.findIndex((o) => o.id === offer.id)
+      );
+
+      // Establecer todas las ofertas de una sola vez
+      setOffers(uniqueOffers);
+
     } catch (err) {
       console.error("Error al cargar publicaciones de productos:", err);
       setOffers([]);
@@ -534,6 +731,176 @@ export default function UserProfile({
     });
   };
 
+  // Handlers para formulario de intercambio
+  const handleExchangeChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setExchangeForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmitExchange = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!user?.cod_us) {
+      setError("No se encontró el código de usuario");
+      return;
+    }
+
+    if (!exchangeForm.name || !exchangeForm.category) {
+      setError("Nombre y categoría son obligatorios");
+      return;
+    }
+
+    try {
+      setError(null);
+
+      const formData = new FormData();
+      formData.append("cod_us_1", user.cod_us.toString());
+
+      // Datos del producto a crear
+      formData.append("nom_prod", exchangeForm.name);
+      formData.append("peso_prod", exchangeForm.weightKg || "0");
+      formData.append("marca_prod", exchangeForm.material || "");
+      formData.append("cod_subcat_prod", exchangeForm.subcategory || exchangeForm.category); // Fallback a categoría si no hay sub
+      formData.append("calidad_prod", exchangeForm.quality || "nuevo");
+      formData.append("desc_prod", exchangeForm.description || "");
+
+      // La cantidad y unidad se asumen por defecto o se añaden si el backend lo requiere
+      // Para intercambio, asumimos 1 unidad del producto creado
+      formData.append("cant_prod_origen", "1");
+      formData.append("unidad_medida_origen", "unidades");
+
+      if (exchangeForm.image) {
+        formData.append("foto_inter", exchangeForm.image);
+      }
+
+      const response = await ExchangeService.create_exchange(formData);
+
+      if (response.success) {
+        alert("¡Oferta de intercambio publicada exitosamente!");
+        handleCancelExchange();
+        setShowSuccessModal(true);
+        // Recargar ofertas para mostrar el nuevo intercambio
+        if (user.cod_us) {
+          await fetchOffersForUser(user.cod_us);
+        }
+      } else {
+        throw new Error(response.message || "Error al crear el intercambio");
+      }
+    } catch (err: any) {
+      console.error("Error al crear intercambio:", err);
+      setError(err?.message || "Error al crear el intercambio");
+    }
+  };
+
+  const handleCancelExchange = () => {
+    setExchangeForm({
+      name: "",
+      weightKg: "",
+      material: "",
+      category: "",
+      subcategory: "",
+      quality: "",
+      description: "",
+      image: null,
+    });
+  };
+
+  // Handlers para formulario de eventos
+  const handleEventChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    // Si se cambia el tipo de evento a "benefico", resetear el costo a 0
+    if (name === 'eventType' && value === 'benefico') {
+      setEventForm(prev => ({
+        ...prev,
+        [name]: value,
+        cost: "0" // Changed to string "0" to match the type of eventForm.cost
+      }));
+    } else {
+      setEventForm(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmitEvent = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!user?.cod_us) {
+      setError("No se encontró el código de usuario");
+      return;
+    }
+
+    if (!eventForm.title || !eventForm.description || !eventForm.startDate || !eventForm.endDate || !eventForm.eventType) {
+      setError("Título, descripción, fechas y tipo de evento son obligatorios");
+      return;
+    }
+
+    // Validar que la fecha de inicio sea anterior a la fecha de finalización
+    if (new Date(eventForm.startDate) >= new Date(eventForm.endDate)) {
+      setError("La fecha de finalización debe ser posterior a la fecha de inicio");
+      return;
+    }
+
+    try {
+      setError(null);
+
+      const formData = new FormData();
+      formData.append("titulo_evento", eventForm.title);
+      formData.append("descripcion_evento", eventForm.description);
+      formData.append("fecha_inicio_evento", eventForm.startDate);
+      formData.append("fecha_finalizacion_evento", eventForm.endDate);
+      formData.append("tipo_evento", eventForm.eventType);
+      formData.append("costo_inscripcion", eventForm.cost || "0");
+
+      if (eventForm.rewardId) {
+        formData.append("cod_rec", eventForm.rewardId);
+      }
+
+      if (eventForm.image) {
+        formData.append("banner_evento", eventForm.image);
+      }
+
+      // Agregar cod_us a la URL como query parameter
+      const response = await fetch(`${API_BASE_URL}/events/create?cod_us=${user.cod_us}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("¡Evento creado exitosamente!");
+        handleCancelEvent();
+        setShowSuccessModal(true);
+        // Recargar ofertas para mostrar el nuevo evento
+        if (user.cod_us) {
+          await fetchOffersForUser(user.cod_us);
+        }
+      } else {
+        throw new Error(result.message || "Error al crear el evento");
+      }
+    } catch (err: any) {
+      console.error("Error al crear evento:", err);
+      setError(err?.message || "Error al crear el evento");
+    }
+  };
+
+  const handleCancelEvent = () => {
+    setEventForm({
+      title: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+      eventType: "",
+      cost: "",
+      rewardId: "",
+      image: null,
+    });
+  };
+
   const fullName =
     user &&
     `${user.nom_us} ${user.ap_pat_us} ${user.ap_mat_us ?? ""}`.trim();
@@ -800,32 +1167,28 @@ export default function UserProfile({
         <nav className={styles.tabs}>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "offers" ? "tabActive" : ""
-              }`}
+            className={`${styles.tab} ${activeTab === "offers" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("offers")}
           >
             Ofertas Propias
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "publish" ? "tabActive" : ""
-              }`}
+            className={`${styles.tab} ${activeTab === "publish" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("publish")}
           >
             Publicar
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "likes" ? "tabActive" : ""
-              }`}
+            className={`${styles.tab} ${activeTab === "likes" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("likes")}
           >
             Me gusta
           </button>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "events" ? "tabActive" : ""
-              }`}
+            className={`${styles.tab} ${activeTab === "events" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("events")}
           >
             Eventos
@@ -868,8 +1231,24 @@ export default function UserProfile({
             onChangeServiceImage={(file) =>
               setServiceForm((prev) => ({ ...prev, image: file }))
             }
+            exchangeForm={exchangeForm}
+            handleExchangeChange={handleExchangeChange}
+            handleSubmitExchange={handleSubmitExchange}
+            handleCancelExchange={handleCancelExchange}
+            onChangeExchangeImage={(file) =>
+              setExchangeForm((prev) => ({ ...prev, image: file }))
+            }
+            eventForm={eventForm}
+            handleEventChange={handleEventChange}
+            handleSubmitEvent={handleSubmitEvent}
+            handleCancelEvent={handleCancelEvent}
+            onChangeEventImage={(file) =>
+              setEventForm((prev) => ({ ...prev, image: file }))
+            }
+            userProducts={userProducts}
             categories={categories}
             filteredSubcategories={filteredSubcategories}
+            availableRewards={availableRewards}
           />
         )}
 
@@ -977,39 +1356,47 @@ function OffersSection({ offers }: OffersSectionProps) {
                   objectFit: "cover",
                   borderRadius: "12px",
                 }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
           </div>
           <div className={styles.offerInfo}>
             <h2 className={styles.offerTitle}>{offer.title}</h2>
-            <p className={styles.offerDescription}>{offer.description}</p>
+            <p className={styles.offerDescription} style={{ whiteSpace: 'pre-line' }}>{offer.description}</p>
           </div>
           <div className={styles.offerActions}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '12px'
+              gap: '12px',
+              flexWrap: 'wrap'
             }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '4px'
-              }}>
-                <span style={{
-                  fontSize: '20px',
-                  fontWeight: '700',
-                  color: '#1fb7a1'
-                }}>
-                  {offer.price ?? 0}
-                </span>
-                <span style={{
-                  fontSize: '13px',
-                  color: '#6b7785',
-                  fontWeight: '500'
-                }}>
-                  Tokens
-                </span>
-              </div>
+              {!offer.isExchange && (
+                <>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: '4px'
+                  }}>
+                    <span style={{
+                      fontSize: '20px',
+                      fontWeight: '700',
+                      color: '#1fb7a1'
+                    }}>
+                      {offer.price ?? 0}
+                    </span>
+                    <span style={{
+                      fontSize: '13px',
+                      color: '#6b7785',
+                      fontWeight: '500'
+                    }}>
+                      Tokens
+                    </span>
+                  </div>
+                </>
+              )}
               <button
                 type="button"
                 className={styles.iconButton}
@@ -1053,8 +1440,24 @@ interface PublishSectionProps {
   handleSubmitService: (e: React.FormEvent) => void;
   handleCancelProduct: () => void;
   handleCancelService: () => void;
+  exchangeForm: ExchangeFormState;
+  handleExchangeChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => void;
+  handleSubmitExchange: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleCancelExchange: () => void;
+  onChangeExchangeImage: (file: File | null) => void;
+  eventForm: EventFormState;
+  handleEventChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => void;
+  handleSubmitEvent: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleCancelEvent: () => void;
+  onChangeEventImage: (file: File | null) => void;
+  userProducts: Product[];
   categories: Category[];
   filteredSubcategories: Subcategory[];
+  availableRewards: Array<{ cod_rec: number, monto_rec: number }>;
 }
 
 function PublishSection({
@@ -1070,8 +1473,20 @@ function PublishSection({
   handleSubmitService,
   handleCancelProduct,
   handleCancelService,
+  exchangeForm,
+  handleExchangeChange,
+  handleSubmitExchange,
+  handleCancelExchange,
+  onChangeExchangeImage,
+  eventForm,
+  handleEventChange,
+  handleSubmitEvent,
+  handleCancelEvent,
+  onChangeEventImage,
+  userProducts,
   categories,
   filteredSubcategories,
+  availableRewards,
 }: PublishSectionProps) {
   return (
     <section className={styles.publishSection}>
@@ -1080,23 +1495,35 @@ function PublishSection({
       <div className={styles.publishTabs}>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "product" ? "publishTabActive" : ""
-            }`}
+          className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""}`}
           onClick={() => setPublishType("product")}
         >
           Producto
         </button>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "service" ? "publishTabActive" : ""
-            }`}
+          className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""}`}
           onClick={() => setPublishType("service")}
         >
           Servicio
         </button>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "exchange" ? styles.publishTabActive : ""}`}
+          onClick={() => setPublishType("exchange")}
+        >
+          Intercambio
+        </button>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "event" ? styles.publishTabActive : ""}`}
+          onClick={() => setPublishType("event")}
+        >
+          Evento
+        </button>
       </div>
 
-      {publishType === "product" ? (
+      {publishType === "product" && (
         <form
           onSubmit={handleSubmitProduct}
           className={styles.publishForm}
@@ -1247,7 +1674,8 @@ function PublishSection({
             </div>
           </div>
         </form>
-      ) : (
+      )}
+      {publishType === "service" && (
         <form
           onSubmit={handleSubmitService}
           className={styles.publishForm}
@@ -1336,6 +1764,277 @@ function PublishSection({
                   type="button"
                   className={styles.cancelButton}
                   onClick={handleCancelService}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      )}
+
+      {publishType === "exchange" && (
+        <form
+          onSubmit={handleSubmitExchange}
+          className={styles.publishForm}
+          noValidate
+        >
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Nombre del Producto</label>
+              <ProfileInput
+                type="text"
+                name="name"
+                value={exchangeForm.name}
+                onChange={handleExchangeChange as any}
+                placeholder="Ej. Chocolate bar powder"
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Peso (Kg)</label>
+              <ProfileInput
+                type="text"
+                name="weightKg"
+                value={exchangeForm.weightKg}
+                onChange={handleExchangeChange as any}
+                placeholder="Ej. 0.5"
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Marca / Material</label>
+              <ProfileInput
+                type="text"
+                name="material"
+                value={exchangeForm.material}
+                onChange={handleExchangeChange as any}
+                placeholder="Ej. COCA"
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Categoría</label>
+              <select
+                name="category"
+                value={exchangeForm.category}
+                onChange={handleExchangeChange}
+                className={styles.selectInput}
+              >
+                <option value="">Seleccionar</option>
+                {categories.map((cat) => (
+                  <option
+                    key={cat.cod_cat}
+                    value={cat.cod_cat.toString()}
+                  >
+                    {cat.nom_cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Subcategoría</label>
+              <select
+                name="subcategory"
+                value={exchangeForm.subcategory}
+                onChange={handleExchangeChange}
+                className={styles.selectInput}
+                disabled={!exchangeForm.category}
+              >
+                <option value="">Seleccionar</option>
+                {filteredSubcategories.map((sub) => (
+                  <option
+                    key={sub.cod_subcat_prod}
+                    value={sub.cod_subcat_prod.toString()}
+                  >
+                    {sub.nom_subcat_prod}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Calidad</label>
+              <select
+                name="quality"
+                value={exchangeForm.quality}
+                onChange={handleExchangeChange}
+                className={styles.selectInput}
+              >
+                <option value="">Seleccionar</option>
+                <option value="nuevo">Nuevo</option>
+                <option value="usado">Usado</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Descripción</label>
+              <textarea
+                name="description"
+                value={exchangeForm.description}
+                onChange={handleExchangeChange}
+                className={styles.textarea}
+                placeholder="Describe tu producto..."
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRowBottom}>
+            <div className={styles.formColImage}>
+              <label className={styles.fieldLabel}>
+                Imagen (cuadrada, máx. 100KB)
+              </label>
+              <FileInput name="exchangeImage" onChange={onChangeExchangeImage} />
+            </div>
+
+            <div className={styles.formColButtons}>
+              <div className={styles.actionsRowInline}>
+                <button type="submit" className={styles.submitButton}>
+                  Publicar Intercambio
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={handleCancelExchange}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      )}
+
+      {publishType === "event" && (
+        <form
+          onSubmit={handleSubmitEvent}
+          className={styles.publishForm}
+          noValidate
+        >
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Título del Evento</label>
+              <ProfileInput
+                type="text"
+                name="title"
+                value={eventForm.title}
+                onChange={handleEventChange as any}
+                placeholder="Ej. Festival de Reciclaje 2025"
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Fecha de Inicio</label>
+              <ProfileInput
+                type="date"
+                name="startDate"
+                value={eventForm.startDate}
+                onChange={handleEventChange as any}
+                required
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Fecha de Finalización</label>
+              <ProfileInput
+                type="date"
+                name="endDate"
+                value={eventForm.endDate}
+                onChange={handleEventChange as any}
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Tipo de Evento</label>
+              <select
+                name="eventType"
+                value={eventForm.eventType}
+                onChange={handleEventChange}
+                className={styles.selectInput}
+                required
+              >
+                <option value="">Seleccionar</option>
+                <option value="benefico">Benéfico</option>
+                <option value="monetizable">Monetizable</option>
+              </select>
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Costo de Inscripción (Tokens)</label>
+              <input
+                type="number"
+                name="cost"
+                value={eventForm.cost}
+                onChange={handleEventChange}
+                className={styles.profileInput}
+                placeholder="Ej. 10"
+                min="0"
+                disabled={eventForm.eventType === 'benefico'}
+              /></div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Recompensa (Créditos Verdes CV)</label>
+              <select
+                name="rewardId"
+                value={eventForm.rewardId}
+                onChange={handleEventChange}
+                className={styles.selectInput}
+              >
+                <option value="">Sin recompensa</option>
+                {availableRewards.map((reward: { cod_rec: number, monto_rec: number }) => (
+                  <option key={reward.cod_rec} value={reward.cod_rec}>
+                    {reward.monto_rec} CV
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Descripción</label>
+              <textarea
+                name="description"
+                value={eventForm.description}
+                onChange={handleEventChange}
+                className={styles.textarea}
+                placeholder="Describe tu evento..."
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRowBottom}>
+            <div className={styles.formColImage}>
+              <label className={styles.fieldLabel}>
+                Banner del Evento (cuadrado, máx. 100KB)
+              </label>
+              <FileInput name="eventImage" onChange={onChangeEventImage} />
+            </div>
+
+            <div className={styles.formColButtons}>
+              <div className={styles.actionsRowInline}>
+                <button type="submit" className={styles.submitButton}>
+                  Crear Evento
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={handleCancelEvent}
                 >
                   Cancelar
                 </button>
