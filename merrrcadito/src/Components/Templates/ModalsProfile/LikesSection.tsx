@@ -159,10 +159,10 @@ export default function LikesSection({ userId }: Props) {
                                     <i className="bi bi-person-circle"></i>
                                     <span>@{like.autor_handle}</span>
                                 </div>
-                                {like.calif_pond_pub > 0 && (
+                                {like.calif_pond_pub && Number(like.calif_pond_pub) > 0 && (
                                     <div className={styles.rating}>
                                         <i className="bi bi-star-fill"></i>
-                                        <span>{like.calif_pond_pub.toFixed(1)}</span>
+                                        <span>{Number(like.calif_pond_pub).toFixed(1)}</span>
                                     </div>
                                 )}
                             </div>

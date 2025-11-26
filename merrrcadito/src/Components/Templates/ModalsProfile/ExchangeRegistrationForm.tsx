@@ -1,4 +1,4 @@
-"use client";
+/*\"use client";
 
 import React, { useState, useEffect } from "react";
 import styles from "./ExchangeRegistrationForm.module.css";
@@ -363,3 +363,4 @@ export default function ExchangeRegistrationForm({
         </form>
     );
 }
+*/
