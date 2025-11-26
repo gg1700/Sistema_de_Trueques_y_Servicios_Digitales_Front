@@ -55,5 +55,17 @@ export const ExchangeService = {
             console.error('Error al obtener productos del usuario:', error);
             throw error;
         }
+    },
+
+    get_all_exchanges: async () => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/exchanges/open`
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener intercambios:', error);
+            throw error;
+        }
     }
 };

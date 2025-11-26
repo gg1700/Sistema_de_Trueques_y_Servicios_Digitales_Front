@@ -1,0 +1,177 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+}
+
+.modalContent {
+    background: #ffffff;
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.closeButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeButton:hover {
+    color: #64748b;
+}
+
+.modalTitle {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.modalSubtitle {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.errorMessage {
+    background: #7f1d1d;
+    color: #fecaca;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .formRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formGroup label {
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #1e293b;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+    outline: none;
+    border-color: #16a085;
+    box-shadow: 0 0 0 3px rgba(22, 160, 133, 0.1);
+}
+
+.formGroup input:disabled,
+.formGroup select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.formGroup textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.formActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+}
+
+.cancelButton,
+.submitButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.cancelButton {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background: #e2e8f0;
+}
+
+.submitButton {
+    background: #16a085;
+    color: #ffffff;
+}
+
+.submitButton:hover:not(:disabled) {
+    background: #138f75;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 160, 133, 0.3);
+}
+
+.cancelButton:disabled,
+.submitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
