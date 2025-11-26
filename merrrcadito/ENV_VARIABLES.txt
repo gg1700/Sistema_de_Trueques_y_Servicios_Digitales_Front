@@ -1,0 +1,14 @@
+# Variables de entorno para el frontend
+# Copia estas líneas a tu archivo .env.local
+
+# API Base URLs
+NEXT_PUBLIC_USERS_API_BASE_URL=http://localhost:5000/api/users
+NEXT_PUBLIC_PRODUCTS_API_BASE_URL=http://localhost:5000/api/products
+NEXT_PUBLIC_EXCHANGES_API_BASE_URL=http://localhost:5000/api/exchanges
+NEXT_PUBLIC_SERVICES_API_BASE_URL=http://localhost:5000/api/services
+NEXT_PUBLIC_EVENTS_API_BASE_URL=http://localhost:5000/api/events
+NEXT_PUBLIC_NOTIFICATIONS_API_BASE_URL=http://localhost:5000/api/notifications
+
+# Si tu backend está en otro puerto o dominio, ajusta las URLs:
+# NEXT_PUBLIC_USERS_API_BASE_URL=https://tu-backend.com/api/users
+# etc...

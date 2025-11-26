@@ -50,7 +50,9 @@ export default function LogInModal({ open, onConfirm, onCancel }: Props) {
         </div>
 
         <div className={styles.actions}>
-          <ButtonCancel onClick={onCancel} />
+          <button type="button" className={styles.btnCancel} onClick={onCancel}>
+            Cancelar
+          </button>
           <button type="submit" className={styles.btnConfirm}>
             Confirmar
           </button>

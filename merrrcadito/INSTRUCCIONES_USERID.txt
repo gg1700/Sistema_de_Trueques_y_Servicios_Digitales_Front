@@ -1,0 +1,10 @@
+// Instrucciones para guardar el userId en localStorage
+
+// Cuando el usuario inicia sesión, guarda su userId en localStorage
+// Agrega esto en tu componente de login o donde manejes la autenticación:
+
+// Ejemplo:
+localStorage.setItem("userId", userData.cod_us.toString());
+
+// Si ya tienes el handle guardado, puedes hacer una llamada a la API
+// para obtener el cod_us y guardarlo también.

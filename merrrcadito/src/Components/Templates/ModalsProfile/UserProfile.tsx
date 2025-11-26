@@ -183,13 +183,13 @@ function PublishSection({
         >
           Servicio
         </button>
-        <button
+        {/* <button
           type="button"
           className={`${styles.publishTab} ${publishType === "exchange" ? "publishTabActive" : ""}`}
           onClick={() => setPublishType("exchange")}
         >
           Intercambio
-        </button>
+        </button> */}
       </div>
 
       {publishType === "product" ? (

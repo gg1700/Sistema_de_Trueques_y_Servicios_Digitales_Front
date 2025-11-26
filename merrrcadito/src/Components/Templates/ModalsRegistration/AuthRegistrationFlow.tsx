@@ -71,6 +71,8 @@ const AuthRegistrationFlow: React.FC = () => {
           try {
             window.localStorage.setItem("currentUserHandle", username);
             window.localStorage.setItem("currentUserRole", role);
+            // 🔔 Guardamos el userId para el sistema de notificaciones
+            window.localStorage.setItem("userId", userData.cod_us?.toString() || "");
           } catch {
             // si falla localStorage no rompemos el flujo
           }
