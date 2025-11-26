@@ -1,15 +1,15 @@
 'use client'
-import {Publication} from '@/Components/Organisms'
-import {useRef} from 'react';
+import { Publication } from '@/Components/Organisms'
+import { useRef } from 'react';
 import styles from './ListPublication.module.css'
-
-interface DataPubProps{
+interface DataPubProps {
     title: string,
-    pubProd: {
+    clase: 'Producto' | 'Servicio',
+    publications: {
         cod_pub: number,
         nombre_publicacion: string,
         nombre_categoria: string,
-        nombre_subcat: string,
+        nombre_subcat?: string,
         precio_pub?: number,
         foto_pub: string | null,
         calif_pond_pub: number,
@@ -20,17 +20,19 @@ interface DataPubProps{
         contacto_correo: string;
         contacto_numero: number;
         handlename: string;
-        cantidad: number;
+        cantidad?: number;
         marca?: string | null;
+        hrs_ini_serv?: string;
+        hrs_fin_serv?: string;
+        duracion?: number;
     }[]
 }
-
-export default function ListPublicationProd({
+export default function ListPublication({
     title,
-    pubProd
-}:DataPubProps){
+    clase,
+    publications
+}: DataPubProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-
     const scroll = (direction: 'left' | 'right') => {
         const container = scrollContainerRef.current;
         if (container) {
@@ -38,12 +40,12 @@ export default function ListPublicationProd({
             container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
         }
     };
-    return(
+
+    return (
         <div className={styles.listContainer}>
             <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>{title}</h2>
             </div>
-
             <div className={styles.scrollWrapper}>
                 <button
                     className={`${styles.navButton} ${styles.navButtonLeft}`}
@@ -52,45 +54,52 @@ export default function ListPublicationProd({
                 >
                     ‹
                 </button>
-
-            <div  ref={scrollContainerRef} className={styles.scrollContainer}>
-                {pubProd.map(pubP => (
-                    
-                    <Publication 
-                    key={pubP.cod_pub}
-                    clase= 'Producto'
-                    pub={{
-                            cod_pub: pubP.cod_pub,
-                            nombre_publicacion: pubP.nombre_publicacion,
-                            nombre_categoria: pubP.nombre_categoria,
-                            nombre_subcat: pubP.nombre_subcat,
-                            precio_pub: pubP.precio_pub,
-                            foto_pub: pubP.foto_pub,
-                            calif_pond_pub: pubP.calif_pond_pub,
-                            calidad: pubP.calidad,
-                            estado_pub: pubP.estado_pub,
-                            handlename: pubP.handlename
-                    }}
-                    pubP={{
-                            descripcion: pubP.descripcion,
-                            fecha_ini_pub: pubP.fecha_ini_pub,
-                            contacto_correo: pubP.contacto_correo,
-                            contacto_numero: pubP.contacto_numero,
-                            cantidad: pubP.cantidad,
-                            marca: pubP.marca,
-                            handlename: pubP.handlename
-                    }}
-                    />
-                ))}
-            </div>
-
-            <button
+                <div ref={scrollContainerRef} className={styles.scrollContainer}>
+                    {publications.map(pub => (
+                        <Publication
+                            key={pub.cod_pub}
+                            clase={clase}
+                            pub={{
+                                cod_pub: pub.cod_pub,
+                                nombre_publicacion: pub.nombre_publicacion,
+                                nombre_categoria: pub.nombre_categoria,
+                                nombre_subcat: pub.nombre_subcat,
+                                precio_pub: pub.precio_pub,
+                                foto_pub: pub.foto_pub,
+                                calif_pond_pub: pub.calif_pond_pub,
+                                calidad: pub.calidad,
+                                estado_pub: pub.estado_pub,
+                                handlename: pub.handlename
+                            }}
+                            pubP={clase === 'Producto' ? {
+                                descripcion: pub.descripcion,
+                                fecha_ini_pub: pub.fecha_ini_pub,
+                                contacto_correo: pub.contacto_correo,
+                                contacto_numero: pub.contacto_numero,
+                                cantidad: pub.cantidad!,
+                                marca: pub.marca,
+                                handlename: pub.handlename
+                            } : null}
+                            pubS={clase === 'Servicio' ? {
+                                descripcion: pub.descripcion,
+                                fecha_ini_pub: pub.fecha_ini_pub,
+                                contacto_correo: pub.contacto_correo,
+                                contacto_numero: pub.contacto_numero,
+                                handlename: pub.handlename,
+                                hrs_ini_serv: pub.hrs_ini_serv!,
+                                hrs_fin_serv: pub.hrs_fin_serv!,
+                                duracion: pub.duracion!
+                            } : null}
+                        />
+                    ))}
+                </div>
+                <button
                     className={`${styles.navButton} ${styles.navButtonRight}`}
                     onClick={() => scroll('right')}
                     aria-label="Scroll right"
                 >
                     ›
-            </button>
+                </button>
             </div>
         </div>
     );

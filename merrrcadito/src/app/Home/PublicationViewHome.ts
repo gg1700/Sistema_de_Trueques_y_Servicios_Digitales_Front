@@ -19,6 +19,9 @@ interface Publication {
   handlename: string;
   cantidad: number;
   marca?: string | null;
+  hrs_ini_serv?: string;
+  hrs_fin_serv?: string;
+  duracion?: number;
 }
 
 const PUBLICATIONS_API_BASE =
@@ -34,24 +37,44 @@ export const usePublicationsProds = () => {
         const response = await PublicationService.getAllPubProds();
         const data = response.data;
 
-        const mappedPublications = data.map((pub: any) => ({
-          cod_pub: pub.cod_pub,
-          nombre_publicacion: pub.nom_prod,
-          nombre_categoria: pub.nom_cat,
-          nombre_subcat: pub.nom_subcat_prod,
-          precio_pub: pub.precio_pub,
-          foto_pub: `${PUBLICATIONS_API_BASE}/${pub.cod_pub}/image`,
-          calif_pond_pub: pub.calif_pond_pub,
-          calidad: pub.calidad_prod,
-          estado_pub: pub.estado_pub,
-          descripcion: pub.contenido,
-          fecha_ini_pub: pub.fecha_ini_pub,
-          contacto_correo: pub.correo_us,
-          contacto_numero: pub.telefono_us,
-          handlename: pub.handle_name,
-          cantidad: pub.cantidad,
-          marca: pub.marca_prod,
-        }));
+        // ✅ Debug: Ver datos RAW del backend
+        console.log('🔥 RAW Backend Data (primeros 2):', data.slice(0, 2));
+
+        const mappedPublications = data.map((pub: any) => {
+          // ✅ Debug: Ver cada campo individual
+          console.log('📝 Mapeando publicación:', {
+            cod_pub: pub.cod_pub,
+            'RAW pub object keys': Object.keys(pub),
+            contenido: pub.contenido,
+            correo_us: pub.correo_us,
+            telefono_us: pub.telefono_us,
+            cantidad: pub.cantidad,
+            handle_name: pub.handle_name,
+            fecha_ini_pub: pub.fecha_ini_pub
+          });
+
+          const mapped = {
+            cod_pub: pub.cod_pub,
+            nombre_publicacion: pub.nom_prod,
+            nombre_categoria: pub.nom_cat,
+            nombre_subcat: pub.nom_subcat_prod,
+            precio_pub: pub.precio_prod,
+            foto_pub: `${PUBLICATIONS_API_BASE}/${pub.cod_pub}/image`,
+            calif_pond_pub: pub.calif_pond_pub,
+            calidad: pub.calidad_prod,
+            estado_pub: pub.estado_pub,
+            descripcion: pub.desc_prod,
+            fecha_ini_pub: pub.fecha_ini_pub,
+            contacto_correo: pub.correo_us,
+            contacto_numero: pub.telefono_us,
+            handlename: pub.handle_name,
+            cantidad: pub.cant_prod,
+            marca: pub.marca_prod,
+          };
+
+          console.log('✅ Mapped result:', mapped);
+          return mapped;
+        });
 
         setPublications(mappedPublications);
       } catch (err) {
@@ -64,3 +87,40 @@ export const usePublicationsProds = () => {
 
   return publications;
 };
+export const usePublicationsServs = () => {
+  const [publications, setPublications] = useState<Publication[]>([]);
+  useEffect(() => {
+    async function loadPublicationsServs() {
+      try {
+        const response = await PublicationService.getAllPubServices();
+        const data = response.data;
+        const mappedPublications = data.map((pub: any) => ({
+          cod_pub: pub.cod_pub,
+          nombre_publicacion: pub.nom_serv,
+          nombre_categoria: pub.nom_cat,
+          nombre_subcat: undefined,
+          precio_pub: pub.precio_pub,
+          foto_pub: `${PUBLICATIONS_API_BASE}/${pub.cod_pub}/image`,
+          calif_pond_pub: pub.calif_pond_pub,
+          calidad: undefined,
+          estado_pub: pub.estado_pub,
+          descripcion: pub.contenido,
+          fecha_ini_pub: pub.fecha_ini_pub,
+          contacto_correo: pub.correo_us,
+          contacto_numero: pub.telefono_us,
+          handlename: pub.handle_name,
+          cantidad: undefined,
+          marca: undefined,
+          hrs_ini_serv: pub.hrs_ini_serv,
+          hrs_fin_serv: pub.hrs_fin_serv,
+          duracion: pub.duracion,
+        }));
+        setPublications(mappedPublications);
+      } catch (err) {
+        console.error('Error cargando publicaciones de servicios:', err);
+      }
+    }
+    loadPublicationsServs();
+  }, []);
+  return publications;
+}

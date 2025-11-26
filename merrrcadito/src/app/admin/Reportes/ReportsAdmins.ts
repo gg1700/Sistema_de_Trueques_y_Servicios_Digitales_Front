@@ -40,27 +40,15 @@ export function useActivityWeek() {
     return data;
 }
 
-<<<<<<< HEAD
-
-
-export function useActionsUsers(month:string){
-=======
 // Hook existente
 export function useActionsUsers(month: string) {
->>>>>>> origin/test/reportes
     const [data, setData] = useState();
 
     useEffect(() => {
         async function loadThirdRepo() {
-<<<<<<< HEAD
-            const response= await ReportService.get_actions_users_by_month(month);
-            const actions= response.data;
-            const mapActions= actions.map((action:any) => ({
-=======
             const response = await ReportService.get_actions_users_by_month(month);
             const actions = response.data;
             const mapActions = actions.map((action: any) => ({
->>>>>>> origin/test/reportes
                 mes: action.mes,
                 anio: action.anio,
                 cant_compras_publicaciones_prod: action.cant_compras_publicaciones_prod,
@@ -72,13 +60,8 @@ export function useActionsUsers(month: string) {
             setData(mapActions);
         }
         loadThirdRepo();
-<<<<<<< HEAD
-    },[month])
-    return data
-=======
     }, [month])
     return data;
->>>>>>> origin/test/reportes
 }
 
 // ========== NUEVOS HOOKS ==========

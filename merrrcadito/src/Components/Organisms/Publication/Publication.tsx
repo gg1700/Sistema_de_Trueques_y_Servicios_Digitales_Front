@@ -112,7 +112,16 @@ export default function Publication({
                             }}
                         />
                     ) : clase === 'Servicio' && pubS ? (
-                        <PublicationService pub={pubS} onCancel={cerrarModal} />
+                        <PublicationService
+                            pub={pubS}
+                            onCancel={cerrarModal}
+                            publicationData={{
+                                cod_pub: pub.cod_pub,
+                                nombre_publicacion: pub.nombre_publicacion,
+                                precio_pub: pub.precio_pub,
+                                foto_pub: pub.foto_pub
+                            }}
+                        />
                     ) : (
                         <div>No hay datos disponibles</div>
                     )}

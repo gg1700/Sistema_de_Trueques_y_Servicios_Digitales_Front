@@ -69,25 +69,7 @@ export default function PublicationCard({
                 }
             </div>
             <div className={styles.buttonContainer}>
-                {onPurchaseClick && pub.estado_pub === 'activo' && (
-                    <button
-                        onClick={onPurchaseClick}
-                        style={{
-                            backgroundColor: '#1fb7a1',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '8px',
-                            padding: '10px 20px',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            marginBottom: '8px',
-                            width: '100%'
-                        }}
-                    >
-                        Comprar
-                    </button>
-                )}
+
                 <ButtonForm
                     type='open'
                     action='watch'

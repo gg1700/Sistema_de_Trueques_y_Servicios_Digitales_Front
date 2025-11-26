@@ -58,38 +58,6 @@ export default function ReportsAdmin() {
         }]
     };
 
-<<<<<<< HEAD
-
-    const reporteTres = Reports.useActionsUsers("11");
-    const safeReporteTres = Array.isArray(reporteTres) ? reporteTres : [];
-    const usuario = safeReporteTres[0] as any || {};
-
-
-
-    const usuariosActionsData = {
-        labels: ['Compras Productos', 'Compras Servicios', 'Intercambios', 'Compras de Potenciadores', 'Compras de CV'],
-        datasets: [
-            {
-                label: 'Acciones del Usuario',
-                data: [
-                    usuario.cant_compras_publicaciones_prod || 0,
-                    usuario.cant_compras_publicaciones_serv || 0,
-                    usuario.cant_intercambios || 0,
-                    usuario.cant_compras_potenciadores || 0,
-                    usuario.cant_paquetes_tokens || 0
-                ],
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.8)',
-                    'rgba(255, 99, 132, 0.8)',
-                    'rgba(255, 205, 86, 0.8)',
-                    'rgba(54, 162, 235, 0.8)',
-                    'rgba(153, 102, 255, 0.8)'
-                ]
-            }
-        ]
-    };
-
-=======
     const reporteTres = useActionsUsers(currentMonth);
     const safeReporteTres = Array.isArray(reporteTres) ? reporteTres : [];
 
@@ -193,7 +161,6 @@ export default function ReportsAdmin() {
 
     // Reporte 10: Potenciadores (Datos únicos)
     const boostersData: any = useBoostersMonetizationReport(currentMonth, currentYear);
->>>>>>> origin/test/reportes
 
     const reportConfigs = [
         // Reportes existentes

@@ -1,18 +1,29 @@
 'use client'
-import { ListPublicationProd } from "@/Components/Organisms";
+import { ListPublication } from "@/Components/Organisms";
 import { AdminLayout } from "@/Components/Templates";
-import { usePublicationsProds } from "./PublicationViewHome";
+import { usePublicationsProds, usePublicationsServs } from "./PublicationViewHome";
+export default function Home() {
+    const dataPubProd = usePublicationsProds();
+    const dataPubServ = usePublicationsServs();
 
-export default function Home(){
-  const dataPubProd = usePublicationsProds();
     return (
-    <AdminLayout 
-        pageTitle="Hoy por mi"
-        pageSubtitle="Mañana por mi"
-    >
-        <div>  
-            <ListPublicationProd title='Productos' pubProd={dataPubProd}/>
-        </div>
-    </AdminLayout>
+        <AdminLayout
+            pageTitle="Hoy por mi"
+            pageSubtitle="Mañana por mi"
+        >
+            <div>
+                <ListPublication
+                    title='Productos'
+                    clase='Producto'
+                    publications={dataPubProd}
+                />
+
+                <ListPublication
+                    title='Servicios'
+                    clase='Servicio'
+                    publications={dataPubServ}
+                />
+            </div>
+        </AdminLayout>
     );
 }
