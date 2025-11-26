@@ -7,6 +7,11 @@ import styles from "./UserProfile.module.css";
 
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
+import LikesSection from "./LikesSection";
+import EventsSection from "./EventsSection";
+import ExploreSection from "./ExploreSection";
+import ExchangeRegistrationForm from "./ExchangeRegistrationForm";
+import ServiceRegistrationForm from "./ServiceRegistrationForm";
 import { getNavItems } from "../../../Utils/navigation";
 import { ReportService, EventService } from "@/services";
 import { ExchangeService } from "@/services/exchangeService";
@@ -37,8 +42,12 @@ const PUBLICATIONS_API_BASE =
   process.env.NEXT_PUBLIC_PUBLICATIONS_API_BASE_URL ??
   "http://localhost:5000/api/publications";
 
-type Tab = "offers" | "publish" | "likes" | "events";
-type PublishType = "product" | "service" | "exchange" | "event";
+const SERVICES_API_BASE =
+  process.env.NEXT_PUBLIC_SERVICES_API_BASE_URL ??
+  "http://localhost:5000/api/services";
+
+type Tab = "offers" | "publish" | "likes" | "events" | "explore";
+type PublishType = "product" | "service" | "exchange";
 type NavRole = "admin" | "user";
 type Role = NavRole | "entrepreneur";
 
@@ -61,6 +70,7 @@ interface ProductFormState {
   description: string;
   priceTokens: string;
   image: File | null;
+  condition?: string;
 }
 
 interface ServiceFormState {
@@ -140,11 +150,235 @@ const mapCodRolToRole = (codRol?: number): Role => {
   return "user";
 };
 
+
+interface PublishSectionProps {
+  publishType: PublishType;
+  setPublishType: (type: PublishType) => void;
+  productForm: ProductFormState;
+  serviceForm: ServiceFormState;
+  onChangeProductImage: (file: File | null) => void;
+  onChangeServiceImage: (file: File | null) => void;
+  handleProductChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void;
+  handleServiceChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void;
+  handleSubmitProduct: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
+  handleSubmitService: (e: React.FormEvent) => void;
+  handleCancelProduct: () => void;
+  handleCancelService: () => void;
+  categories: Category[];
+  filteredSubcategories: Subcategory[];
+  userId: number;
+  setModalTitle: (title: string) => void;
+  setModalMessage: (msg: string) => void;
+  setShowSuccessModal: (show: boolean) => void;
+}
+
+function PublishSection({
+  publishType,
+  setPublishType,
+  productForm,
+  serviceForm,
+  onChangeProductImage,
+  onChangeServiceImage,
+  handleProductChange,
+  handleServiceChange,
+  handleSubmitProduct,
+  handleSubmitService,
+  handleCancelProduct,
+  handleCancelService,
+  categories,
+  filteredSubcategories,
+  userId,
+  setModalTitle,
+  setModalMessage,
+  setShowSuccessModal,
+}: PublishSectionProps) {
+  return (
+    <div className={styles.publishSection}>
+      <div className={styles.publishTabs}>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "product" ? "publishTabActive" : ""}`}
+          onClick={() => setPublishType("product")}
+        >
+          Producto
+        </button>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "service" ? "publishTabActive" : ""}`}
+          onClick={() => setPublishType("service")}
+        >
+          Servicio
+        </button>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "exchange" ? "publishTabActive" : ""}`}
+          onClick={() => setPublishType("exchange")}
+        >
+          Intercambio
+        </button>
+      </div>
+
+      {publishType === "product" ? (
+        <form
+          onSubmit={handleSubmitProduct}
+          className={styles.publishForm}
+          noValidate
+        >
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Nombre de Producto</label>
+              <ProfileInput
+                type="text"
+                name="name"
+                value={productForm.name}
+                onChange={handleProductChange}
+                placeholder="Ej. Cámara Canon EOS"
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Categoría</label>
+              <select
+                name="category"
+                value={productForm.category}
+                onChange={handleProductChange}
+                className={styles.selectInput}
+              >
+                <option value="">Seleccionar</option>
+                {categories.map((cat) => (
+                  <option key={cat.cod_cat} value={cat.cod_cat}>
+                    {cat.nom_cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Subcategoría</label>
+              <select
+                name="subcategory"
+                value={productForm.subcategory}
+                onChange={handleProductChange}
+                className={styles.selectInput}
+                disabled={!productForm.category}
+              >
+                <option value="">Seleccionar</option>
+                {filteredSubcategories.map((sub) => (
+                  <option key={sub.cod_subcat_prod} value={sub.cod_subcat_prod}>
+                    {sub.nom_subcat_prod}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Descripción</label>
+              <textarea
+                name="description"
+                value={productForm.description}
+                onChange={handleProductChange}
+                className={styles.textarea}
+                placeholder="Describe tu producto..."
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Precio Tokens</label>
+              <ProfileInput
+                type="text"
+                name="priceTokens"
+                value={productForm.priceTokens}
+                onChange={handleProductChange}
+                placeholder="Ej. 20"
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Estado</label>
+              <select
+                name="condition"
+                value={productForm.condition}
+                onChange={handleProductChange}
+                className={styles.selectInput}
+              >
+                <option value="Nuevo">Nuevo</option>
+                <option value="Usado">Usado</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRowBottom}>
+            <div className={styles.formColImage}>
+              <label className={styles.fieldLabel}>
+                Imagen (cuadrada, máx. 100KB)
+              </label>
+              <FileInput name="productImage" onChange={onChangeProductImage} />
+            </div>
+
+            <div className={styles.formColButtons}>
+              <div className={styles.actionsRowInline}>
+                <button type="submit" className={styles.submitButton}>
+                  Publicar
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={handleCancelProduct}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      ) : publishType === "service" ? (
+        <ServiceRegistrationForm
+          userId={userId}
+          onSuccess={() => {
+            setModalTitle("Â¡Servicio Registrado!");
+            setModalMessage("Tu servicio ha sido registrado correctamente y ya está visible en el mercado.");
+            setShowSuccessModal(true);
+          }}
+          onDuplicate={() => {
+            setModalTitle("Â¡Servicio Ya Registrado!");
+            setModalMessage("Este servicio ya se encuentra registrado en tu perfil.");
+            setShowSuccessModal(true);
+          }}
+        />
+      ) : (
+        <ExchangeRegistrationForm
+          userId={userId}
+          onSuccess={() => {
+            setModalTitle("Â¡Intercambio Registrado!");
+            setModalMessage("Tu intercambio ha sido registrado correctamente.");
+            setShowSuccessModal(true);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 export default function UserProfile({
   role: roleProp = "admin",
 }: UserProfileProps) {
   const [activeTab, setActiveTab] = useState<Tab>("offers");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("Â¡Publicación Exitosa!");
+  const [modalMessage, setModalMessage] = useState("Tu producto ha sido publicado correctamente y ya está visible en el mercado.");
   const [publishType, setPublishType] = useState<PublishType>("product");
   const [showMoreInfo, setShowMoreInfo] = useState(false); // Estado para expandir/colapsar
 
@@ -172,8 +406,10 @@ export default function UserProfile({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<UserApi | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [services, setServices] = useState<Offer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewerId, setViewerId] = useState<number | null>(null);
   const [resolvedHandle, setResolvedHandle] = useState<string | null>(null);
   const [resolvedRoleFromStorage, setResolvedRoleFromStorage] =
     useState<Role | null>(null);
@@ -254,6 +490,29 @@ export default function UserProfile({
   const navList = getNavItems(navRole);
 
   useEffect(() => {
+    const fetchViewerData = async () => {
+      if (typeof window !== "undefined") {
+        const handle = window.localStorage.getItem("currentUserHandle");
+        if (handle) {
+          try {
+            const res = await fetch(
+              `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(handle)}`
+            );
+            const json = await res.json();
+            if (res.ok && json.success && json.data) {
+              const data = Array.isArray(json.data) ? json.data[0] : json.data;
+              setViewerId(data.cod_us);
+            }
+          } catch (err) {
+            console.error("Error fetching viewer data:", err);
+          }
+        }
+      }
+    };
+    fetchViewerData();
+  }, []);
+
+  useEffect(() => {
     const fetchCategoriesAndSubcats = async () => {
       try {
         const resCat = await fetch(
@@ -298,10 +557,26 @@ export default function UserProfile({
       setFilteredSubcategories([]);
       return;
     }
+<<<<<<< HEAD
     const filtered = subcategories.filter(
       (sc) => sc.cod_cat === parseInt(productForm.category)
     );
     setFilteredSubcategories(filtered);
+=======
+    const codCat = parseInt(productForm.category, 10);
+    if (isNaN(codCat)) {
+      setFilteredSubcategories([]);
+      return;
+    }
+    const filtered = subcategories.filter((s) => s.cod_cat === codCat);
+
+    // Eliminar duplicados
+    const uniqueFiltered = Array.from(
+      new Map(filtered.map((item) => [item.cod_subcat_prod, item])).values()
+    );
+
+    setFilteredSubcategories(uniqueFiltered);
+>>>>>>> origin/Frontend-Mateo
   }, [productForm.category, subcategories]);
 
   // Filtrar subcategorías para formulario de intercambio
@@ -460,6 +735,7 @@ export default function UserProfile({
     }
   };
 
+<<<<<<< HEAD
   const fetchEnvironmentalData = async (codUs: number) => {
     try {
       setLoadingEnvironmental(true);
@@ -472,6 +748,32 @@ export default function UserProfile({
       setEnvironmentalData(null);
     } finally {
       setLoadingEnvironmental(false);
+=======
+  const fetchServicesForUser = async (codUs: number) => {
+    try {
+      console.log(`Fetching services for user: ${codUs}`);
+      const resServices = await fetch(`${SERVICES_API_BASE}/user/${codUs}`);
+      const jsonServices = await resServices.json().catch(() => ({} as any));
+      console.log("Services response:", jsonServices);
+
+      if (resServices.ok && jsonServices.data && Array.isArray(jsonServices.data)) {
+        const mappedServices: Offer[] = jsonServices.data.map((s: any) => ({
+          id: s.cod_serv ?? s.id ?? 0,
+          title: s.nom_serv ?? "Sin título",
+          description: s.descr_serv ?? "",
+          image: s.foto_serv ? `data:image/jpeg;base64,${Buffer.from(s.foto_serv).toString('base64')}` : undefined,
+          price: s.precio_serv ?? s.precio_serv_token ?? 0,
+        }));
+        console.log("Mapped services:", mappedServices);
+        setServices(mappedServices);
+      } else {
+        console.warn("No services found or invalid response format");
+        setServices([]);
+      }
+    } catch (err) {
+      console.error("Error al cargar servicios:", err);
+      setServices([]);
+>>>>>>> origin/Frontend-Mateo
     }
   };
 
@@ -507,12 +809,16 @@ export default function UserProfile({
 
         if (userData.cod_us) {
           await fetchOffersForUser(userData.cod_us);
+<<<<<<< HEAD
           // Cargar datos de impacto ambiental sin bloquear el perfil si falla
           try {
             await fetchEnvironmentalData(userData.cod_us);
           } catch (envErr) {
             console.error("Error al cargar impacto ambiental (no crítico):", envErr);
           }
+=======
+          await fetchServicesForUser(userData.cod_us);
+>>>>>>> origin/Frontend-Mateo
         }
       } catch (err: any) {
         console.error(err);
@@ -701,9 +1007,60 @@ export default function UserProfile({
     }
   };
 
-  const handleSubmitService = (e: React.FormEvent) => {
+  const handleSubmitService = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Servicio a publicar:", serviceForm);
+
+    try {
+      const response = await fetch(`${SERVICES_API_BASE}/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cod_cat: parseInt(serviceForm.category),
+          nom_serv: serviceForm.name,
+          desc_serv: serviceForm.description,
+          precio_serv: parseInt(serviceForm.priceTokens),
+          duracion_serv: serviceForm.duration,
+          cod_us: user?.cod_us,
+          hrs_ini_dia_serv: "08:00",
+          hrs_fin_dia_serv: "18:00",
+          dif_dist_serv: 0
+        })
+      });
+
+      const json = await response.json();
+
+      if (response.status === 409) {
+        // Servicio duplicado
+        setModalTitle("Â¡Servicio Ya Registrado!");
+        setModalMessage("Este servicio ya se encuentra registrado en tu perfil.");
+        setShowSuccessModal(true);
+      } else if (response.ok) {
+        // Ã‰xito
+        setModalTitle("Â¡Servicio Registrado!");
+        setModalMessage("Tu servicio ha sido registrado correctamente y ya está visible en el mercado.");
+        setShowSuccessModal(true);
+
+        // Recargar servicios
+        if (user?.cod_us) {
+          await fetchServicesForUser(user.cod_us);
+        }
+
+        // Limpiar formulario
+        setServiceForm({
+          name: "",
+          duration: "",
+          category: "",
+          description: "",
+          priceTokens: "",
+          image: null,
+        });
+      } else {
+        alert(`Error: ${json.message || "No se pudo registrar el servicio"}`);
+      }
+    } catch (err: any) {
+      console.error("Error al registrar servicio:", err);
+      alert("Error al registrar servicio");
+    }
   };
 
   const handleCancelProduct = () => {
@@ -1193,6 +1550,14 @@ export default function UserProfile({
           >
             Eventos
           </button>
+          <button
+            type="button"
+            className={`${styles.tab} ${activeTab === "explore" ? "tabActive" : ""
+              }`}
+            onClick={() => setActiveTab("explore")}
+          >
+            Explorar
+          </button>
         </nav>
       </header>
 
@@ -1210,7 +1575,7 @@ export default function UserProfile({
         )}
 
         {!loading && !error && activeTab === "offers" && (
-          <OffersSection offers={offers} />
+          <OffersSection offers={offers} services={services} />
         )}
 
         {!loading && !error && activeTab === "publish" && (
@@ -1231,37 +1596,27 @@ export default function UserProfile({
             onChangeServiceImage={(file) =>
               setServiceForm((prev) => ({ ...prev, image: file }))
             }
-            exchangeForm={exchangeForm}
-            handleExchangeChange={handleExchangeChange}
-            handleSubmitExchange={handleSubmitExchange}
-            handleCancelExchange={handleCancelExchange}
-            onChangeExchangeImage={(file) =>
-              setExchangeForm((prev) => ({ ...prev, image: file }))
-            }
-            eventForm={eventForm}
-            handleEventChange={handleEventChange}
-            handleSubmitEvent={handleSubmitEvent}
-            handleCancelEvent={handleCancelEvent}
-            onChangeEventImage={(file) =>
-              setEventForm((prev) => ({ ...prev, image: file }))
-            }
-            userProducts={userProducts}
             categories={categories}
             filteredSubcategories={filteredSubcategories}
-            availableRewards={availableRewards}
+            userId={user?.cod_us ?? 0}
+            setModalTitle={setModalTitle}
+            setModalMessage={setModalMessage}
+            setShowSuccessModal={setShowSuccessModal}
           />
         )}
 
         {!loading && !error && activeTab === "likes" && (
-          <div className={styles.placeholderTab}>
-            <p>No hay me gustas</p>
-          </div>
+          <LikesSection userId={user?.cod_us ?? 0} />
+
+
         )}
 
         {!loading && !error && activeTab === "events" && (
-          <div className={styles.placeholderTab}>
-            <p>No hay eventos</p>
-          </div>
+          <EventsSection userId={viewerId ?? 0} />
+        )}
+
+        {!loading && !error && activeTab === "explore" && (
+          <ExploreSection currentUserId={viewerId ?? 0} />
         )}
       </div>
 
@@ -1330,10 +1685,14 @@ export default function UserProfile({
 
 interface OffersSectionProps {
   offers: Offer[];
+  services: Offer[];
 }
 
-function OffersSection({ offers }: OffersSectionProps) {
-  if (!offers.length) {
+function OffersSection({ offers, services }: OffersSectionProps) {
+  const hasProducts = offers.length > 0;
+  const hasServices = services.length > 0;
+
+  if (!hasProducts && !hasServices) {
     return (
       <div className={styles.placeholderTab}>
         <p>Este usuario aún no tiene ofertas publicadas.</p>
@@ -1343,706 +1702,77 @@ function OffersSection({ offers }: OffersSectionProps) {
 
   return (
     <div className={styles.offersSection}>
-      {offers.map((offer) => (
-        <article key={offer.id} className={styles.offerCard}>
-          <div className={styles.offerImage}>
-            {offer.image && (
-              <img
-                src={offer.image}
-                alt={offer.title}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: "12px",
-                }}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-            )}
-          </div>
-          <div className={styles.offerInfo}>
-            <h2 className={styles.offerTitle}>{offer.title}</h2>
-            <p className={styles.offerDescription} style={{ whiteSpace: 'pre-line' }}>{offer.description}</p>
-          </div>
-          <div className={styles.offerActions}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              flexWrap: 'wrap'
-            }}>
-              {!offer.isExchange && (
-                <>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: '4px'
-                  }}>
-                    <span style={{
-                      fontSize: '20px',
-                      fontWeight: '700',
-                      color: '#1fb7a1'
-                    }}>
-                      {offer.price ?? 0}
-                    </span>
-                    <span style={{
-                      fontSize: '13px',
-                      color: '#6b7785',
-                      fontWeight: '500'
-                    }}>
-                      Tokens
-                    </span>
+      {/* Sección de Productos */}
+      {hasProducts && (
+        <>
+          <h3 className={styles.subsectionTitle}>Productos</h3>
+          <div className={styles.offersGrid}>
+            {offers.map((offer) => (
+              <article key={offer.id} className={styles.offerCard}>
+                <div className={styles.offerImage}>
+                  {offer.image && (
+                    <img
+                      src={offer.image}
+                      alt={offer.title}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                      }}
+                    />
+                  )}
+                </div>
+                <div className={styles.offerInfo}>
+                  <h2 className={styles.offerTitle}>{offer.title}</h2>
+                  <p className={styles.offerDescription}>{offer.description}</p>
+                </div>
+                {offer.price !== undefined && (
+                  <div className={styles.offerPrice}>
+                    <span>{offer.price} tokens</span>
                   </div>
-                </>
-              )}
-              <button
-                type="button"
-                className={styles.iconButton}
-                title="Compartir"
-              >
-                <i className="bi bi-share" />
-              </button>
-              <button
-                type="button"
-                className={styles.iconButton}
-                title="Favorito"
-              >
-                <i className="bi bi-heart" />
-              </button>
-            </div>
+                )}
+              </article>
+            ))}
           </div>
-        </article>
-      ))}
+        </>
+      )}
+
+      {/* Sección de Servicios */}
+      {hasServices && (
+        <>
+          <h3 className={styles.subsectionTitle}>Servicios</h3>
+          <div className={styles.offersGrid}>
+            {services.map((service) => (
+              <article key={service.id} className={styles.offerCard}>
+                <div className={styles.offerImage}>
+                  {service.image && (
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                      }}
+                    />
+                  )}
+                </div>
+                <div className={styles.offerInfo}>
+                  <h2 className={styles.offerTitle}>{service.title}</h2>
+                  <p className={styles.offerDescription}>{service.description}</p>
+                </div>
+                {service.price !== undefined && (
+                  <div className={styles.offerPrice}>
+                    <span>{service.price} tokens</span>
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </>
+      )}
     </div>
-  );
-}
-
-interface PublishSectionProps {
-  publishType: PublishType;
-  setPublishType: (type: PublishType) => void;
-  productForm: ProductFormState;
-  serviceForm: ServiceFormState;
-  onChangeProductImage: (file: File | null) => void;
-  onChangeServiceImage: (file: File | null) => void;
-  handleProductChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => void;
-  handleServiceChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => void;
-  handleSubmitProduct: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
-  handleSubmitService: (e: React.FormEvent) => void;
-  handleCancelProduct: () => void;
-  handleCancelService: () => void;
-  exchangeForm: ExchangeFormState;
-  handleExchangeChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => void;
-  handleSubmitExchange: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleCancelExchange: () => void;
-  onChangeExchangeImage: (file: File | null) => void;
-  eventForm: EventFormState;
-  handleEventChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => void;
-  handleSubmitEvent: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleCancelEvent: () => void;
-  onChangeEventImage: (file: File | null) => void;
-  userProducts: Product[];
-  categories: Category[];
-  filteredSubcategories: Subcategory[];
-  availableRewards: Array<{ cod_rec: number, monto_rec: number }>;
-}
-
-function PublishSection({
-  publishType,
-  setPublishType,
-  productForm,
-  serviceForm,
-  onChangeProductImage,
-  onChangeServiceImage,
-  handleProductChange,
-  handleServiceChange,
-  handleSubmitProduct,
-  handleSubmitService,
-  handleCancelProduct,
-  handleCancelService,
-  exchangeForm,
-  handleExchangeChange,
-  handleSubmitExchange,
-  handleCancelExchange,
-  onChangeExchangeImage,
-  eventForm,
-  handleEventChange,
-  handleSubmitEvent,
-  handleCancelEvent,
-  onChangeEventImage,
-  userProducts,
-  categories,
-  filteredSubcategories,
-  availableRewards,
-}: PublishSectionProps) {
-  return (
-    <section className={styles.publishSection}>
-      <h2 className={styles.publishQuestion}>¿Que desea ofertar?</h2>
-
-      <div className={styles.publishTabs}>
-        <button
-          type="button"
-          className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""}`}
-          onClick={() => setPublishType("product")}
-        >
-          Producto
-        </button>
-        <button
-          type="button"
-          className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""}`}
-          onClick={() => setPublishType("service")}
-        >
-          Servicio
-        </button>
-        <button
-          type="button"
-          className={`${styles.publishTab} ${publishType === "exchange" ? styles.publishTabActive : ""}`}
-          onClick={() => setPublishType("exchange")}
-        >
-          Intercambio
-        </button>
-        <button
-          type="button"
-          className={`${styles.publishTab} ${publishType === "event" ? styles.publishTabActive : ""}`}
-          onClick={() => setPublishType("event")}
-        >
-          Evento
-        </button>
-      </div>
-
-      {publishType === "product" && (
-        <form
-          onSubmit={handleSubmitProduct}
-          className={styles.publishForm}
-          noValidate
-        >
-          <div className={styles.formRow}>
-            <div className={styles.formColFull}>
-              <label className={styles.fieldLabel}>Nombre del Producto</label>
-              <ProfileInput
-                type="text"
-                name="name"
-                value={productForm.name}
-                onChange={handleProductChange as any}
-                placeholder="Ej. Chocolate bar powder"
-                required
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Peso (Kg)</label>
-              <ProfileInput
-                type="text"
-                name="weightKg"
-                value={productForm.weightKg}
-                onChange={handleProductChange as any}
-                placeholder="Ej. 0.5"
-              />
-            </div>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Marca / Material</label>
-              <ProfileInput
-                type="text"
-                name="material"
-                value={productForm.material}
-                onChange={handleProductChange as any}
-                placeholder="Ej. COCA"
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Categoría</label>
-              <select
-                name="category"
-                value={productForm.category}
-                onChange={handleProductChange}
-                className={styles.selectInput}
-              >
-                <option value="">Seleccionar</option>
-                {categories.map((cat) => (
-                  <option
-                    key={cat.cod_cat}
-                    value={cat.cod_cat.toString()}
-                  >
-                    {cat.nom_cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Subcategoría</label>
-              <select
-                name="subcategory"
-                value={productForm.subcategory}
-                onChange={handleProductChange}
-                className={styles.selectInput}
-                disabled={!productForm.category}
-              >
-                <option value="">Seleccionar</option>
-                {filteredSubcategories.map((sub) => (
-                  <option
-                    key={sub.cod_subcat_prod}
-                    value={sub.cod_subcat_prod.toString()}
-                  >
-                    {sub.nom_subcat_prod}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Calidad</label>
-              <select
-                name="quality"
-                value={productForm.quality}
-                onChange={handleProductChange}
-                className={styles.selectInput}
-              >
-                <option value="">Seleccionar</option>
-                <option value="nuevo">Nuevo</option>
-                <option value="usado">Usado</option>
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formColFull}>
-              <label className={styles.fieldLabel}>Descripción</label>
-              <textarea
-                name="description"
-                value={productForm.description}
-                onChange={handleProductChange}
-                className={styles.textarea}
-                placeholder="Describe tu producto..."
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Precio Tokens</label>
-              <ProfileInput
-                type="text"
-                name="priceTokens"
-                value={productForm.priceTokens}
-                onChange={handleProductChange as any}
-                placeholder="Ej. 10"
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRowBottom}>
-            <div className={styles.formColImage}>
-              <label className={styles.fieldLabel}>
-                Imagen (cuadrada, máx. 100KB)
-              </label>
-              <FileInput name="productImage" onChange={onChangeProductImage} />
-            </div>
-
-            <div className={styles.formColButtons}>
-              <div className={styles.actionsRowInline}>
-                <button type="submit" className={styles.submitButton}>
-                  Ofertar
-                </button>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={handleCancelProduct}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
-      )}
-      {publishType === "service" && (
-        <form
-          onSubmit={handleSubmitService}
-          className={styles.publishForm}
-          noValidate
-        >
-          <div className={styles.formRow}>
-            <div className={styles.formColFull}>
-              <label className={styles.fieldLabel}>Nombre de Servicio</label>
-              <ProfileInput
-                type="text"
-                name="name"
-                value={serviceForm.name}
-                onChange={handleServiceChange as any}
-                placeholder="Ej. Asesoría de marketing"
-                required
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Duración</label>
-              <ProfileInput
-                type="text"
-                name="duration"
-                value={serviceForm.duration}
-                onChange={handleServiceChange as any}
-                placeholder="Ej. 2 horas"
-              />
-            </div>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Categoría</label>
-              <select
-                name="category"
-                value={serviceForm.category}
-                onChange={handleServiceChange}
-                className={styles.selectInput}
-              >
-                <option value="">Seleccionar</option>
-                <option value="marketing">Marketing</option>
-                <option value="soporte">Soporte</option>
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formColFull}>
-              <label className={styles.fieldLabel}>Descripción</label>
-              <textarea
-                name="description"
-                value={serviceForm.description}
-                onChange={handleServiceChange}
-                className={styles.textarea}
-                placeholder="Describe tu servicio..."
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Precio Tokens</label>
-              <ProfileInput
-                type="text"
-                name="priceTokens"
-                value={serviceForm.priceTokens}
-                onChange={handleServiceChange as any}
-                placeholder="Ej. 15"
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRowBottom}>
-            <div className={styles.formColImage}>
-              <label className={styles.fieldLabel}>
-                Imagen (cuadrada, máx. 100KB)
-              </label>
-              <FileInput name="serviceImage" onChange={onChangeServiceImage} />
-            </div>
-
-            <div className={styles.formColButtons}>
-              <div className={styles.actionsRowInline}>
-                <button type="submit" className={styles.submitButton}>
-                  Ofertar
-                </button>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={handleCancelService}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
-      )}
-
-      {publishType === "exchange" && (
-        <form
-          onSubmit={handleSubmitExchange}
-          className={styles.publishForm}
-          noValidate
-        >
-          <div className={styles.formRow}>
-            <div className={styles.formColFull}>
-              <label className={styles.fieldLabel}>Nombre del Producto</label>
-              <ProfileInput
-                type="text"
-                name="name"
-                value={exchangeForm.name}
-                onChange={handleExchangeChange as any}
-                placeholder="Ej. Chocolate bar powder"
-                required
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Peso (Kg)</label>
-              <ProfileInput
-                type="text"
-                name="weightKg"
-                value={exchangeForm.weightKg}
-                onChange={handleExchangeChange as any}
-                placeholder="Ej. 0.5"
-              />
-            </div>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Marca / Material</label>
-              <ProfileInput
-                type="text"
-                name="material"
-                value={exchangeForm.material}
-                onChange={handleExchangeChange as any}
-                placeholder="Ej. COCA"
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Categoría</label>
-              <select
-                name="category"
-                value={exchangeForm.category}
-                onChange={handleExchangeChange}
-                className={styles.selectInput}
-              >
-                <option value="">Seleccionar</option>
-                {categories.map((cat) => (
-                  <option
-                    key={cat.cod_cat}
-                    value={cat.cod_cat.toString()}
-                  >
-                    {cat.nom_cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Subcategoría</label>
-              <select
-                name="subcategory"
-                value={exchangeForm.subcategory}
-                onChange={handleExchangeChange}
-                className={styles.selectInput}
-                disabled={!exchangeForm.category}
-              >
-                <option value="">Seleccionar</option>
-                {filteredSubcategories.map((sub) => (
-                  <option
-                    key={sub.cod_subcat_prod}
-                    value={sub.cod_subcat_prod.toString()}
-                  >
-                    {sub.nom_subcat_prod}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Calidad</label>
-              <select
-                name="quality"
-                value={exchangeForm.quality}
-                onChange={handleExchangeChange}
-                className={styles.selectInput}
-              >
-                <option value="">Seleccionar</option>
-                <option value="nuevo">Nuevo</option>
-                <option value="usado">Usado</option>
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formColFull}>
-              <label className={styles.fieldLabel}>Descripción</label>
-              <textarea
-                name="description"
-                value={exchangeForm.description}
-                onChange={handleExchangeChange}
-                className={styles.textarea}
-                placeholder="Describe tu producto..."
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRowBottom}>
-            <div className={styles.formColImage}>
-              <label className={styles.fieldLabel}>
-                Imagen (cuadrada, máx. 100KB)
-              </label>
-              <FileInput name="exchangeImage" onChange={onChangeExchangeImage} />
-            </div>
-
-            <div className={styles.formColButtons}>
-              <div className={styles.actionsRowInline}>
-                <button type="submit" className={styles.submitButton}>
-                  Publicar Intercambio
-                </button>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={handleCancelExchange}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
-      )}
-
-      {publishType === "event" && (
-        <form
-          onSubmit={handleSubmitEvent}
-          className={styles.publishForm}
-          noValidate
-        >
-          <div className={styles.formRow}>
-            <div className={styles.formColFull}>
-              <label className={styles.fieldLabel}>Título del Evento</label>
-              <ProfileInput
-                type="text"
-                name="title"
-                value={eventForm.title}
-                onChange={handleEventChange as any}
-                placeholder="Ej. Festival de Reciclaje 2025"
-                required
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Fecha de Inicio</label>
-              <ProfileInput
-                type="date"
-                name="startDate"
-                value={eventForm.startDate}
-                onChange={handleEventChange as any}
-                required
-              />
-            </div>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Fecha de Finalización</label>
-              <ProfileInput
-                type="date"
-                name="endDate"
-                value={eventForm.endDate}
-                onChange={handleEventChange as any}
-                required
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Tipo de Evento</label>
-              <select
-                name="eventType"
-                value={eventForm.eventType}
-                onChange={handleEventChange}
-                className={styles.selectInput}
-                required
-              >
-                <option value="">Seleccionar</option>
-                <option value="benefico">Benéfico</option>
-                <option value="monetizable">Monetizable</option>
-              </select>
-            </div>
-            <div className={styles.formCol}>
-              <label className={styles.fieldLabel}>Costo de Inscripción (Tokens)</label>
-              <input
-                type="number"
-                name="cost"
-                value={eventForm.cost}
-                onChange={handleEventChange}
-                className={styles.profileInput}
-                placeholder="Ej. 10"
-                min="0"
-                disabled={eventForm.eventType === 'benefico'}
-              /></div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formColFull}>
-              <label className={styles.fieldLabel}>Recompensa (Créditos Verdes CV)</label>
-              <select
-                name="rewardId"
-                value={eventForm.rewardId}
-                onChange={handleEventChange}
-                className={styles.selectInput}
-              >
-                <option value="">Sin recompensa</option>
-                {availableRewards.map((reward: { cod_rec: number, monto_rec: number }) => (
-                  <option key={reward.cod_rec} value={reward.cod_rec}>
-                    {reward.monto_rec} CV
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formColFull}>
-              <label className={styles.fieldLabel}>Descripción</label>
-              <textarea
-                name="description"
-                value={eventForm.description}
-                onChange={handleEventChange}
-                className={styles.textarea}
-                placeholder="Describe tu evento..."
-                required
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRowBottom}>
-            <div className={styles.formColImage}>
-              <label className={styles.fieldLabel}>
-                Banner del Evento (cuadrado, máx. 100KB)
-              </label>
-              <FileInput name="eventImage" onChange={onChangeEventImage} />
-            </div>
-
-            <div className={styles.formColButtons}>
-              <div className={styles.actionsRowInline}>
-                <button type="submit" className={styles.submitButton}>
-                  Crear Evento
-                </button>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={handleCancelEvent}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
-      )}
-    </section>
   );
 }

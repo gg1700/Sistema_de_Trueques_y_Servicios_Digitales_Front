@@ -1,0 +1,307 @@
+.container {
+    width: 100%;
+    padding: 20px;
+}
+
+.loading,
+.error,
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    gap: 16px;
+}
+
+.loading p,
+.error p {
+    font-size: 16px;
+    color: #666;
+}
+
+.empty h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink, #1b1a1f);
+    margin: 0;
+}
+
+.empty p {
+    font-size: 15px;
+    color: #666;
+    margin: 0;
+}
+
+.retryBtn {
+    margin-top: 12px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    background: var(--green, #18c0a6);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.retryBtn:hover {
+    background: var(--green-h, #14af97);
+    transform: translateY(-2px);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink, #1b1a1f);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.title i {
+    color: var(--green, #18c0a6);
+    font-size: 24px;
+}
+
+.count {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 6px 12px;
+    border-radius: 999px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.cardBanner {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+}
+
+.cardBanner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholderBanner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.eventType {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.eventType span {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.typeBenefico {
+    background: rgba(24, 192, 166, 0.95);
+    color: #fff;
+}
+
+.typeMonetizable {
+    background: rgba(255, 165, 0, 0.95);
+    color: #fff;
+}
+
+.cardContent {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.cardTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink, #1b1a1f);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.cardDescription {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-height: 1.5;
+}
+
+.eventInfo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.infoItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.infoItem i {
+    font-size: 18px;
+    color: var(--green, #18c0a6);
+    margin-top: 2px;
+}
+
+.infoItem div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.infoLabel {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.infoValue {
+    font-size: 13px;
+    color: var(--ink, #1b1a1f);
+    font-weight: 600;
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.organization {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #666;
+    flex: 1;
+    overflow: hidden;
+}
+
+.organization i {
+    font-size: 16px;
+    color: var(--purple, #1b0c22);
+    flex-shrink: 0;
+}
+
+.organization span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.unenrollBtn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--red, #ff5f5f);
+    background: #fff;
+    color: var(--red, #ff5f5f);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.unenrollBtn:hover {
+    background: var(--red, #ff5f5f);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 95, 95, 0.3);
+}
+
+.unenrollBtn i {
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .eventInfo {
+        grid-template-columns: 1fr;
+    }
+
+    .cardFooter {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .unenrollBtn {
+        justify-content: center;
+    }
+}

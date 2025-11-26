@@ -1,6 +1,6 @@
 .profilePage {
   width: 100%;
-  max-width: 1200px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 32px 40px 48px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -685,83 +685,3 @@
     opacity: 1;
   }
 }
-
-/* Sección de Impacto Ambiental */
-.environmentalImpactSection {
-  margin-top: 24px;
-  padding: 24px;
-  background: linear-gradient(135deg, #f8fffe 0%, #f0f9f7 100%);
-  border-radius: 16px;
-  border: 2px solid rgba(31, 183, 161, 0.2);
-  box-shadow: 0 4px 16px rgba(31, 183, 161, 0.1);
-}
-
-.impactGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.impactItem {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  background: white;
-  border-radius: 12px;
-  border-left: 4px solid #1fb7a1;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(31, 183, 161, 0.08);
-}
-
-.impactItem:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(31, 183, 161, 0.15);
-}
-
-.impactContent {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-}
-
-.impactLabel {
-  font-size: 13px;
-  color: #6b7785;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-.impactValue {
-  font-size: 15px;
-  color: #2c3e50;
-  font-weight: 700;
-}
-
-@media (max-width: 768px) {
-  .impactGrid {
-    grid-template-columns: 1fr;
-  }
-
-  /* Subsection titles for Products and Services */
-  .subsectionTitle {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #18c0a6;
-    margin: 1.5rem 0 1rem 0;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e0e0e0;
-  }
-
-  .subsectionTitle:first-child {
-    margin-top: 0;
-  }
-
-  .offersGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }

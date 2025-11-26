@@ -1,0 +1,206 @@
+:root {
+  --bg-soft: #fff6f6;
+  --stripe: #ffeff2;
+  --ink: #1b1a1f;
+  --border: #d8cdd1;
+  --purple: #1b0c22;
+  --green: #18c0a6;
+  --green-h: #19ceb3;
+  --red: #f82424;
+  --red-h: #e34d4d;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.daysRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dayChip {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dayChip:hover {
+  border-color: var(--green);
+  transform: translateY(-2px);
+}
+
+.dayChipActive {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.dayChipActive:hover {
+  background: var(--green-h);
+  border-color: var(--green-h);
+}
+
+.error {
+  color: var(--red);
+  font-size: 13px;
+  padding: 8px 12px;
+  background: rgba(248, 36, 36, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid var(--red);
+}
+
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.scheduleList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scheduleList::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.scheduleList::-webkit-scrollbar-thumb {
+  background: rgba(27, 12, 34, 0.3);
+  border-radius: 10px;
+}
+
+.scheduleList::-webkit-scrollbar-thumb:hover {
+  background: rgba(27, 12, 34, 0.5);
+}
+
+.dayCard {
+  background: var(--bg-soft);
+  border-radius: 12px;
+  padding: 14px;
+  border: 1.5px solid var(--border);
+  transition: border-color 0.2s ease;
+}
+
+.dayCard:hover {
+  border-color: var(--green);
+}
+
+.dayHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dayHeader h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--purple);
+}
+
+.addSlotBtn {
+  background: transparent;
+  border: 1.5px dashed var(--green);
+  color: var(--green);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addSlotBtn:hover {
+  background: var(--green);
+  color: #fff;
+  border-style: solid;
+}
+
+.slotsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slotRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.timeInput {
+  flex: 1;
+  height: 36px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  padding: 0 10px;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.timeInput:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(24, 192, 166, 0.1);
+}
+
+.separator {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.removeSlotBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(248, 36, 36, 0.1);
+  color: var(--red);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.removeSlotBtn:hover {
+  background: var(--red);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 15px;
+  background: var(--bg-soft);
+  border-radius: 12px;
+  border: 2px dashed var(--border);
+}
