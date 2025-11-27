@@ -1,9 +1,5 @@
-import FormPublicationProduct from "@/Components/Organisms/Forms/FormPublication/FormPublicationProduct";
-import Publication from "@/Components/Organisms/Publication/Publication";
+import { redirect } from 'next/navigation';
 
-export default function paginaPrincipal(){
-  return(
-    <div>
-    </div>
-  );
+export default function paginaPrincipal() {
+  redirect('/login');
 }

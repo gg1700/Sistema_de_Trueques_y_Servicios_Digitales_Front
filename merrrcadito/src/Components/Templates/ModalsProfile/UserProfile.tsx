@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import styles from "./UserProfile.module.css";
 
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
@@ -389,8 +389,17 @@ export default function UserProfile({
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const handleFromUrl = searchParams.get("handle");
   const roleFromUrl = searchParams.get("role") as Role | null;
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("currentUserHandle");
+      window.localStorage.removeItem("currentUserRole");
+      router.push("/login");
+    }
+  };
 
   useEffect(() => {
     if (handleFromUrl) {
@@ -890,6 +899,16 @@ export default function UserProfile({
               </div>
             )}
           </div>
+
+          <button
+            className={styles.logoutButton}
+            type="button"
+            aria-label="Cerrar sesión"
+            onClick={handleLogout}
+            title="Cerrar sesión"
+          >
+            <i className="bi bi-box-arrow-right"></i>
+          </button>
 
           <button
             className={styles.menuButton}
