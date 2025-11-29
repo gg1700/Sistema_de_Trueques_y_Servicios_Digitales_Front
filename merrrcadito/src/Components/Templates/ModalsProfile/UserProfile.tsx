@@ -10,8 +10,8 @@ import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
 import LikesSection from "./LikesSection";
 import EventsSection from "./EventsSection";
 import ExploreSection from "./ExploreSection";
-import ExchangeRegistrationForm from "./ExchangeRegistrationForm";
 import ServiceRegistrationForm from "./ServiceRegistrationForm";
+
 import { getNavItems } from "../../../Utils/navigation";
 import { ReportService, EventService } from "@/services";
 import { ExchangeService } from "@/services/exchangeService";
@@ -178,6 +178,22 @@ interface PublishSectionProps {
   setModalTitle: (title: string) => void;
   setModalMessage: (msg: string) => void;
   setShowSuccessModal: (show: boolean) => void;
+  exchangeForm: ExchangeFormState;
+  handleExchangeChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => void;
+  handleSubmitExchange: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleCancelExchange: () => void;
+  onChangeExchangeImage: (file: File | null) => void;
+  eventForm: EventFormState;
+  handleEventChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => void;
+  handleSubmitEvent: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleCancelEvent: () => void;
+  onChangeEventImage: (file: File | null) => void;
+  userProducts: Product[];
+  availableRewards: Array<{ cod_rec: number, monto_rec: number }>;
 }
 
 function PublishSection({
@@ -199,31 +215,50 @@ function PublishSection({
   setModalTitle,
   setModalMessage,
   setShowSuccessModal,
+  exchangeForm,
+  handleExchangeChange,
+  handleSubmitExchange,
+  handleCancelExchange,
+  onChangeExchangeImage,
+  eventForm,
+  handleEventChange,
+  handleSubmitEvent,
+  handleCancelEvent,
+  onChangeEventImage,
+  userProducts,
+  availableRewards,
 }: PublishSectionProps) {
   return (
     <div className={styles.publishSection}>
       <div className={styles.publishTabs}>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "product" ? "publishTabActive" : ""}`}
+          className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""}`}
           onClick={() => setPublishType("product")}
         >
           Producto
         </button>
         <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "service" ? "publishTabActive" : ""}`}
+          className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""}`}
           onClick={() => setPublishType("service")}
         >
           Servicio
         </button>
-        {/* <button
+        <button
           type="button"
-          className={`${styles.publishTab} ${publishType === "exchange" ? "publishTabActive" : ""}`}
+          className={`${styles.publishTab} ${publishType === "exchange" ? styles.publishTabActive : ""}`}
           onClick={() => setPublishType("exchange")}
         >
           Intercambio
-        </button> */}
+        </button>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "event" ? styles.publishTabActive : ""}`}
+          onClick={() => setPublishType("event")}
+        >
+          Evento
+        </button>
       </div>
 
       {publishType === "product" ? (
@@ -348,25 +383,283 @@ function PublishSection({
         <ServiceRegistrationForm
           userId={userId}
           onSuccess={() => {
-            setModalTitle("Â¡Servicio Registrado!");
+            setModalTitle("¡Servicio Registrado!");
             setModalMessage("Tu servicio ha sido registrado correctamente y ya está visible en el mercado.");
             setShowSuccessModal(true);
           }}
           onDuplicate={() => {
-            setModalTitle("Â¡Servicio Ya Registrado!");
+            setModalTitle("¡Servicio Ya Registrado!");
             setModalMessage("Este servicio ya se encuentra registrado en tu perfil.");
             setShowSuccessModal(true);
           }}
         />
+      ) : publishType === "exchange" ? (
+        <form
+          onSubmit={handleSubmitExchange}
+          className={styles.publishForm}
+          noValidate
+        >
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Nombre del Producto</label>
+              <ProfileInput
+                type="text"
+                name="name"
+                value={exchangeForm.name}
+                onChange={handleExchangeChange as any}
+                placeholder="Ej. Chocolate bar powder"
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Peso (Kg)</label>
+              <ProfileInput
+                type="text"
+                name="weightKg"
+                value={exchangeForm.weightKg}
+                onChange={handleExchangeChange as any}
+                placeholder="Ej. 0.5"
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Marca / Material</label>
+              <ProfileInput
+                type="text"
+                name="material"
+                value={exchangeForm.material}
+                onChange={handleExchangeChange as any}
+                placeholder="Ej. COCA"
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Categoría</label>
+              <select
+                name="category"
+                value={exchangeForm.category}
+                onChange={handleExchangeChange}
+                className={styles.selectInput}
+              >
+                <option value="">Seleccionar</option>
+                {categories.map((cat) => (
+                  <option
+                    key={cat.cod_cat}
+                    value={cat.cod_cat.toString()}
+                  >
+                    {cat.nom_cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Subcategoría</label>
+              <select
+                name="subcategory"
+                value={exchangeForm.subcategory}
+                onChange={handleExchangeChange}
+                className={styles.selectInput}
+                disabled={!exchangeForm.category}
+              >
+                <option value="">Seleccionar</option>
+                {filteredSubcategories.map((sub) => (
+                  <option
+                    key={sub.cod_subcat_prod}
+                    value={sub.cod_subcat_prod.toString()}
+                  >
+                    {sub.nom_subcat_prod}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Calidad</label>
+              <select
+                name="quality"
+                value={exchangeForm.quality}
+                onChange={handleExchangeChange}
+                className={styles.selectInput}
+              >
+                <option value="">Seleccionar</option>
+                <option value="nuevo">Nuevo</option>
+                <option value="usado">Usado</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Descripción</label>
+              <textarea
+                name="description"
+                value={exchangeForm.description}
+                onChange={handleExchangeChange}
+                className={styles.textarea}
+                placeholder="Describe tu producto..."
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRowBottom}>
+            <div className={styles.formColImage}>
+              <label className={styles.fieldLabel}>
+                Imagen (cuadrada, máx. 100KB)
+              </label>
+              <FileInput name="exchangeImage" onChange={onChangeExchangeImage} />
+            </div>
+
+            <div className={styles.formColButtons}>
+              <div className={styles.actionsRowInline}>
+                <button type="submit" className={styles.submitButton}>
+                  Publicar Intercambio
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={handleCancelExchange}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
       ) : (
-        <ExchangeRegistrationForm
-          userId={userId}
-          onSuccess={() => {
-            setModalTitle("Â¡Intercambio Registrado!");
-            setModalMessage("Tu intercambio ha sido registrado correctamente.");
-            setShowSuccessModal(true);
-          }}
-        />
+        <form
+          onSubmit={handleSubmitEvent}
+          className={styles.publishForm}
+          noValidate
+        >
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Título del Evento</label>
+              <ProfileInput
+                type="text"
+                name="title"
+                value={eventForm.title}
+                onChange={handleEventChange as any}
+                placeholder="Ej. Festival de Reciclaje 2025"
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Fecha de Inicio</label>
+              <ProfileInput
+                type="date"
+                name="startDate"
+                value={eventForm.startDate}
+                onChange={handleEventChange as any}
+                required
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Fecha de Finalización</label>
+              <ProfileInput
+                type="date"
+                name="endDate"
+                value={eventForm.endDate}
+                onChange={handleEventChange as any}
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Tipo de Evento</label>
+              <select
+                name="eventType"
+                value={eventForm.eventType}
+                onChange={handleEventChange}
+                className={styles.selectInput}
+                required
+              >
+                <option value="">Seleccionar</option>
+                <option value="benefico">Benéfico</option>
+                <option value="monetizable">Monetizable</option>
+              </select>
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Costo de Inscripción (Tokens)</label>
+              <input
+                type="number"
+                name="cost"
+                value={eventForm.cost}
+                onChange={handleEventChange}
+                className={styles.profileInput}
+                placeholder="Ej. 10"
+                min="0"
+                disabled={eventForm.eventType === 'benefico'}
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Recompensa (Créditos Verdes CV)</label>
+              <select
+                name="rewardId"
+                value={eventForm.rewardId}
+                onChange={handleEventChange}
+                className={styles.selectInput}
+              >
+                <option value="">Sin recompensa</option>
+                {availableRewards.map((reward: { cod_rec: number, monto_rec: number }) => (
+                  <option key={reward.cod_rec} value={reward.cod_rec}>
+                    {reward.monto_rec} CV
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Descripción</label>
+              <textarea
+                name="description"
+                value={eventForm.description}
+                onChange={handleEventChange}
+                className={styles.textarea}
+                placeholder="Describe tu evento..."
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRowBottom}>
+            <div className={styles.formColImage}>
+              <label className={styles.fieldLabel}>
+                Banner del Evento (cuadrada, máx. 100KB)
+              </label>
+              <FileInput name="eventImage" onChange={onChangeEventImage} />
+            </div>
+
+            <div className={styles.formColButtons}>
+              <div className={styles.actionsRowInline}>
+                <button type="submit" className={styles.submitButton}>
+                  Crear Evento
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={handleCancelEvent}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
       )}
     </div>
   );
