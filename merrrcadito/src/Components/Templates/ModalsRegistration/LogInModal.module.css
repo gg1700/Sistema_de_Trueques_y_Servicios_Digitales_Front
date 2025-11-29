@@ -1,14 +1,16 @@
 :root {
-  --bg-soft: #fff6f6;
-  --stripe: #ffeff2; 
+  --bg-soft: #fdfbfb;
+  --stripe: #ffeff2;
   --ink: #1b1a1f;
   --green: #18c0a6;
   --green-h: #14af97;
   --red: #ff5f5f;
   --red-h: #e34d4d;
-  --border: #d8cdd1;
+  --border: #e0e0e0;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 }
-
 
 .screen {
   position: fixed;
@@ -16,84 +18,121 @@
   display: grid;
   place-items: center;
   z-index: 1000;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease-out;
 }
-
 
 .card {
   width: 92%;
-  max-width: 360px;
+  max-width: 380px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  transform: translateY(6vh);
+  gap: 20px;
+  padding: 32px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .field input {
-  height: 42px;
-  border-radius: 8px;
-  border: 1.6px solid var(--border);
-  background: #fff;
-  padding: 0 10px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0 16px;
   outline: none;
   color: var(--ink);
-  font-size: 15px;
+  font-size: 16px;
+  transition: all 0.2s ease;
 }
 
 .field input:focus {
-  border-color: #312338;
-  box-shadow: 0 0 0 2px rgba(49, 35, 56, 0.08);
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px rgba(24, 192, 166, 0.1);
+  transform: translateY(-1px);
 }
 
 .actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 16px;
+  margin-top: 8px;
 }
-
 
 .actions button {
-  height: 42px;
+  height: 48px;
   border: 0;
-  border-radius: 8px;
-  font-weight: 700;
-  color: #fff;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
-  transition: transform 0.06s ease, background 0.15s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
 
 .btnConfirm {
-  background: var(--green);
+  background: linear-gradient(135deg, var(--green) 0%, var(--green-h) 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(24, 192, 166, 0.3);
 }
+
 .btnConfirm:hover {
-  background: var(--green-h);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(24, 192, 166, 0.4);
 }
 
+.btnConfirm:active {
+  transform: translateY(0);
+}
 
-.actions :global(.buttonCancel),
 .btnCancel {
-  background: var(--red);
+  background: #fff;
+  color: var(--red);
+  border: 1px solid var(--red);
 }
-.actions :global(.buttonCancel:hover),
+
 .btnCancel:hover {
-  background: var(--red-h);
+  background: var(--red);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 95, 95, 0.2);
 }
 
-
-.actions button:active {
-  transform: translateY(1px);
+.btnCancel:active {
+  transform: translateY(0);
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
 
-.btnConfirm:hover:not(:disabled) {
-    background-color: #2ab29d;
-    transform: translateY(-1px);
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

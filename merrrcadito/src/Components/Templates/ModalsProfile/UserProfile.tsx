@@ -2,11 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import styles from "./UserProfile.module.css";
 
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
+import LikesSection from "./LikesSection";
+import EventsSection from "./EventsSection";
+import ExploreSection from "./ExploreSection";
+import ExchangeRegistrationForm from "./ExchangeRegistrationForm";
+import ServiceRegistrationForm from "./ServiceRegistrationForm";
 import { getNavItems } from "../../../Utils/navigation";
 import { ReportService, EventService } from "@/services";
 import { ExchangeService } from "@/services/exchangeService";
@@ -37,7 +42,11 @@ const PUBLICATIONS_API_BASE =
   process.env.NEXT_PUBLIC_PUBLICATIONS_API_BASE_URL ??
   "http://localhost:5000/api/publications";
 
-type Tab = "offers" | "publish" | "likes" | "events";
+const SERVICES_API_BASE =
+  process.env.NEXT_PUBLIC_SERVICES_API_BASE_URL ??
+  "http://localhost:5000/api/services";
+
+type Tab = "offers" | "publish" | "likes" | "events" | "explore";
 type PublishType = "product" | "service" | "exchange" | "event";
 type NavRole = "admin" | "user";
 type Role = NavRole | "entrepreneur";
@@ -61,6 +70,7 @@ interface ProductFormState {
   description: string;
   priceTokens: string;
   image: File | null;
+  condition?: string;
 }
 
 interface ServiceFormState {
@@ -140,11 +150,235 @@ const mapCodRolToRole = (codRol?: number): Role => {
   return "user";
 };
 
+
+interface PublishSectionProps {
+  publishType: PublishType;
+  setPublishType: (type: PublishType) => void;
+  productForm: ProductFormState;
+  serviceForm: ServiceFormState;
+  onChangeProductImage: (file: File | null) => void;
+  onChangeServiceImage: (file: File | null) => void;
+  handleProductChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void;
+  handleServiceChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void;
+  handleSubmitProduct: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
+  handleSubmitService: (e: React.FormEvent) => void;
+  handleCancelProduct: () => void;
+  handleCancelService: () => void;
+  categories: Category[];
+  filteredSubcategories: Subcategory[];
+  userId: number;
+  setModalTitle: (title: string) => void;
+  setModalMessage: (msg: string) => void;
+  setShowSuccessModal: (show: boolean) => void;
+}
+
+function PublishSection({
+  publishType,
+  setPublishType,
+  productForm,
+  serviceForm,
+  onChangeProductImage,
+  onChangeServiceImage,
+  handleProductChange,
+  handleServiceChange,
+  handleSubmitProduct,
+  handleSubmitService,
+  handleCancelProduct,
+  handleCancelService,
+  categories,
+  filteredSubcategories,
+  userId,
+  setModalTitle,
+  setModalMessage,
+  setShowSuccessModal,
+}: PublishSectionProps) {
+  return (
+    <div className={styles.publishSection}>
+      <div className={styles.publishTabs}>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "product" ? "publishTabActive" : ""}`}
+          onClick={() => setPublishType("product")}
+        >
+          Producto
+        </button>
+        <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "service" ? "publishTabActive" : ""}`}
+          onClick={() => setPublishType("service")}
+        >
+          Servicio
+        </button>
+        {/* <button
+          type="button"
+          className={`${styles.publishTab} ${publishType === "exchange" ? "publishTabActive" : ""}`}
+          onClick={() => setPublishType("exchange")}
+        >
+          Intercambio
+        </button> */}
+      </div>
+
+      {publishType === "product" ? (
+        <form
+          onSubmit={handleSubmitProduct}
+          className={styles.publishForm}
+          noValidate
+        >
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Nombre de Producto</label>
+              <ProfileInput
+                type="text"
+                name="name"
+                value={productForm.name}
+                onChange={handleProductChange}
+                placeholder="Ej. Cámara Canon EOS"
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Categoría</label>
+              <select
+                name="category"
+                value={productForm.category}
+                onChange={handleProductChange}
+                className={styles.selectInput}
+              >
+                <option value="">Seleccionar</option>
+                {categories.map((cat) => (
+                  <option key={cat.cod_cat} value={cat.cod_cat}>
+                    {cat.nom_cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Subcategoría</label>
+              <select
+                name="subcategory"
+                value={productForm.subcategory}
+                onChange={handleProductChange}
+                className={styles.selectInput}
+                disabled={!productForm.category}
+              >
+                <option value="">Seleccionar</option>
+                {filteredSubcategories.map((sub) => (
+                  <option key={sub.cod_subcat_prod} value={sub.cod_subcat_prod}>
+                    {sub.nom_subcat_prod}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColFull}>
+              <label className={styles.fieldLabel}>Descripción</label>
+              <textarea
+                name="description"
+                value={productForm.description}
+                onChange={handleProductChange}
+                className={styles.textarea}
+                placeholder="Describe tu producto..."
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Precio Tokens</label>
+              <ProfileInput
+                type="text"
+                name="priceTokens"
+                value={productForm.priceTokens}
+                onChange={handleProductChange}
+                placeholder="Ej. 20"
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Estado</label>
+              <select
+                name="condition"
+                value={productForm.condition}
+                onChange={handleProductChange}
+                className={styles.selectInput}
+              >
+                <option value="Nuevo">Nuevo</option>
+                <option value="Usado">Usado</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRowBottom}>
+            <div className={styles.formColImage}>
+              <label className={styles.fieldLabel}>
+                Imagen (cuadrada, máx. 100KB)
+              </label>
+              <FileInput name="productImage" onChange={onChangeProductImage} />
+            </div>
+
+            <div className={styles.formColButtons}>
+              <div className={styles.actionsRowInline}>
+                <button type="submit" className={styles.submitButton}>
+                  Publicar
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={handleCancelProduct}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      ) : publishType === "service" ? (
+        <ServiceRegistrationForm
+          userId={userId}
+          onSuccess={() => {
+            setModalTitle("Â¡Servicio Registrado!");
+            setModalMessage("Tu servicio ha sido registrado correctamente y ya está visible en el mercado.");
+            setShowSuccessModal(true);
+          }}
+          onDuplicate={() => {
+            setModalTitle("Â¡Servicio Ya Registrado!");
+            setModalMessage("Este servicio ya se encuentra registrado en tu perfil.");
+            setShowSuccessModal(true);
+          }}
+        />
+      ) : (
+        <ExchangeRegistrationForm
+          userId={userId}
+          onSuccess={() => {
+            setModalTitle("Â¡Intercambio Registrado!");
+            setModalMessage("Tu intercambio ha sido registrado correctamente.");
+            setShowSuccessModal(true);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 export default function UserProfile({
   role: roleProp = "admin",
 }: UserProfileProps) {
   const [activeTab, setActiveTab] = useState<Tab>("offers");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("Â¡Publicación Exitosa!");
+  const [modalMessage, setModalMessage] = useState("Tu producto ha sido publicado correctamente y ya está visible en el mercado.");
   const [publishType, setPublishType] = useState<PublishType>("product");
   const [showMoreInfo, setShowMoreInfo] = useState(false); // Estado para expandir/colapsar
 
@@ -172,8 +406,10 @@ export default function UserProfile({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<UserApi | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [services, setServices] = useState<Offer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewerId, setViewerId] = useState<number | null>(null);
   const [resolvedHandle, setResolvedHandle] = useState<string | null>(null);
   const [resolvedRoleFromStorage, setResolvedRoleFromStorage] =
     useState<Role | null>(null);
@@ -218,8 +454,17 @@ export default function UserProfile({
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const handleFromUrl = searchParams.get("handle");
   const roleFromUrl = searchParams.get("role") as Role | null;
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("currentUserHandle");
+      window.localStorage.removeItem("currentUserRole");
+      router.push("/login");
+    }
+  };
 
   useEffect(() => {
     if (handleFromUrl) {
@@ -252,6 +497,29 @@ export default function UserProfile({
 
   const navRole: NavRole = effectiveRole === "admin" ? "admin" : "user";
   const navList = getNavItems(navRole);
+
+  useEffect(() => {
+    const fetchViewerData = async () => {
+      if (typeof window !== "undefined") {
+        const handle = window.localStorage.getItem("currentUserHandle");
+        if (handle) {
+          try {
+            const res = await fetch(
+              `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(handle)}`
+            );
+            const json = await res.json();
+            if (res.ok && json.success && json.data) {
+              const data = Array.isArray(json.data) ? json.data[0] : json.data;
+              setViewerId(data.cod_us);
+            }
+          } catch (err) {
+            console.error("Error fetching viewer data:", err);
+          }
+        }
+      }
+    };
+    fetchViewerData();
+  }, []);
 
   useEffect(() => {
     const fetchCategoriesAndSubcats = async () => {
@@ -298,10 +566,19 @@ export default function UserProfile({
       setFilteredSubcategories([]);
       return;
     }
-    const filtered = subcategories.filter(
-      (sc) => sc.cod_cat === parseInt(productForm.category)
+    const codCat = parseInt(productForm.category, 10);
+    if (isNaN(codCat)) {
+      setFilteredSubcategories([]);
+      return;
+    }
+    const filtered = subcategories.filter((s) => s.cod_cat === codCat);
+
+    // Eliminar duplicados
+    const uniqueFiltered = Array.from(
+      new Map(filtered.map((item) => [item.cod_subcat_prod, item])).values()
     );
-    setFilteredSubcategories(filtered);
+
+    setFilteredSubcategories(uniqueFiltered);
   }, [productForm.category, subcategories]);
 
   // Filtrar subcategorías para formulario de intercambio
@@ -475,6 +752,33 @@ export default function UserProfile({
     }
   };
 
+  const fetchServicesForUser = async (codUs: number) => {
+    try {
+      console.log(`Fetching services for user: ${codUs}`);
+      const resServices = await fetch(`${SERVICES_API_BASE}/user/${codUs}`);
+      const jsonServices = await resServices.json().catch(() => ({} as any));
+      console.log("Services response:", jsonServices);
+
+      if (resServices.ok && jsonServices.data && Array.isArray(jsonServices.data)) {
+        const mappedServices: Offer[] = jsonServices.data.map((s: any) => ({
+          id: s.cod_serv ?? s.id ?? 0,
+          title: s.nom_serv ?? "Sin título",
+          description: s.descr_serv ?? "",
+          image: s.foto_serv ? `data:image/jpeg;base64,${Buffer.from(s.foto_serv).toString('base64')}` : undefined,
+          price: s.precio_serv ?? s.precio_serv_token ?? 0,
+        }));
+        console.log("Mapped services:", mappedServices);
+        setServices(mappedServices);
+      } else {
+        console.warn("No services found or invalid response format");
+        setServices([]);
+      }
+    } catch (err) {
+      console.error("Error al cargar servicios:", err);
+      setServices([]);
+    }
+  };
+
   useEffect(() => {
     if (!resolvedHandle) {
       setError("No se encontró información de sesión del usuario.");
@@ -513,6 +817,7 @@ export default function UserProfile({
           } catch (envErr) {
             console.error("Error al cargar impacto ambiental (no crítico):", envErr);
           }
+          await fetchServicesForUser(userData.cod_us);
         }
       } catch (err: any) {
         console.error(err);
@@ -701,9 +1006,60 @@ export default function UserProfile({
     }
   };
 
-  const handleSubmitService = (e: React.FormEvent) => {
+  const handleSubmitService = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Servicio a publicar:", serviceForm);
+
+    try {
+      const response = await fetch(`${SERVICES_API_BASE}/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cod_cat: parseInt(serviceForm.category),
+          nom_serv: serviceForm.name,
+          desc_serv: serviceForm.description,
+          precio_serv: parseInt(serviceForm.priceTokens),
+          duracion_serv: serviceForm.duration,
+          cod_us: user?.cod_us,
+          hrs_ini_dia_serv: "08:00",
+          hrs_fin_dia_serv: "18:00",
+          dif_dist_serv: 0
+        })
+      });
+
+      const json = await response.json();
+
+      if (response.status === 409) {
+        // Servicio duplicado
+        setModalTitle("Â¡Servicio Ya Registrado!");
+        setModalMessage("Este servicio ya se encuentra registrado en tu perfil.");
+        setShowSuccessModal(true);
+      } else if (response.ok) {
+        // Ã‰xito
+        setModalTitle("Â¡Servicio Registrado!");
+        setModalMessage("Tu servicio ha sido registrado correctamente y ya está visible en el mercado.");
+        setShowSuccessModal(true);
+
+        // Recargar servicios
+        if (user?.cod_us) {
+          await fetchServicesForUser(user.cod_us);
+        }
+
+        // Limpiar formulario
+        setServiceForm({
+          name: "",
+          duration: "",
+          category: "",
+          description: "",
+          priceTokens: "",
+          image: null,
+        });
+      } else {
+        alert(`Error: ${json.message || "No se pudo registrar el servicio"}`);
+      }
+    } catch (err: any) {
+      console.error("Error al registrar servicio:", err);
+      alert("Error al registrar servicio");
+    }
   };
 
   const handleCancelProduct = () => {
@@ -939,6 +1295,16 @@ export default function UserProfile({
               </div>
             )}
           </div>
+
+          <button
+            className={styles.logoutButton}
+            type="button"
+            aria-label="Cerrar sesión"
+            onClick={handleLogout}
+            title="Cerrar sesión"
+          >
+            <i className="bi bi-box-arrow-right"></i>
+          </button>
 
           <button
             className={styles.menuButton}
@@ -1193,6 +1559,14 @@ export default function UserProfile({
           >
             Eventos
           </button>
+          <button
+            type="button"
+            className={`${styles.tab} ${activeTab === "explore" ? "tabActive" : ""
+              }`}
+            onClick={() => setActiveTab("explore")}
+          >
+            Explorar
+          </button>
         </nav>
       </header>
 
@@ -1210,7 +1584,7 @@ export default function UserProfile({
         )}
 
         {!loading && !error && activeTab === "offers" && (
-          <OffersSection offers={offers} />
+          <OffersSection offers={offers} services={services} />
         )}
 
         {!loading && !error && activeTab === "publish" && (
@@ -1249,19 +1623,25 @@ export default function UserProfile({
             categories={categories}
             filteredSubcategories={filteredSubcategories}
             availableRewards={availableRewards}
+            userId={user?.cod_us ?? 0}
+            setModalTitle={setModalTitle}
+            setModalMessage={setModalMessage}
+            setShowSuccessModal={setShowSuccessModal}
           />
         )}
 
         {!loading && !error && activeTab === "likes" && (
-          <div className={styles.placeholderTab}>
-            <p>No hay me gustas</p>
-          </div>
+          <LikesSection userId={user?.cod_us ?? 0} />
+
+
         )}
 
         {!loading && !error && activeTab === "events" && (
-          <div className={styles.placeholderTab}>
-            <p>No hay eventos</p>
-          </div>
+          <EventsSection userId={viewerId ?? 0} />
+        )}
+
+        {!loading && !error && activeTab === "explore" && (
+          <ExploreSection currentUserId={viewerId ?? 0} />
         )}
       </div>
 
@@ -1330,10 +1710,14 @@ export default function UserProfile({
 
 interface OffersSectionProps {
   offers: Offer[];
+  services: Offer[];
 }
 
-function OffersSection({ offers }: OffersSectionProps) {
-  if (!offers.length) {
+function OffersSection({ offers, services }: OffersSectionProps) {
+  const hasProducts = offers.length > 0;
+  const hasServices = services.length > 0;
+
+  if (!hasProducts && !hasServices) {
     return (
       <div className={styles.placeholderTab}>
         <p>Este usuario aún no tiene ofertas publicadas.</p>

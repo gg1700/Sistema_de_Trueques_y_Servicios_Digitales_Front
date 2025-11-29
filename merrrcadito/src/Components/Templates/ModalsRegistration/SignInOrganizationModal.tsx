@@ -86,8 +86,8 @@ export default function SignInOrganizationModal({
 
   const set =
     (k: keyof OrgForm) =>
-    (v: string): void =>
-      setForm((prev) => ({ ...prev, [k]: v }));
+      (v: string): void =>
+        setForm((prev) => ({ ...prev, [k]: v }));
 
   const validateForm = (): boolean => {
     const errors: OrgErrors = {};
@@ -345,7 +345,7 @@ export default function SignInOrganizationModal({
                 icon="bi-geo-alt"
                 type="default"
                 name="Elegir en mapa"
-                onClick={onPickLocation ?? (() => {})}
+                onClick={onPickLocation ?? (() => { })}
               />
             </div>
 
@@ -378,7 +378,9 @@ export default function SignInOrganizationModal({
           </div>
 
           <div className={styles.actions}>
-            <ButtonCancel onClick={onCancel} />
+            <button type="button" className={styles.btnCancel} onClick={onCancel}>
+              Cancelar
+            </button>
             <button type="submit" className={styles.btnConfirm}>
               Confirmar
             </button>

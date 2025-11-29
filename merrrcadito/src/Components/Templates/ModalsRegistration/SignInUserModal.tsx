@@ -106,8 +106,8 @@ const SignInUserModal: React.FC<Props> = ({
 
   const setField =
     (k: keyof SignInForm) =>
-    (v: string): void =>
-      setForm((prev) => ({ ...prev, [k]: v }));
+      (v: string): void =>
+        setForm((prev) => ({ ...prev, [k]: v }));
 
   const validateMainForm = (): boolean => {
     const errors: SignInErrors = {};
@@ -421,7 +421,9 @@ const SignInUserModal: React.FC<Props> = ({
           </div>
 
           <div className={styles.actions}>
-            <ButtonCancel onClick={() => onCancel?.()} />
+            <button type="button" className={styles.btnCancel} onClick={() => onCancel?.()}>
+              Cancelar
+            </button>
             <button type="submit" className={styles.btnConfirm}>
               Confirmar
             </button>
@@ -460,8 +462,8 @@ const SignInUserModal: React.FC<Props> = ({
                 {credMode === "admin"
                   ? "Registrar administrador"
                   : credMode === "entrepreneur"
-                  ? "Registrar emprendedor"
-                  : "Registrar usuario"}
+                    ? "Registrar emprendedor"
+                    : "Registrar usuario"}
               </h2>
               <button
                 type="button"

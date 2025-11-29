@@ -2,7 +2,9 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// Servicio combinado de intercambios que soporta ambas implementaciones
 export const ExchangeService = {
+    // === Funciones de HEAD (sistema de ofertas abiertas) ===
     create_exchange: async (formData: FormData) => {
         try {
             const response = await axios.post(
@@ -67,5 +69,84 @@ export const ExchangeService = {
             console.error('Error al obtener intercambios:', error);
             throw error;
         }
-    }
+    },
+
+    // === Funciones de Frontend-Mateo (sistema de gestión de propuestas) ===
+    acceptExchange: async (exchangeId: number, userId: number) => {
+        try {
+            const response = await axios.put(
+                `${API_BASE_URL}/exchanges/${exchangeId}/accept`,
+                { userId }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error al aceptar intercambio:', error);
+            throw error;
+        }
+    },
+
+    rejectExchange: async (exchangeId: number, userId: number, reason?: string) => {
+        try {
+            const response = await axios.put(
+                `${API_BASE_URL}/exchanges/${exchangeId}/reject`,
+                { userId, reason }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error al rechazar intercambio:', error);
+            throw error;
+        }
+    },
+
+    confirmExchange: async (exchangeId: number, userId: number) => {
+        try {
+            const response = await axios.put(
+                `${API_BASE_URL}/exchanges/${exchangeId}/confirm`,
+                { userId }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error al confirmar intercambio:', error);
+            throw error;
+        }
+    },
+
+    getExchangesByStatus: async (userId: number, status: string) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/exchanges/user/${userId}/status/${status}`
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener intercambios por estado:', error);
+            throw error;
+        }
+    },
+
+    getUserExchanges: async (userId: number) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/exchanges/user/${userId}`
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener intercambios del usuario:', error);
+            throw error;
+        }
+    },
+
+    getExchangeDetails: async (exchangeId: number) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/exchanges/${exchangeId}`
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener detalles del intercambio:', error);
+            throw error;
+        }
+    },
 };
+
+// Export alias para compatibilidad con Frontend-Mateo
+export const exchangeService = ExchangeService;

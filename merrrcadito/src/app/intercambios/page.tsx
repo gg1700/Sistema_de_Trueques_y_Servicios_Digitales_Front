@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/Components/Templates';
+import ExchangesView from '@/Components/Templates/ExchangesView/ExchangesView';
 import ProposeExchangeModal from '@/Components/Molecules/ProposeExchangeModal/ProposeExchangeModal';
 import { ExchangeService } from '@/services/exchangeService';
 import styles from './page.module.css';
@@ -19,14 +21,26 @@ interface Exchange {
 }
 
 export default function ExchangesPage() {
+    const [userId, setUserId] = useState<number | null>(null);
+    const [viewMode, setViewMode] = useState<'list' | 'detailed'>('list');
     const [exchanges, setExchanges] = useState<Exchange[]>([]);
     const [selectedExchange, setSelectedExchange] = useState<any | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
-        fetchExchanges();
-    }, []);
+        // Obtener userId de localStorage
+        const storedUserId = localStorage.getItem('userId');
+
+        if (storedUserId) {
+            setUserId(parseInt(storedUserId));
+            fetchExchanges();
+        } else {
+            // Si no hay usuario, redirigir al login
+            router.push('/login');
+        }
+    }, [router]);
 
     const fetchExchanges = async () => {
         try {
@@ -51,6 +65,33 @@ export default function ExchangesPage() {
         fetchExchanges();
     };
 
+    // Si está cargando el userId
+    if (loading && !userId) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh'
+            }}>
+                <p>Cargando...</p>
+            </div>
+        );
+    }
+
+    // Si no hay userId, no renderizar nada (se redirigirá)
+    if (!userId) {
+        return null;
+    }
+
+    // Si se detectó que hay ExchangesView disponible, usar vista detallada
+    const useDetailedView = viewMode === 'detailed';
+
+    if (useDetailedView) {
+        return <ExchangesView userId={userId} />;
+    }
+
+    // Vista de lista simplificada (HEAD)
     return (
         <AdminLayout pageTitle="Intercambios" pageSubtitle="Explora todas las oportunidades de intercambio">
             <div className={styles.container}>
