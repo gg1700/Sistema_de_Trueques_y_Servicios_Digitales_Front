@@ -1,0 +1,37 @@
+.promotionCard {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background: white;
+  transition: box-shadow 0.2s;
+}
+
+.promotionCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1fb7a1;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.details {
+  display: flex;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

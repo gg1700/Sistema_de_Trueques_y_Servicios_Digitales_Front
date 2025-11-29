@@ -18,33 +18,41 @@ import { ExchangeService } from "@/services/exchangeService";
 
 const USERS_API_BASE =
   process.env.NEXT_PUBLIC_USERS_API_BASE_URL ??
-  "http://localhost:5000/api/users";
+  "http://127.0.0.1:5000/api/users";
 
 const PRODUCTS_API_BASE =
   process.env.NEXT_PUBLIC_PRODUCTS_API_BASE_URL ??
-  "http://localhost:5000/api/products";
+  "http://127.0.0.1:5000/api/products";
 
 const POSTS_API_BASE =
   process.env.NEXT_PUBLIC_POSTS_API_BASE_URL ??
-  "http://localhost:5000/api/posts";
+  "http://127.0.0.1:5000/api/posts";
 
 const CATEGORIES_API_BASE =
   process.env.NEXT_PUBLIC_CATEGORIES_API_BASE_URL ??
-  "http://localhost:5000/api/categories";
+  "http://127.0.0.1:5000/api/categories";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:5000/api";
 
 const SUBCATEGORIES_API_BASE =
   process.env.NEXT_PUBLIC_SUBCATEGORIES_API_BASE_URL ??
-  "http://localhost:5000/api/subcategories";
+  "http://127.0.0.1:5000/api/subcategories";
 
 const PUBLICATIONS_API_BASE =
   process.env.NEXT_PUBLIC_PUBLICATIONS_API_BASE_URL ??
-  "http://localhost:5000/api/publications";
+  "http://127.0.0.1:5000/api/publications";
 
 const SERVICES_API_BASE =
   process.env.NEXT_PUBLIC_SERVICES_API_BASE_URL ??
-  "http://localhost:5000/api/services";
+  "http://127.0.0.1:5000/api/services";
+
+const EVENTS_API_BASE =
+  process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL ??
+  "http://127.0.0.1:5000/api/events";
+
+const EXCHANGES_API_BASE =
+  process.env.NEXT_PUBLIC_EXCHANGES_API_BASE_URL ??
+  "http://127.0.0.1:5000/api/exchanges";
 
 type Tab = "offers" | "publish" | "likes" | "events" | "explore";
 type PublishType = "product" | "service" | "exchange" | "event";
@@ -58,6 +66,11 @@ interface Offer {
   image?: string;
   price?: number;
   isExchange?: boolean;
+  type: 'product' | 'service' | 'event' | 'exchange';
+  impact?: number;
+  date?: string;
+  reward?: number;
+  status?: string;
 }
 
 interface ProductFormState {
@@ -700,6 +713,8 @@ export default function UserProfile({
   const [user, setUser] = useState<UserApi | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [services, setServices] = useState<Offer[]>([]);
+  const [events, setEvents] = useState<Offer[]>([]);
+  const [exchanges, setExchanges] = useState<Offer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [viewerId, setViewerId] = useState<number | null>(null);
@@ -889,6 +904,8 @@ export default function UserProfile({
   const fetchOffersForUser = async (codUs: number) => {
     try {
       const allOffers: Offer[] = [];
+      const allEvents: Offer[] = [];
+      const allExchanges: Offer[] = [];
 
       const resPosts = await fetch(
         `${POSTS_API_BASE}/all_active_product_posts`
@@ -923,6 +940,9 @@ export default function UserProfile({
               description: descriptionLines.join('\n'),
               image: `${PUBLICATIONS_API_BASE}/${p.cod_pub ?? p.id ?? 0}/image`,
               price: p.precio_prod ?? 0,
+              type: 'product' as const,
+              impact: impacto,
+              status: p.estado_prod ?? 'active',
             };
           });
 
@@ -965,18 +985,21 @@ export default function UserProfile({
           const imageUrl = ex.tiene_foto ? `${API_BASE_URL}/exchanges/${ex.cod_inter}/image` : null;
 
           return {
-            id: `exchange-${ex.cod_inter}`,
+            id: ex.cod_inter,
             title: isOpenOffer
               ? `Intercambio: ${ex.nombre_prod_origen} (Oferta)`
               : `Intercambio: ${ex.nombre_prod_origen} ⇄ ${ex.nombre_prod_destino}`,
             description: descriptionLines.join('\n'),
             image: imageUrl,
             price: 0,
-            isExchange: true
+            isExchange: true,
+            type: 'exchange' as const,
+            impact: ex.impacto_amb_inter ?? 5,
+            status: ex.estado_inter ?? 'active',
           };
         });
 
-        allOffers.push(...exchangeOffers);
+        allExchanges.push(...exchangeOffers);
       }
 
       // Cargar eventos del usuario
@@ -1004,29 +1027,33 @@ export default function UserProfile({
           descriptionLines.push(`🌱 Impacto: 10 pts`);
 
           return {
-            id: `event-${ev.cod_evento}`,
+            id: ev.cod_evento,
             title: `Evento: ${ev.titulo_evento}`,
             description: descriptionLines.join('\n'),
             image: imageUrl,
             price: ev.costo_inscripcion,
-            isExchange: false
+            isExchange: false,
+            type: 'event' as const,
+            impact: 10,
+            date: ev.fecha_inicio_evento,
+            reward: ev.monto_recompensa,
+            status: ev.estado_evento ?? 'active',
           };
         });
 
-        allOffers.push(...eventOffers);
+        allEvents.push(...eventOffers);
       }
 
-      // Eliminar duplicados basados en ID (mantener el primero encontrado)
-      const uniqueOffers = allOffers.filter((offer, index, self) =>
-        index === self.findIndex((o) => o.id === offer.id)
-      );
-
-      // Establecer todas las ofertas de una sola vez
-      setOffers(uniqueOffers);
+      // Establecer todas las ofertas por separado
+      setOffers(allOffers);
+      setEvents(allEvents);
+      setExchanges(allExchanges);
 
     } catch (err) {
       console.error("Error al cargar publicaciones de productos:", err);
       setOffers([]);
+      setEvents([]);
+      setExchanges([]);
     }
   };
 
@@ -1059,6 +1086,9 @@ export default function UserProfile({
           description: s.descr_serv ?? "",
           image: s.foto_serv ? `data:image/jpeg;base64,${Buffer.from(s.foto_serv).toString('base64')}` : undefined,
           price: s.precio_serv ?? s.precio_serv_token ?? 0,
+          type: 'service' as const,
+          impact: 5,
+          status: 'active',
         }));
         console.log("Mapped services:", mappedServices);
         setServices(mappedServices);
@@ -1877,7 +1907,7 @@ export default function UserProfile({
         )}
 
         {!loading && !error && activeTab === "offers" && (
-          <OffersSection offers={offers} services={services} />
+          <OffersSection offers={offers} services={services} events={events} exchanges={exchanges} />
         )}
 
         {!loading && !error && activeTab === "publish" && (
@@ -2004,13 +2034,17 @@ export default function UserProfile({
 interface OffersSectionProps {
   offers: Offer[];
   services: Offer[];
+  events: Offer[];
+  exchanges: Offer[];
 }
 
-function OffersSection({ offers, services }: OffersSectionProps) {
+function OffersSection({ offers, services, events, exchanges }: OffersSectionProps) {
   const hasProducts = offers.length > 0;
   const hasServices = services.length > 0;
+  const hasEvents = events.length > 0;
+  const hasExchanges = exchanges.length > 0;
 
-  if (!hasProducts && !hasServices) {
+  if (!hasProducts && !hasServices && !hasEvents && !hasExchanges) {
     return (
       <div className={styles.placeholderTab}>
         <p>Este usuario aún no tiene ofertas publicadas.</p>
@@ -2018,80 +2052,138 @@ function OffersSection({ offers, services }: OffersSectionProps) {
     );
   }
 
-  return (
-    <div className={styles.offersSection}>
-      {offers.map((offer) => (
-        <article key={offer.id} className={styles.offerCard}>
-          <div className={styles.offerImage}>
-            {offer.image && (
-              <img
-                src={offer.image}
-                alt={offer.title}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: "12px",
-                }}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-            )}
-          </div>
-          <div className={styles.offerInfo}>
-            <h2 className={styles.offerTitle}>{offer.title}</h2>
-            <p className={styles.offerDescription} style={{ whiteSpace: 'pre-line' }}>{offer.description}</p>
-          </div>
-          <div className={styles.offerActions}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              flexWrap: 'wrap'
-            }}>
-              {!offer.isExchange && (
-                <>
+  const renderSection = (title: string, items: Offer[]) => {
+    if (items.length === 0) return null;
+    return (
+      <div className={styles.sectionContainer} style={{ marginBottom: '32px' }}>
+        <h3 className={styles.sectionTitle} style={{
+          fontSize: '18px',
+          fontWeight: '600',
+          color: '#333',
+          marginBottom: '16px',
+          paddingLeft: '8px',
+          borderLeft: '4px solid #1fb7a1'
+        }}>
+          {title}
+        </h3>
+        <div className={styles.offersSection}>
+          {items.map((offer) => (
+            <article key={offer.id} className={styles.offerCard}>
+              <div className={styles.offerImage}>
+                {offer.image ? (
+                  <img
+                    src={offer.image}
+                    alt={offer.title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "12px",
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
                   <div style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: '4px'
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#f0f0f0",
+                    borderRadius: "12px",
+                    color: "#ccc",
+                    fontSize: "40px"
                   }}>
-                    <span style={{
-                      fontSize: '20px',
-                      fontWeight: '700',
-                      color: '#1fb7a1'
-                    }}>
-                      {offer.price ?? 0}
-                    </span>
-                    <span style={{
-                      fontSize: '13px',
-                      color: '#6b7785',
-                      fontWeight: '500'
-                    }}>
-                      Tokens
-                    </span>
+                    {offer.type === 'event' ? <i className="bi bi-calendar-event"></i> :
+                      offer.type === 'exchange' ? <i className="bi bi-arrow-left-right"></i> :
+                        offer.type === 'service' ? <i className="bi bi-tools"></i> :
+                          <i className="bi bi-box-seam"></i>}
                   </div>
-                </>
-              )}
-              <button
-                type="button"
-                className={styles.iconButton}
-                title="Compartir"
-              >
-                <i className="bi bi-share" />
-              </button>
-              <button
-                type="button"
-                className={styles.iconButton}
-                title="Favorito"
-              >
-                <i className="bi bi-heart" />
-              </button>
-            </div>
-          </div>
-        </article>
-      ))}
+                )}
+                {offer.status && offer.status !== 'active' && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    color: 'white',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px'
+                  }}>
+                    {offer.status}
+                  </div>
+                )}
+              </div>
+              <div className={styles.offerInfo}>
+                <h2 className={styles.offerTitle}>{offer.title}</h2>
+                <div className={styles.offerDescription} style={{ whiteSpace: 'pre-line' }}>
+                  {offer.description}
+                </div>
+              </div>
+              <div className={styles.offerActions}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  flexWrap: 'wrap'
+                }}>
+                  {!offer.isExchange && offer.price !== undefined && (
+                    <>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '4px'
+                      }}>
+                        <span style={{
+                          fontSize: '20px',
+                          fontWeight: '700',
+                          color: '#1fb7a1'
+                        }}>
+                          {offer.price}
+                        </span>
+                        <span style={{
+                          fontSize: '13px',
+                          color: '#6b7785',
+                          fontWeight: '500'
+                        }}>
+                          Tokens
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  <div style={{ flex: 1 }}></div>
+                  <button
+                    type="button"
+                    className={styles.iconButton}
+                    title="Compartir"
+                  >
+                    <i className="bi bi-share" />
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.iconButton}
+                    title="Favorito"
+                  >
+                    <i className="bi bi-heart" />
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className={styles.offersContainer}>
+      {renderSection("Productos", offers)}
+      {renderSection("Servicios", services)}
+      {renderSection("Intercambios", exchanges)}
+      {renderSection("Eventos", events)}
     </div>
   );
 }
