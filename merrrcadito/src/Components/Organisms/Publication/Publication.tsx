@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PublicationCard from "@/Components/Molecules/PublicationCard/PublicationCard";
 import PublicationProducto from "@/Components/Molecules/PublicationMore/PublicationProducto";
 import ModalManagement from "../ModalManagement/modalManagement";
@@ -58,8 +58,16 @@ export default function Publication({
     const [isProcessing, setIsProcessing] = useState(false);
     const [purchaseData, setPurchaseData] = useState<PurchaseProductResponse | null>(null);
 
-    // Hardcoded user ID for testing - replace with actual auth
-    const USER_ID = 18;
+    const [userId, setUserId] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const storedUserId = localStorage.getItem('userId');
+            if (storedUserId) {
+                setUserId(parseInt(storedUserId));
+            }
+        }
+    }, []);
 
     function abrirModal() {
         setIsModalOpen(true);
@@ -70,13 +78,22 @@ export default function Publication({
     }
 
     function handlePurchaseClick() {
+        if (!userId) {
+            alert('Por favor inicia sesión para realizar una compra');
+            return;
+        }
         setShowConfirmModal(true);
     }
 
     async function handleConfirmPurchase() {
+        if (!userId) {
+            alert('Error: No se pudo identificar al usuario');
+            return;
+        }
+
         setIsProcessing(true);
         try {
-            const result = await purchaseProduct(USER_ID, pub.cod_pub);
+            const result = await purchaseProduct(userId, pub.cod_pub);
             if (result.success) {
                 setPurchaseData(result);
                 setShowConfirmModal(false);

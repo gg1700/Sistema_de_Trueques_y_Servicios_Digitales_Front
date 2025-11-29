@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import AdminLayout from '@/Components/Templates/UserLayout/UserLayout';
+import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
 import { getAllTokenPackages, TokenPackageDB } from '@/services/tokenService';
 import { purchaseTokens } from '@/services/transactionService';
 import styles from './tokens.module.css';
@@ -485,16 +485,28 @@ const TokenItem = ({
 };
 
 export default function TokensPage() {
+  const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
   const [paquetes, setPaquetes] = useState<TokenPackageDB[]>([]);
   const [loading, setLoading] = useState(true);
   const [comprandoId, setComprandoId] = useState<number | null>(null);
   const [selectedPaquete, setSelectedPaquete] = useState<TokenPackageDB | null>(null);
   const [successPaquete, setSuccessPaquete] = useState<TokenPackageDB | null>(null);
-  const [notification, setNotification] = useState<{
-    show: boolean;
-    success: boolean;
-    message: string;
-  }>({ show: false, success: false, message: '' });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [notification, setNotification] = useState({ show: false, success: false, message: '' });
+
+  const [userId, setUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem('currentUserRole');
+    if (storedRole === 'admin' || storedRole === 'user') {
+      setUserRole(storedRole);
+    }
+
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(parseInt(storedUserId));
+    }
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -525,13 +537,15 @@ export default function TokensPage() {
   const handleConfirmPurchase = async () => {
     if (!selectedPaquete) return;
 
+    if (!userId) {
+      showNotification(false, 'Error: No se pudo identificar al usuario. Por favor, inicia sesión nuevamente.');
+      return;
+    }
+
     setComprandoId(selectedPaquete.id);
 
     try {
-      // TODO: Obtener el cod_us del usuario autenticado
-      // Por ahora usaremos un valor de ejemplo
-      // Usuario 1 tiene saldo_real = 0, Usuario 18 tiene saldo_real = 100000
-      const cod_us_origen = 1; // CAMBIAR POR EL ID DEL USUARIO ACTUAL
+      const cod_us_origen = userId;
 
       const result = await purchaseTokens(
         cod_us_origen,
@@ -573,9 +587,10 @@ export default function TokensPage() {
   };
 
   return (
-    <AdminLayout
+    <AppLayout
       pageTitle="Tienda de Tokens"
       pageSubtitle="Compra tokens con dinero real para usar en la plataforma."
+      userRole={userRole}
     >
       {/* Modal de confirmación */}
       {selectedPaquete && (
@@ -631,6 +646,6 @@ export default function TokensPage() {
           ))}
         </div>
       )}
-    </AdminLayout>
+    </AppLayout>
   );
 }

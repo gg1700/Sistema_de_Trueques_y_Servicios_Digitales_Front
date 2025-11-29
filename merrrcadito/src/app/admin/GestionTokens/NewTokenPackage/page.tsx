@@ -1,10 +1,11 @@
 "use client";
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import styles from "./newToken.module.css";
-import AdminLayout from "@/Components/Templates/AdminLayout/AdminLayout";
+import AppLayout from "@/Components/Templates/AppLayout/AppLayout";
 import { createTokenPackage } from "@/services/tokenService";
 
 export default function NewTokenPackagePage() {
+  const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
   const [form, setForm] = useState({
     nombre: "",
     tokens: "",
@@ -13,6 +14,13 @@ export default function NewTokenPackagePage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem('currentUserRole');
+    if (storedRole === 'admin' || storedRole === 'user') {
+      setUserRole(storedRole);
+    }
+  }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,10 +47,10 @@ export default function NewTokenPackagePage() {
       formData.append("nombre", form.nombre);
       formData.append("tokens", form.tokens);
       formData.append("precio_real", form.precio_real);
-      formData.append("image", file); 
+      formData.append("image", file);
 
       await createTokenPackage(formData);
-      
+
       alert("Paquete registrado con éxito");
       // Reset form
       setForm({ nombre: "", tokens: "", precio_real: "" });
@@ -57,14 +65,15 @@ export default function NewTokenPackagePage() {
   };
 
   return (
-    <AdminLayout 
-      pageTitle="Gestión de Tokens" 
+    <AppLayout
+      pageTitle="Gestión de Tokens"
       pageSubtitle="Registrar nuevo paquete de tokens"
+      userRole={userRole}
     >
       <div className={styles.container}>
         <h2 className={styles.title}>Registrar Nuevo Paquete</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
-          
+
           <div className={styles.field}>
             <label className={styles.label}>Nombre del Paquete</label>
             <input
@@ -120,6 +129,6 @@ export default function NewTokenPackagePage() {
           </div>
         </form>
       </div>
-    </AdminLayout>
+    </AppLayout>
   );
 }

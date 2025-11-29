@@ -37,23 +37,12 @@ export default function PublicationProducto({
     const [userId, setUserId] = useState<number | null>(null);
 
     useEffect(() => {
-        const getUserId = async () => {
-            if (typeof window !== 'undefined') {
-                const storedHandle = window.localStorage.getItem('currentUserHandle');
-                if (storedHandle) {
-                    try {
-                        const response = await fetch(`${USERS_API_BASE}/handle/${storedHandle}`);
-                        const data = await response.json();
-                        if (data.success && data.data) {
-                            setUserId(data.data.cod_us);
-                        }
-                    } catch (error) {
-                        console.error('Error obteniendo user ID:', error);
-                    }
-                }
+        if (typeof window !== 'undefined') {
+            const storedUserId = localStorage.getItem('userId');
+            if (storedUserId) {
+                setUserId(parseInt(storedUserId));
             }
-        };
-        getUserId();
+        }
     }, []);
 
     async function handleConfirmPurchase() {

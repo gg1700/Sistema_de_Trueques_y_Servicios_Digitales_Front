@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AdminLayout } from '@/Components/Templates';
+import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
 import ExchangesView from '@/Components/Templates/ExchangesView/ExchangesView';
 import ProposeExchangeModal from '@/Components/Molecules/ProposeExchangeModal/ProposeExchangeModal';
 import { ExchangeService } from '@/services/exchangeService';
@@ -21,6 +21,7 @@ interface Exchange {
 }
 
 export default function ExchangesPage() {
+    const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
     const [userId, setUserId] = useState<number | null>(null);
     const [viewMode, setViewMode] = useState<'list' | 'detailed'>('list');
     const [exchanges, setExchanges] = useState<Exchange[]>([]);
@@ -30,8 +31,13 @@ export default function ExchangesPage() {
     const router = useRouter();
 
     useEffect(() => {
-        // Obtener userId de localStorage
+        // Obtener userId y role de localStorage
         const storedUserId = localStorage.getItem('userId');
+        const storedRole = localStorage.getItem('currentUserRole');
+
+        if (storedRole === 'admin' || storedRole === 'user') {
+            setUserRole(storedRole);
+        }
 
         if (storedUserId) {
             setUserId(parseInt(storedUserId));
@@ -93,7 +99,7 @@ export default function ExchangesPage() {
 
     // Vista de lista simplificada (HEAD)
     return (
-        <AdminLayout pageTitle="Intercambios" pageSubtitle="Explora todas las oportunidades de intercambio">
+        <AppLayout pageTitle="Intercambios" pageSubtitle="Explora todas las oportunidades de intercambio" userRole={userRole}>
             <div className={styles.container}>
                 {loading ? (
                     <div className={styles.loading}>
@@ -167,6 +173,6 @@ export default function ExchangesPage() {
                     />
                 )}
             </div>
-        </AdminLayout>
+        </AppLayout>
     );
 }

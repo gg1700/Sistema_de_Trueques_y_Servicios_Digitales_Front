@@ -1,16 +1,25 @@
 'use client'
-import {AdminLayout} from '@/Components/Templates';
+import { useEffect, useState } from "react";
+import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
 import ViewSubcategories from './ViewSubcategories/ViewSubcategories';
 
-export default function Subcategorias(){
+export default function Subcategorias() {
+    const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
 
-    return(
+    useEffect(() => {
+        const storedRole = localStorage.getItem('currentUserRole');
+        if (storedRole === 'admin' || storedRole === 'user') {
+            setUserRole(storedRole);
+        }
+    }, []);
+
+    return (
         <>
-         <div>
-            <AdminLayout pageTitle='Gestion de Secciones' pageSubtitle='Subcategorias'>
-                <ViewSubcategories/>
-            </AdminLayout>
-         </div>
+            <div>
+                <AppLayout pageTitle='Gestion de Secciones' pageSubtitle='Subcategorias' userRole={userRole}>
+                    <ViewSubcategories />
+                </AppLayout>
+            </div>
         </>
     );
 }

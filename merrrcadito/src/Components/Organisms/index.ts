@@ -1,10 +1,11 @@
-export {default as DeleteSeccion} from './DeleteSeccionComponent/deleteSeccion';
-export {default as FormSeccion} from './Forms/FormSeccion/formSeccion';
-export {default as AccordionForm} from './Forms/AccordionForm';
-export {default as ModalManagement} from './ModalManagement/modalManagement';
-export {default as SeccionList} from './SeccionList/SeccionList';
-export {default as ViewSeccion} from './ViewSeccionComponent/ViewSeccion';
-export {default as FormProfile} from './Forms/FormProfile/FormProfile';
-export {default as SideBar} from './SideBar/SideBar';
-export {default as Publication} from './Publication/Publication'
-export {default as ListPublicationProd} from './ListPublication/ListPublicationProd'
+export { default as DeleteSeccion } from './DeleteSeccionComponent/deleteSeccion';
+export { default as FormSeccion } from './Forms/FormSeccion/formSeccion';
+export { default as AccordionForm } from './Forms/AccordionForm';
+export { default as ModalManagement } from './ModalManagement/modalManagement';
+export { default as SeccionList } from './SeccionList/SeccionList';
+export { default as ViewSeccion } from './ViewSeccionComponent/ViewSeccion';
+export { default as FormProfile } from './Forms/FormProfile/FormProfile';
+export { default as SideBar } from './SideBar/SideBar';
+export { default as Publication } from './Publication/Publication'
+export { default as ListPublicationProd } from './ListPublication/ListPublicationProd'
+export { default as ListPublicationServ } from './ListPublication/ListPublicationServ';

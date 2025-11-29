@@ -19,6 +19,9 @@ interface Publication {
   handlename: string;
   cantidad: number;
   marca?: string | null;
+  hrs_ini_serv?: string;
+  hrs_fin_serv?: string;
+  duracion?: number;
 }
 
 const PUBLICATIONS_API_BASE =
@@ -39,12 +42,12 @@ export const usePublicationsProds = () => {
           nombre_publicacion: pub.nom_prod,
           nombre_categoria: pub.nom_cat,
           nombre_subcat: pub.nom_subcat_prod,
-          precio_pub: pub.precio_pub,
+          precio_pub: pub.precio_prod,
           foto_pub: `${PUBLICATIONS_API_BASE}/${pub.cod_pub}/image`,
           calif_pond_pub: pub.calif_pond_pub,
           calidad: pub.calidad_prod,
           estado_pub: pub.estado_pub,
-          descripcion: pub.contenido,
+          descripcion: pub.desc_prod,
           fecha_ini_pub: pub.fecha_ini_pub,
           contacto_correo: pub.correo_us,
           contacto_numero: pub.telefono_us,
@@ -60,6 +63,50 @@ export const usePublicationsProds = () => {
     }
 
     loadPublicationsProds();
+  }, []);
+
+  return publications;
+};
+
+export const usePublicationsServs = () => {
+  const [publications, setPublications] = useState<Publication[]>([]);
+
+  useEffect(() => {
+    async function loadPublicationsServs() {
+      try {
+        const response = await PublicationService.getAllPubServs();
+        const data = response.data;
+
+        const mappedPublications = data.map((pub: any) => ({
+          cod_pub: pub.cod_pub,
+          nombre_publicacion: pub.nom_serv,
+          nombre_categoria: 'Servicio', // O mapear si viene del back
+          nombre_subcat: '', // Servicios no parecen tener subcat en la query actual
+          precio_pub: pub.precio_serv,
+          foto_pub: `${PUBLICATIONS_API_BASE}/${pub.cod_pub}/image`,
+          calif_pond_pub: pub.calif_pond_pub,
+          calidad: '', // Servicios no tienen calidad
+          estado_pub: pub.estado_pub,
+          descripcion: pub.desc_serv,
+          fecha_ini_pub: '', // No estaba en la query, verificar si es necesario
+          contacto_correo: '', // No estaba en la query
+          contacto_numero: 0, // No estaba en la query
+          handlename: '', // Falta join con usuario para obtener esto
+          cantidad: 0,
+          marca: null,
+          // Props especificos de servicio
+          hrs_ini_serv: pub.hrs_ini_serv,
+          hrs_fin_serv: pub.hrs_fin_serv,
+          duracion: pub.duracion
+        }));
+
+        setPublications(mappedPublications);
+      } catch (err) {
+        console.error('Error cargando publicaciones de servicios:', err);
+      }
+    }
+
+    loadPublicationsServs();
   }, []);
 
   return publications;

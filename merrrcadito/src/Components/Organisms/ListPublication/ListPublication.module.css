@@ -2,83 +2,104 @@
   width: 100%;
   max-width: 100%;
   overflow: hidden;
+  padding: 20px 0;
 }
 
 .sectionContainer {
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
   position: relative;
 }
 
-
 .sectionHeader {
-  padding: 0 30px;
-  margin-bottom: 20px;
+  padding: 0 40px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
 }
 
 .sectionTitle {
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
+  color: #1a1a1a;
+  font-size: 28px;
+  font-weight: 700;
   margin: 0;
+  position: relative;
+  padding-bottom: 8px;
 }
 
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #0c994b, #4ade80);
+  border-radius: 2px;
+}
 
 .scrollWrapper {
   position: relative;
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
 }
-
 
 .scrollContainer {
   display: flex;
-  gap: 15px;
+  gap: 24px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 0 10px;
+  padding: 20px 40px;
+  /* Padding for shadow visibility */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-
 
 .scrollContainer::-webkit-scrollbar {
   display: none;
 }
 
-
 .navButton {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 30px;
-  height: 100%;
-  background-color: rgba(12, 153, 75, 0.7);
-  border: none;
-  color: white;
+  width: 48px;
+  height: 48px;
+  background-color: white;
+  border: 1px solid #e5e5e5;
+  border-radius: 50%;
+  color: #0c994b;
   font-size: 24px;
   cursor: pointer;
   z-index: 20;
-  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  opacity: 0.9;
 }
 
 .navButton:hover {
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: #0c994b;
+  color: white;
+  border-color: #0c994b;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 16px rgba(12, 153, 75, 0.3);
+  opacity: 1;
 }
 
 .navButton:active {
-  background-color: rgba(0, 0, 0, 1);
+  transform: translateY(-50%) scale(0.95);
 }
 
 .navButtonLeft {
-  left: 0;
+  left: 10px;
 }
 
 .navButtonRight {
-  right: 0;
+  right: 10px;
 }
-
 
 @media (max-width: 768px) {
   .sectionHeader {
@@ -86,15 +107,19 @@
   }
 
   .scrollContainer {
-    padding: 0 20px;
+    padding: 15px 20px;
+    gap: 16px;
   }
 
   .navButton {
     width: 40px;
+    height: 40px;
     font-size: 20px;
+    display: none;
+    /* Hide nav buttons on mobile as touch scroll is better */
   }
 
   .sectionTitle {
-    font-size: 20px;
+    font-size: 22px;
   }
 }

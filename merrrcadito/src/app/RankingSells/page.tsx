@@ -1,6 +1,6 @@
 'use client'
 import { RankingCard } from '@/Components/Molecules';
-import { AdminLayout } from '@/Components/Templates';
+import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
 import { ReportService } from '@/services';
 import { useEffect, useState } from 'react';
 
@@ -13,14 +13,22 @@ interface RankingData {
     points: number;
     puesto: number;
 }
-export default function RankingSells(){
+export default function RankingSells() {
+    const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
     const [dataSell, setDataSell] = useState<RankingData[]>([]);
 
     useEffect(() => {
-        async function getRankingSells(){
+        const storedRole = localStorage.getItem('currentUserRole');
+        if (storedRole === 'admin' || storedRole === 'user') {
+            setUserRole(storedRole);
+        }
+    }, []);
+
+    useEffect(() => {
+        async function getRankingSells() {
             const response = await ReportService.get_ranking_users_by_sells();
             const sells = response.data;
-            const mapSells = sells.map((sell : any) => ({
+            const mapSells = sells.map((sell: any) => ({
                 puesto: sell.puesto_ranking_ventas,
                 codUs: sell.cod_us,
                 handlename: sell.handle_name,
@@ -31,11 +39,11 @@ export default function RankingSells(){
             setDataSell(mapSells);
         }
         getRankingSells();
-    },[]);
-    return(
-        <AdminLayout  pageTitle='Ranking' pageSubtitle='de los mejores emprendedores'>
-            {dataSell.map((sell : any ) => (
-                <RankingCard 
+    }, []);
+    return (
+        <AppLayout pageTitle='Ranking' pageSubtitle='de los mejores emprendedores' userRole={userRole}>
+            {dataSell.map((sell: any) => (
+                <RankingCard
                     key={sell.codUs.toString()}
                     cod_us={sell.codUs}
                     imagenUsuario={sell.imagenUsuario}
@@ -45,6 +53,6 @@ export default function RankingSells(){
                     puesto={sell.puesto}
                 />
             ))}
-        </AdminLayout>
+        </AppLayout>
     );
 }

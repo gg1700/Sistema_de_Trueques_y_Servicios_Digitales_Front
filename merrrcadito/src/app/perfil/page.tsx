@@ -1,7 +1,26 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
 import UserProfile from '@/Components/Templates/ModalsProfile/UserProfile';
 
 export default function PerfilPage() {
-  return <UserProfile />;
+  const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem('currentUserRole');
+    if (storedRole === 'admin' || storedRole === 'user') {
+      setUserRole(storedRole);
+    }
+  }, []);
+
+  return (
+    <AppLayout
+      pageTitle="Mi Perfil"
+      pageSubtitle="Información de tu cuenta"
+      userRole={userRole}
+    >
+      <UserProfile />
+    </AppLayout>
+  );
 }
