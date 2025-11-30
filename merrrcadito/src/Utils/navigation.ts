@@ -5,6 +5,7 @@ export const navItems = {
     { name: 'Mi Perfil', route: '/perfil' },
     { name: 'Rankig Emprendedores', route: '/RankingSells' },
     { name: 'Intercambios', route: '/intercambios' },
+    { name: 'Eventos', route: '/eventos' },
     { name: 'Tienda', route: '/tokens' }
   ],
   admin: [

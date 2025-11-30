@@ -970,14 +970,16 @@ export default function UserProfile({
       if (exchangesResponse.success && exchangesResponse.data) {
         // Mapear intercambios a formato Offer para mostrarlos en la lista
         const exchangeOffers: Offer[] = exchangesResponse.data.map((ex: any, index: number) => {
-          const isOpenOffer = ex.cod_us_1 === ex.cod_us_2;
+          // Si cod_us_1 es null, es una oferta abierta (sin propuesta aún)
+          const isOpenOffer = ex.cod_us_1 === null;
 
           let descriptionLines = [];
 
           if (isOpenOffer) {
             descriptionLines.push('📝 Oferta abierta de intercambio');
           } else {
-            descriptionLines.push(`📝 Con @${ex.cod_us_1 === codUs ? ex.usuario_destino_handle : ex.usuario_origen_handle}`);
+            // Mostrar el usuario que propuso (cod_us_1)
+            descriptionLines.push(`📝 Con @${ex.handle_name_1 || 'usuario'}`);
           }
 
           descriptionLines.push(`🌱 Impacto: ${ex.impacto_amb_inter} pts`);
@@ -987,8 +989,8 @@ export default function UserProfile({
           return {
             id: ex.cod_inter,
             title: isOpenOffer
-              ? `Intercambio: ${ex.nombre_prod_origen} (Oferta)`
-              : `Intercambio: ${ex.nombre_prod_origen} ⇄ ${ex.nombre_prod_destino}`,
+              ? `Intercambio: ${ex.nombre_prod_destino || 'Producto'} (Oferta)`
+              : `Intercambio: ${ex.nombre_prod_destino || 'Producto'} ⇄ ${ex.nombre_prod_origen || 'Propuesta'}`,
             description: descriptionLines.join('\n'),
             image: imageUrl,
             price: 0,
@@ -1024,7 +1026,10 @@ export default function UserProfile({
             descriptionLines.push(`🎁 Recompensa: ${ev.monto_recompensa} CV`);
           }
 
-          descriptionLines.push(`🌱 Impacto: 10 pts`);
+          const impact = ev.impacto_amb_inter || 0;
+          if (impact > 0) {
+            descriptionLines.push(`🌱 Impacto: ${impact} pts`);
+          }
 
           return {
             id: ev.cod_evento,
@@ -1034,7 +1039,7 @@ export default function UserProfile({
             price: ev.costo_inscripcion,
             isExchange: false,
             type: 'event' as const,
-            impact: 10,
+            impact: impact,
             date: ev.fecha_inicio_evento,
             reward: ev.monto_recompensa,
             status: ev.estado_evento ?? 'active',

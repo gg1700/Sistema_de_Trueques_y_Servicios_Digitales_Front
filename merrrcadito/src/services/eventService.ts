@@ -85,5 +85,65 @@ export const EventService = {
                 error: error instanceof Error ? error.message : 'Error desconocido'
             };
         }
+    },
+
+    /**
+     * Obtener todos los eventos activos (vigentes)
+     */
+    get_all_events: async (): Promise<EventResponse> => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/events/all`);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching all events:', error);
+            return {
+                success: false,
+                message: 'Error al obtener eventos',
+                error: error instanceof Error ? error.message : 'Error desconocido'
+            };
+        }
+    },
+
+    /**
+     * Inscribir a un usuario en un evento
+     */
+    enroll_in_event: async (cod_us: number, cod_evento: number): Promise<EventResponse> => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/event-enrollments/enroll`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ cod_us, cod_evento })
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error enrolling in event:', error);
+            return {
+                success: false,
+                message: 'Error al inscribirse en el evento',
+                error: error instanceof Error ? error.message : 'Error desconocido'
+            };
+        }
+    },
+
+    /**
+     * Verificar si un usuario está inscrito en un evento
+     */
+    check_enrollment: async (cod_us: number, cod_evento: number): Promise<EventResponse> => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/event-enrollments/check/${cod_us}/${cod_evento}`);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error checking enrollment:', error);
+            return {
+                success: false,
+                message: 'Error al verificar inscripción',
+                error: error instanceof Error ? error.message : 'Error desconocido'
+            };
+        }
     }
 };

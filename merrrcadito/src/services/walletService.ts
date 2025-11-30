@@ -9,6 +9,7 @@ export interface WalletData {
     cod_us: number;
     cuenta_bancaria: string;
     saldo_actual: number;
+    saldo_creditos?: number;  // Créditos Verdes (CV)
     saldo_real?: number;
     saldo_bolivianos?: number;
     fecha_ultima_transaccion?: string;
