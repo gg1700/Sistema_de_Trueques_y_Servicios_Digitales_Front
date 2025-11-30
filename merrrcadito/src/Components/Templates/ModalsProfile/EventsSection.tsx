@@ -7,6 +7,10 @@ const ENROLLMENTS_API_BASE =
     process.env.NEXT_PUBLIC_ENROLLMENTS_API_BASE_URL ??
     "http://localhost:5000/api/event-enrollments";
 
+const EVENTS_API_BASE =
+    process.env.NEXT_PUBLIC_EVENTS_API_BASE_URL ??
+    "http://127.0.0.1:5000/api/events";
+
 interface EnrolledEvent {
     cod_evento: number;
     titulo_evento: string;
@@ -159,22 +163,24 @@ export default function EventsSection({ userId }: Props) {
                                     src={event.banner_evento}
                                     alt={event.titulo_evento}
                                     onError={(e) => {
-                                        (e.target as HTMLImageElement).src = "/placeholder-event.png";
+                                        (e.target as HTMLImageElement).src = `${EVENTS_API_BASE}/default-image`;
                                     }}
                                 />
                             ) : (
-                                <div className={styles.placeholderBanner}>
-                                    <i className="bi bi-calendar-event"></i>
-                                </div>
+                                <img
+                                    src={`${EVENTS_API_BASE}/default-image`}
+                                    alt={event.titulo_evento}
+                                    className={styles.defaultBanner}
+                                />
                             )}
-                            <div className={styles.eventType}>
+                        </div>
+
+                        <div className={styles.cardContent}>
+                            <div className={styles.eventTypeBody}>
                                 <span className={event.tipo_evento === "benefico" ? styles.typeBenefico : styles.typeMonetizable}>
                                     {event.tipo_evento === "benefico" ? "Benéfico" : "Monetizable"}
                                 </span>
                             </div>
-                        </div>
-
-                        <div className={styles.cardContent}>
                             <h3 className={styles.cardTitle}>{event.titulo_evento}</h3>
                             <p className={styles.cardDescription}>{event.descripcion_evento}</p>
 

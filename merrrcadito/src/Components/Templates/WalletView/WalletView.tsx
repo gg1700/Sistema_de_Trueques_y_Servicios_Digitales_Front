@@ -284,8 +284,18 @@ export default function WalletView() {
                                 const eventData = await eventRes.json();
                                 if (eventData && eventData.nom_evento) {
                                     enrichedTrans.transaction_title = eventData.nom_evento || trans.desc_trans || 'Evento';
+                                    // IMPORTANTE: Agregar el costo del evento como monto_pagado
+                                    // PostgreSQL devuelve Decimals como objetos, convertir a número
+                                    enrichedTrans.monto_pagado = Number(eventData.costo_inscripcion || 0);
+
+                                    // Si es un evento de organización, mostrar el nombre de la organización como vendedor
+                                    if (eventData.organizacion_nombre) {
+                                        enrichedTrans.vendedor_nombre = eventData.organizacion_nombre;
+                                        enrichedTrans.vendedor_handle = 'Organización';
+                                    }
                                 } else {
                                     enrichedTrans.transaction_title = trans.desc_trans || 'Evento';
+                                    enrichedTrans.monto_pagado = 0;
                                 }
                             } else {
                                 enrichedTrans.transaction_title = trans.desc_trans || 'Evento';

@@ -134,22 +134,27 @@
     right: 12px;
 }
 
-.eventType span {
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
+.eventTypeBody span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    line-height: 1;
 }
 
 .typeBenefico {
-    background: rgba(24, 192, 166, 0.95);
+    background: linear-gradient(135deg, #18c0a6 0%, #14af97 100%);
     color: #fff;
 }
 
 .typeMonetizable {
-    background: rgba(255, 165, 0, 0.95);
+    background: linear-gradient(135deg, #ff9f43 0%, #ff8c00 100%);
     color: #fff;
 }
 
