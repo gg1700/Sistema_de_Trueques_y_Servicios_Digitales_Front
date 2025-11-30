@@ -6,7 +6,8 @@ export const navItems = {
     { name: 'Rankig Emprendedores', route: '/RankingSells' },
     { name: 'Intercambios', route: '/intercambios' },
     { name: 'Eventos', route: '/eventos' },
-    { name: 'Tienda', route: '/tokens' }
+    { name: 'Tienda', route: '/tokens' },
+    { name: 'Explorar Mas', route: '/Explorar' }
   ],
   admin: [
     { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias' },
@@ -14,13 +15,13 @@ export const navItems = {
     { name: 'Gestión de la Tienda', route: '/admin/usuarios' },
     { name: 'Reportes', route: '/admin/Reportes' },
     { name: 'Gestión de Tokens', route: '/admin/GestionTokens/NewTokenPackage' },
-  ],
-  user: [
-    { name: 'Ver mi C02', route: '/mi-tienda' },
-    { name: 'Mis Compras', route: '/pedidos' },
   ]
 };
 
 export const getNavItems = (role: 'admin' | 'user') => {
-  return [...navItems.common, ...navItems[role]];
+  if (role === 'admin') {
+    return [...navItems.common, ...navItems.admin];
+  }
+  return navItems.common;
 };
+
