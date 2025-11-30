@@ -1,28 +1,28 @@
 .hrCard {
    border: none;
-   border-top: 10px solid #000;     
-   margin: 130px 400px 0 400px;                  
-   width: calc(100% - 800px);
-   border-radius: 20px;
+   border-top: 1px solid #e0e0e0;
+   margin: 20px 0;
+   width: 100%;
 }
 
 .hrCard2 {
    border: none;
-    border-top: 10px solid #000;     
-    margin: 10px 400px 0 400px;                  
-    width: calc(100% - 800px);
-    border-radius: 20px;
+   border-top: 1px solid #e0e0e0;
+   margin: 20px 0;
+   width: 100%;
 }
 
 .mainContainer {
-   height: 400px;
-   overflow-y: auto; 
-   margin: 0 420px;
+   max-width: 1200px;
+   margin: 40px auto;
+   padding: 0 20px;
+   height: calc(100vh - 200px);
+   overflow-y: auto;
 }
 
 .seccionContainer {
- display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+   gap: 20px;
+   padding: 10px 0;
 }

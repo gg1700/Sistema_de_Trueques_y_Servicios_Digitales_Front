@@ -1,45 +1,46 @@
 'use client'
 import { useState, useEffect } from 'react';
-import {SeccionList, AccordionForm, ModalManagement} from '..';
+import { SeccionList, ModalManagement } from '..';
+import styles from './ViewSeccion.module.css';
 
 interface Seccion {
-  cod: number;
-  nombre: string;
-  tipo: string
-  descripcion: string;
-  imagen: string | null;
+    cod: number;
+    nombre: string;
+    tipo: string
+    descripcion: string;
+    imagen: string | null;
 }
 
 interface ViewSeccionesProps {
-  type: 'subcategory' | 'category';
-  datos: Seccion[];
-  componenteUpdate: React.ComponentType<any>;
-  componenteDelete: React.ComponentType<any>;
-  componenteNuevo: React.ComponentType<any>;
-  triggerText: string;
-  onEliminacionExitosa?: (cod: number) => void;
-  onActualizacionExitosa?: () => void;
-  onCreacionExitosa?: () => void;
+    type: 'subcategory' | 'category';
+    datos: Seccion[];
+    componenteUpdate: React.ComponentType<any>;
+    componenteDelete: React.ComponentType<any>;
+    componenteNuevo: React.ComponentType<any>;
+    triggerText: string;
+    onEliminacionExitosa?: (cod: number) => void;
+    onActualizacionExitosa?: () => void;
+    onCreacionExitosa?: () => void;
 }
 
 export default function ViewSecciones({
-  type,
-  datos,
-  componenteUpdate: UpdateComponent,
-  componenteDelete: DeleteComponent,
-  componenteNuevo: NewComponent,
-  triggerText,
-  onEliminacionExitosa,
-  onActualizacionExitosa,
-  onCreacionExitosa
+    type,
+    datos,
+    componenteUpdate: UpdateComponent,
+    componenteDelete: DeleteComponent,
+    componenteNuevo: NewComponent,
+    triggerText,
+    onEliminacionExitosa,
+    onActualizacionExitosa,
+    onCreacionExitosa
 }: ViewSeccionesProps) {
 
     const [deleteModal, setDeleteModal] = useState(false);
     const [updateModal, setUpdateModal] = useState(false);
-    const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<'list' | 'create'>('list');
     const [seccionSeleccionada, setSeccionSeleccionada] = useState<Seccion | null>(null);
 
-    const API_BASE_URL = process.env.NEXT_PUBLIC_BACK_URL; 
+    const API_BASE_URL = process.env.NEXT_PUBLIC_BACK_URL;
 
     useEffect(() => {
         if (!API_BASE_URL) {
@@ -57,13 +58,7 @@ export default function ViewSecciones({
     function cerrarModalEliminar() {
         console.log("0. Sección seleccionada:", seccionSeleccionada);
         setSeccionSeleccionada(null);
-        setDeleteModal(false);useEffect(() => {
-        if (!API_BASE_URL) {
-            console.error('⚠️ NEXT_PUBLIC_BACK_URL no está definida');
-        } else {
-            console.log('✅ API_BASE_URL:', API_BASE_URL);
-        }
-    }, [API_BASE_URL]);
+        setDeleteModal(false);
     }
 
     function abrirModalEditar(seccion: Seccion) {
@@ -90,28 +85,55 @@ export default function ViewSecciones({
 
     const handleCreacionExitosa = () => {
         onCreacionExitosa?.();
-        setIsAccordionOpen(false);
+        setActiveTab('list');
     };
 
-    return(
-        <div>
-           <SeccionList
-                data={datos}
-                onEdit={abrirModalEditar}
-                onDelete={abrirModalEliminar}
-                type={type}
-           ></SeccionList>
-           {deleteModal && seccionSeleccionada && (
+    return (
+        <div className={styles.container}>
+            <div className={styles.tabContainer}>
+                <button
+                    className={`${styles.tabButton} ${activeTab === 'list' ? styles.active : ''}`}
+                    onClick={() => setActiveTab('list')}
+                >
+                    {type === 'category' ? 'Ver Categorías' : 'Ver Subcategorías'}
+                </button>
+                <button
+                    className={`${styles.tabButton} ${activeTab === 'create' ? styles.active : ''}`}
+                    onClick={() => setActiveTab('create')}
+                >
+                    {type === 'category' ? 'Nueva Categoría' : 'Nueva Subcategoría'}
+                </button>
+            </div>
+
+            <div className={styles.contentContainer}>
+                {activeTab === 'list' ? (
+                    <SeccionList
+                        data={datos}
+                        onEdit={abrirModalEditar}
+                        onDelete={abrirModalEliminar}
+                        type={type}
+                    />
+                ) : (
+                    <div className={styles.formContainer}>
+                        <NewComponent
+                            onSubmit={handleCreacionExitosa}
+                            onCancel={() => setActiveTab('list')}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {deleteModal && seccionSeleccionada && (
                 <ModalManagement onCancelar={cerrarModalEliminar}>
-                    <DeleteComponent 
-                        {...(type === 'subcategory' 
-                            ? { 
+                    <DeleteComponent
+                        {...(type === 'subcategory'
+                            ? {
                                 subcategoryCod: seccionSeleccionada.cod,
-                                subcategoryName: seccionSeleccionada.nombre 
+                                subcategoryName: seccionSeleccionada.nombre
                             }
-                            : { 
+                            : {
                                 categoryCod: seccionSeleccionada.cod,
-                                categoryName: seccionSeleccionada.nombre 
+                                categoryName: seccionSeleccionada.nombre
                             }
                         )}
                         onSuccess={handleEliminacionExitosa}
@@ -120,35 +142,24 @@ export default function ViewSecciones({
                 </ModalManagement>
             )}
 
-            {updateModal && seccionSeleccionada &&(
+            {updateModal && seccionSeleccionada && (
                 <ModalManagement onCancelar={cerrarModalEditar}>
-                    <UpdateComponent 
-                        {...(type === 'subcategory' 
+                    <UpdateComponent
+                        {...(type === 'subcategory'
                             ? { subcategoryCod: seccionSeleccionada.cod, subcategoryName: seccionSeleccionada.nombre }
                             : { categoryCod: seccionSeleccionada.cod, categoryName: seccionSeleccionada.nombre }
                         )}
-                         initialData={{  
-                                seccion: seccionSeleccionada.tipo ,  
-                                nombre: seccionSeleccionada.nombre,
-                                descripcion: seccionSeleccionada.descripcion,
-                                imagen: type=== 'category'? `${API_BASE_URL}/categories/${seccionSeleccionada.cod}/image` : null
-                            }}
+                        initialData={{
+                            seccion: seccionSeleccionada.tipo,
+                            nombre: seccionSeleccionada.nombre,
+                            descripcion: seccionSeleccionada.descripcion,
+                            imagen: type === 'category' ? `${API_BASE_URL}/categories/${seccionSeleccionada.cod}/image` : null
+                        }}
                         onSubmit={handleActualizacionExitosa}
                         onCancel={cerrarModalEditar}
                     />
                 </ModalManagement>
             )}
-
-            <AccordionForm 
-                isOpen={isAccordionOpen}
-                onToggle={() => setIsAccordionOpen(!isAccordionOpen)}
-                triggerText={triggerText}
-            >
-                <NewComponent 
-                    onSubmit={handleCreacionExitosa}
-                    onCancel={() => setIsAccordionOpen(false)}
-                />
-            </AccordionForm>
         </div>
     );
 }
