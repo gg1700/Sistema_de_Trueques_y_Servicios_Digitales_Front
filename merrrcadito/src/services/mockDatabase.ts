@@ -16,8 +16,9 @@ export interface Promocion {
   titulo_prom: string;
   descr_prom: string;
   descuento_prom: number;
+  fecha_ini_prom: string;
   fecha_fin_prom: string;
-  banner_url: string; // Usamos URL para el mock
+  banner_prom?: string; // Opcional
 }
 
 export interface Potenciador {
@@ -73,17 +74,25 @@ export const mockPromociones: Promocion[] = [
   {
     cod_prom: 201,
     titulo_prom: '¡50% en Servicios!',
-    descr_prom: 'Todos los servicios de la categoría "Hogar" a mitad de precio.',
+    descr_prom: 'Todos los servicios de la categoría "Hogar" a mitad de precio. Aprovecha esta increíble oferta por tiempo limitado.',
     descuento_prom: 50,
+    fecha_ini_prom: '2025-11-01',
     fecha_fin_prom: '2025-12-31',
-    banner_url: 'https://via.placeholder.com/400x200/00a99d/ffffff?text=Promo+Hogar',
   },
   {
     cod_prom: 202,
     titulo_prom: 'Fin de Semana de Trueques',
-    descr_prom: 'Intercambia productos sin comisión de plataforma.',
+    descr_prom: 'Intercambia productos sin comisión de plataforma. ¡Perfecto para renovar tu hogar!',
     descuento_prom: 100, // 100% de descuento en comisión
+    fecha_ini_prom: '2025-11-15',
     fecha_fin_prom: '2025-11-20',
-    banner_url: 'https://via.placeholder.com/400x200/ff6347/ffffff?text=Promo+Trueques',
+  },
+  {
+    cod_prom: 203,
+    titulo_prom: 'Black Friday 2025',
+    descr_prom: '30% de descuento en todos los productos electrónicos. La mejor oportunidad del año.',
+    descuento_prom: 30,
+    fecha_ini_prom: '2025-11-25',
+    fecha_fin_prom: '2025-11-30',
   },
 ];

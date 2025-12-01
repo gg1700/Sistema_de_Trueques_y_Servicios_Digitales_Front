@@ -1,13 +1,16 @@
 import styles from './GenericInput.module.css';
 
 interface InputProps {
-  type?: 'text' | 'email' | 'password';
+  type?: 'text' | 'email' | 'password' | 'datetime-local' | 'number';
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   disabled?: boolean;
   error?: boolean;
+  min?: string;
+  max?: string;
+  accept?: string;
 }
 
 export default function GenericInput({
@@ -18,6 +21,9 @@ export default function GenericInput({
   placeholder,
   disabled = false,
   error = false,
+  min,
+  max,
+  accept,
 }: InputProps) {
   return (
     <input
@@ -27,6 +33,9 @@ export default function GenericInput({
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}
+      min={min}
+      max={max}
+      accept={accept}
       className={`${styles.input} ${error ? styles.inputError : ''}`}
     />
   );
