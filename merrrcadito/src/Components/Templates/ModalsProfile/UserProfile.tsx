@@ -380,14 +380,7 @@ function PublishSection({
             <div className={styles.formColButtons}>
               <div className={styles.actionsRowInline}>
                 <button type="submit" className={styles.submitButton}>
-                  Publicar
-                </button>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={handleCancelProduct}
-                >
-                  Cancelar
+                  Publicar Producto
                 </button>
               </div>
             </div>
@@ -534,13 +527,6 @@ function PublishSection({
                 <button type="submit" className={styles.submitButton}>
                   Publicar Intercambio
                 </button>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={handleCancelExchange}
-                >
-                  Cancelar
-                </button>
               </div>
             </div>
           </div>
@@ -662,13 +648,6 @@ function PublishSection({
               <div className={styles.actionsRowInline}>
                 <button type="submit" className={styles.submitButton}>
                   Crear Evento
-                </button>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={handleCancelEvent}
-                >
-                  Cancelar
                 </button>
               </div>
             </div>

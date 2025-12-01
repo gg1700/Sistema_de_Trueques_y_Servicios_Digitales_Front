@@ -444,18 +444,23 @@
 }
 
 .publishForm {
-  max-width: 720px;
+  max-width: 100%;
+  /* Ocupar todo el ancho disponible */
 }
 
 .formRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 14px;
+  gap: 24px;
+  /* Aumentado de 16px para más aire */
+  margin-bottom: 20px;
+  /* Aumentado de 14px */
 }
 
 .formCol {
   flex: 1;
+  min-width: 250px;
+  /* Asegurar que no se aplasten demasiado */
 }
 
 .formColFull {
@@ -508,12 +513,18 @@
   color: white;
   border: none;
   border-radius: 999px;
-  padding: 10px 26px;
-  font-size: 14px;
+  padding: 12px 40px;
+  /* Increased horizontal padding */
+  font-size: 15px;
+  /* Slightly larger font */
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(31, 183, 161, 0.3);
   transition: all 0.3s ease;
+  min-width: 200px;
+  /* Minimum width for ergonomics */
+  width: auto;
+  /* Prevent full width */
 }
 
 .submitButton:hover {

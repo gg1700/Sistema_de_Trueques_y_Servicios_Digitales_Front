@@ -160,13 +160,6 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
             )}
 
             <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.formGroup}>
-                    <label>Imagen del Servicio</label>
-                    <FileInput
-                        name="foto_serv"
-                        onChange={(file) => setImage(file)}
-                    />
-                </div>
 
                 <div className={styles.formGroup}>
                     <label>Nombre del Servicio</label>
@@ -264,6 +257,14 @@ export default function ServiceRegistrationForm({ userId, onSuccess, onDuplicate
                             className={styles.input}
                         />
                     </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                    <label>Imagen del Servicio</label>
+                    <FileInput
+                        name="foto_serv"
+                        onChange={(file) => setImage(file)}
+                    />
                 </div>
 
                 <button type="submit" className={styles.submitBtn} disabled={loading}>
