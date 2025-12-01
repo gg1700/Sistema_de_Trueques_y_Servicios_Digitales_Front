@@ -295,7 +295,17 @@ export default function EventsPage() {
                                                 </div>
                                             )}
                                             <div className={styles.typeBadge}>
-                                                {event.tipo_evento === 'benefico' ? '❤️ Benéfico' : '💰 Monetizable'}
+                                                {event.tipo_evento === 'benefico' ? (
+                                                    <>
+                                                        <i className="bi bi-heart-fill"></i>
+                                                        <span style={{ marginLeft: '0.25rem' }}>Benéfico</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <i className="bi bi-currency-dollar"></i>
+                                                        <span style={{ marginLeft: '0.25rem' }}>Monetizable</span>
+                                                    </>
+                                                )}
                                             </div>
                                             {event.impacto_amb_inter && event.impacto_amb_inter > 0 && (
                                                 <div className={styles.impactBadge}>

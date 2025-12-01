@@ -171,89 +171,89 @@ export default function CreatePromotionForm({ onSuccess, onCancel }: CreatePromo
     }
 
     return (
-        <div className="min-h-screen bg-gray-500 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 w-full max-w-2xl">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Crear Nueva Promoción</h1>
-                    <p className="text-gray-600">Completa los datos para crear una promoción</p>
+        <div className="p-6 md:p-8">
+            {/* Header */}
+            <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-1">Crear Nueva Promoción</h2>
+                <p className="text-gray-500 text-sm">Completa los datos para crear una promoción</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Título */}
+                <div>
+                    <label className="block text-gray-700 text-sm font-medium mb-2">
+                        Título de la Promoción
+                    </label>
+                    <input
+                        type="text"
+                        name="titulo_prom"
+                        value={form.titulo_prom}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2.5 bg-white border ${errors.titulo_prom ? 'border-red-400' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#16a085] text-sm`}
+                        placeholder="Ej: Black Friday 2025"
+                    />
+                    {errors.titulo_prom && (
+                        <p className="text-red-500 text-sm mt-1">{errors.titulo_prom}</p>
+                    )}
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Título */}
+                {/* Descripción */}
+                <div>
+                    <label className="block text-gray-700 text-sm font-medium mb-2">
+                        Descripción
+                    </label>
+                    <textarea
+                        name="descr_prom"
+                        value={form.descr_prom}
+                        onChange={handleChange}
+                        rows={3}
+                        className={`w-full px-4 py-2.5 bg-white border ${errors.descr_prom ? 'border-red-400' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#16a085] resize-none text-sm`}
+                        placeholder="Describe los detalles de la promoción..."
+                    />
+                    {errors.descr_prom && (
+                        <p className="text-red-500 text-sm mt-1">{errors.descr_prom}</p>
+                    )}
+                </div>
+
+                {/* Fechas */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-gray-800 font-bold mb-2">
-                            Título de la Promoción
+                        <label className="block text-gray-700 text-sm font-medium mb-2">
+                            Fecha de Inicio
                         </label>
                         <input
-                            type="text"
-                            name="titulo_prom"
-                            value={form.titulo_prom}
+                            type="datetime-local"
+                            name="fecha_ini_prom"
+                            value={form.fecha_ini_prom}
                             onChange={handleChange}
-                            className={`w-full px-4 py-3 bg-white border ${errors.titulo_prom ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500`}
-                            placeholder="Ej: Black Friday 2025"
+                            className={`w-full px-4 py-2.5 bg-white border ${errors.fecha_ini_prom ? 'border-red-400' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#16a085] text-sm`}
                         />
-                        {errors.titulo_prom && (
-                            <p className="text-red-500 text-sm mt-1">{errors.titulo_prom}</p>
+                        {errors.fecha_ini_prom && (
+                            <p className="text-red-500 text-sm mt-1">{errors.fecha_ini_prom}</p>
                         )}
                     </div>
 
-                    {/* Descripción */}
                     <div>
-                        <label className="block text-gray-800 font-bold mb-2">
-                            Descripción
+                        <label className="block text-gray-700 text-sm font-medium mb-2">
+                            Fecha de Fin
                         </label>
-                        <textarea
-                            name="descr_prom"
-                            value={form.descr_prom}
+                        <input
+                            type="datetime-local"
+                            name="fecha_fin_prom"
+                            value={form.fecha_fin_prom}
                             onChange={handleChange}
-                            rows={4}
-                            className={`w-full px-4 py-3 bg-white border ${errors.descr_prom ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none`}
-                            placeholder="Describe los detalles de la promoción..."
+                            className={`w-full px-4 py-2.5 bg-white border ${errors.fecha_fin_prom ? 'border-red-400' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#16a085] text-sm`}
                         />
-                        {errors.descr_prom && (
-                            <p className="text-red-500 text-sm mt-1">{errors.descr_prom}</p>
+                        {errors.fecha_fin_prom && (
+                            <p className="text-red-500 text-sm mt-1">{errors.fecha_fin_prom}</p>
                         )}
                     </div>
+                </div>
 
-                    {/* Fechas */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-gray-800 font-bold mb-2">
-                                Fecha de Inicio
-                            </label>
-                            <input
-                                type="datetime-local"
-                                name="fecha_ini_prom"
-                                value={form.fecha_ini_prom}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-3 bg-white border ${errors.fecha_ini_prom ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500`}
-                            />
-                            {errors.fecha_ini_prom && (
-                                <p className="text-red-500 text-sm mt-1">{errors.fecha_ini_prom}</p>
-                            )}
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-800 font-bold mb-2">
-                                Fecha de Fin
-                            </label>
-                            <input
-                                type="datetime-local"
-                                name="fecha_fin_prom"
-                                value={form.fecha_fin_prom}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-3 bg-white border ${errors.fecha_fin_prom ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500`}
-                            />
-                            {errors.fecha_fin_prom && (
-                                <p className="text-red-500 text-sm mt-1">{errors.fecha_fin_prom}</p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Descuento */}
+                {/* Descuento */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-gray-800 font-bold mb-2">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">
                             Descuento (%)
                         </label>
                         <input
@@ -263,23 +263,38 @@ export default function CreatePromotionForm({ onSuccess, onCancel }: CreatePromo
                             onChange={handleChange}
                             min="1"
                             max="100"
-                            className={`w-full px-4 py-3 bg-white border ${errors.descuento_prom ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500`}
+                            className={`w-full px-4 py-2.5 bg-white border ${errors.descuento_prom ? 'border-red-400' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#16a085] text-sm`}
                             placeholder="Ej: 50"
                         />
                         {errors.descuento_prom && (
                             <p className="text-red-500 text-sm mt-1">{errors.descuento_prom}</p>
                         )}
                     </div>
+                    <div></div>
+                </div>
 
-                    {/* Banner (Custom File Input) */}
-                    <div>
-                        <label className="block text-gray-800 font-bold mb-2">
-                            Banner de la Promoción
-                        </label>
-                        <div
-                            className={`relative bg-purple-900 rounded-xl p-8 border-2 border-dashed ${errors.banner_prom ? 'border-red-500' : 'border-purple-700'} cursor-pointer hover:bg-purple-800 transition-colors`}
-                            onClick={() => document.getElementById('banner-input')?.click()}
-                        >
+                {/* Banner (Simple File Input) */}
+                <div>
+                    <label className="block text-gray-700 text-sm font-medium mb-2">
+                        Banner de la Promoción
+                    </label>
+                    <div className="flex items-start gap-4">
+                        {/* Placeholder de imagen */}
+                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            {previewUrl ? (
+                                <img
+                                    src={previewUrl}
+                                    alt="Preview"
+                                    className="w-full h-full object-cover rounded-lg"
+                                />
+                            ) : (
+                                <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            )}
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-gray-500 text-xs mb-2">Please upload square image, size less than 100KB</p>
                             <input
                                 id="banner-input"
                                 type="file"
@@ -287,64 +302,62 @@ export default function CreatePromotionForm({ onSuccess, onCancel }: CreatePromo
                                 onChange={handleFileChange}
                                 className="hidden"
                             />
-
-                            {previewUrl ? (
-                                <div className="text-center">
-                                    <img
-                                        src={previewUrl}
-                                        alt="Preview"
-                                        className="max-h-48 mx-auto rounded-lg mb-2"
-                                    />
-                                    <p className="text-white text-sm">Click para cambiar imagen</p>
-                                </div>
-                            ) : (
-                                <div className="text-center text-white">
-                                    <svg className="w-16 h-16 mx-auto mb-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <p className="text-lg font-semibold mb-1">Click para subir imagen</p>
-                                    <p className="text-sm opacity-70">PNG, JPG, GIF hasta 5MB</p>
-                                </div>
-                            )}
-                        </div>
-                        {errors.banner_prom && (
-                            <p className="text-red-500 text-sm mt-1">{errors.banner_prom}</p>
-                        )}
-                    </div>
-
-                    {/* Mensaje de resultado */}
-                    {submitMessage && (
-                        <div className={`p-4 rounded-xl text-center font-semibold ${submitMessage.type === 'success'
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-red-100 text-red-700'
-                            }`}>
-                            {submitMessage.text}
-                        </div>
-                    )}
-
-                    {/* Botones */}
-                    <div className="space-y-3 pt-4">
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="w-full bg-teal-500 hover:bg-teal-600 disabled:bg-teal-300 text-white font-bold py-3 rounded-xl transition-colors"
-                        >
-                            {isSubmitting ? 'Creando...' : 'Crear Promoción'}
-                        </button>
-
-                        {onCancel && (
                             <button
                                 type="button"
-                                onClick={onCancel}
-                                disabled={isSubmitting}
-                                className="w-full bg-white border-2 border-red-500 text-red-500 hover:bg-red-50 disabled:opacity-50 font-bold py-3 rounded-xl transition-colors"
+                                onClick={() => document.getElementById('banner-input')?.click()}
+                                className={`px-6 py-2.5 border-2 rounded-full font-medium text-sm transition-colors ${errors.banner_prom
+                                    ? 'border-red-400 text-red-600 hover:bg-red-50'
+                                    : 'border-[#16a085] text-[#16a085] hover:bg-teal-50'
+                                    }`}
                             >
-                                Cancelar
+                                Choose File
                             </button>
-                        )}
+                            {form.banner_prom && (
+                                <p className="text-gray-600 text-xs mt-2">{form.banner_prom.name}</p>
+                            )}
+                        </div>
                     </div>
-                </form>
-            </div>
+                    {errors.banner_prom && (
+                        <p className="text-red-500 text-xs mt-1">{errors.banner_prom}</p>
+                    )}
+                </div>
+
+                {/* Mensaje de resultado */}
+                {submitMessage && (
+                    <div className={`p-4 rounded-xl text-center font-semibold ${submitMessage.type === 'success'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700'
+                        }`}>
+                        {submitMessage.text}
+                    </div>
+                )}
+
+                {/* Botones */}
+                <div className="flex justify-center gap-3 pt-4">
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="px-8 py-2.5 text-white font-semibold rounded-full transition-all text-sm"
+                        style={{
+                            background: isSubmitting ? '#94a3b8' : '#16a085',
+                            cursor: isSubmitting ? 'not-allowed' : 'pointer'
+                        }}
+                    >
+                        {isSubmitting ? 'Creando...' : 'Publicar'}
+                    </button>
+
+                    {onCancel && (
+                        <button
+                            type="button"
+                            onClick={onCancel}
+                            disabled={isSubmitting}
+                            className="px-8 py-2.5 bg-gray-700 hover:bg-gray-800 disabled:opacity-50 text-white font-semibold rounded-full transition-colors text-sm"
+                        >
+                            Cancelar
+                        </button>
+                    )}
+                </div>
+            </form>
         </div>
     )
 }

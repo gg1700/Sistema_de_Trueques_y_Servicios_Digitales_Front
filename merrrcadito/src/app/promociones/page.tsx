@@ -1,16 +1,30 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
-import { getPromociones, Promocion } from '@/services/promocionService';
 import PromotionCard from '@/Components/Molecules/PromotionCard/PromotionCard';
+import CreatePromotionModal from '@/Components/Molecules/CreatePromotionModal/CreatePromotionModal';
 import Link from 'next/link';
+
+interface Promocion {
+  cod_prom: number;
+  titulo_prom: string;
+  descr_prom: string;
+  fecha_ini_prom: string;
+  fecha_fin_prom: string;
+  descuento_prom: number;
+  cant_prod_vinculados: number;
+  banner_prom_base64?: string;
+}
 
 export default function PromocionesPage() {
   const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const storedRole = localStorage.getItem('currentUserRole');
@@ -23,14 +37,25 @@ export default function PromocionesPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await getPromociones();
-      setPromociones(data);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/promotions/active`);
+      const data = await response.json();
+
+      if (data.success) {
+        setPromociones(data.data || []);
+      } else {
+        setError('Error al cargar las promociones');
+      }
     } catch (err) {
-      console.error('Error cargando promociones:', err);
-      setError('No se pudieron cargar las promociones. Por favor, intente nuevamente.');
+      console.error('Error fetching promotions:', err);
+      setError('Error de conexión al cargar las promociones');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCreateSuccess = () => {
+    loadPromociones(); // Recargar las promociones
+    setShowCreateModal(false); // Cerrar el modal
   };
 
   useEffect(() => {
@@ -50,12 +75,12 @@ export default function PromocionesPage() {
             <h1 className="text-3xl font-bold text-gray-800">Promociones Activas</h1>
             <p className="text-gray-600 mt-2">Descubre las mejores ofertas disponibles</p>
           </div>
-          <Link
-            href="/promociones/create"
+          <button
+            onClick={() => setShowCreateModal(true)}
             className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             + Crear Promoción
-          </Link>
+          </button>
         </div>
 
         {/* Loading state */}
@@ -98,12 +123,12 @@ export default function PromocionesPage() {
               </svg>
               <h3 className="text-xl font-semibold text-gray-700 mb-2">No hay promociones disponibles</h3>
               <p className="text-gray-500 mb-6">Sé el primero en crear una promoción</p>
-              <Link
-                href="/promociones/create"
+              <button
+                onClick={() => setShowCreateModal(true)}
                 className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
               >
                 Crear Promoción
-              </Link>
+              </button>
             </div>
           </div>
         ) : (
@@ -114,6 +139,13 @@ export default function PromocionesPage() {
             ))}
           </div>
         )}
+
+        {/* Modal de crear promoción */}
+        <CreatePromotionModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={handleCreateSuccess}
+        />
       </div>
     </AppLayout>
   );

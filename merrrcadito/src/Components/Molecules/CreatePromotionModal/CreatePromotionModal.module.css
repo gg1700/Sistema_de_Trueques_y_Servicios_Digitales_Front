@@ -1,0 +1,96 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modalContainer {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: 56rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.closeButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.closeButton:hover {
+    background: #e2e8f0;
+    color: #334155;
+    transform: rotate(90deg);
+}
+
+.closeButton:active {
+    transform: rotate(90deg) scale(0.9);
+}
+
+/* Estilos para el scrollbar del modal */
+.modalContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modalContainer::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 1.5rem;
+}
+
+.modalContainer::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 1.5rem;
+}
+
+.modalContainer::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

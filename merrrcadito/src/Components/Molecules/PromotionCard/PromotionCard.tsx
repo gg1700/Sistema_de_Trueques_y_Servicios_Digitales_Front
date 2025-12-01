@@ -72,7 +72,7 @@ const PromotionCard: React.FC<Props> = ({ promocion }) => {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl cursor-pointer">
         {/* Banner de la promoción */}
         <div className="relative h-48 w-full overflow-hidden bg-gray-200">
           <img
