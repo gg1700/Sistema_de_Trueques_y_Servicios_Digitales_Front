@@ -1,34 +1,50 @@
 .gridContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
+  grid-template-columns: 1fr;
+  /* 1 column on mobile */
+  gap: 1.5rem;
   width: 100%;
-  padding-bottom: 100px;
-  /* Espacio extra al final */
+}
+
+/* 2 columns on tablets */
+@media (min-width: 768px) {
+  .gridContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 3 columns on desktop */
+@media (min-width: 1024px) {
+  .gridContainer {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .card {
   background: #ffffff;
   border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  border-radius: 1rem;
+  /* rounded-2xl equivalent */
   overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* shadow-lg */
+  cursor: pointer;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  /* shadow-2xl */
 }
 
 .imagePlaceholder {
   width: 100%;
-  height: 200px;
-  /* Aumentar un poco la altura base */
+  height: 240px;
+  /* Similar to promotions banner height */
   background-color: #f5f7fa;
   display: flex;
   align-items: center;
@@ -43,7 +59,7 @@
 }
 
 .info {
-  padding: 1.5rem;
+  padding: 2rem;
   text-align: center;
   width: 100%;
 }
@@ -64,15 +80,19 @@
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   width: calc(100% - 3rem);
 }
 
 .buyButton:hover {
   background-color: #008f85;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 169, 157, 0.3);
 }
 
 .buyButton:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }

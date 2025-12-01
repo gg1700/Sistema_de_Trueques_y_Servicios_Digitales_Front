@@ -23,7 +23,6 @@ export const navItems: {
     { name: 'Gestión de Subcategorias', route: '/admin/GestionDeSecciones/GestionDeSubcategorias', icon: 'subcategories' },
     { name: 'Gestión de la Tienda', route: '/admin/usuarios', icon: 'stores' },
     { name: 'Reportes', route: '/admin/Reportes', icon: 'reports' },
-    { name: 'Gestión de Tokens', route: '/admin/GestionTokens/NewTokenPackage', icon: 'tokens' },
     { name: 'Promociones', route: '/promociones', icon: 'promotions' },
   ]
 };

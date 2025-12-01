@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
 import { getAllTokenPackages, TokenPackageDB } from '@/services/tokenService';
 import { purchaseTokens } from '@/services/transactionService';
+import CreateTokenPackageModal from '@/Components/Molecules/CreateTokenPackageModal/CreateTokenPackageModal';
 import styles from './tokens.module.css';
 import { FaCoins, FaCheckCircle, FaTimesCircle, FaTimes } from 'react-icons/fa';
 
@@ -493,6 +494,7 @@ export default function TokensPage() {
   const [successPaquete, setSuccessPaquete] = useState<TokenPackageDB | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [notification, setNotification] = useState({ show: false, success: false, message: '' });
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const [userId, setUserId] = useState<number | null>(null);
 
@@ -508,20 +510,26 @@ export default function TokensPage() {
     }
   }, []);
 
+  const loadTokenPackages = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllTokenPackages();
+      setPaquetes(data || []);
+    } catch (error) {
+      console.error("Error cargando paquetes", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllTokenPackages();
-        setPaquetes(data || []);
-      } catch (error) {
-        console.error("Error cargando paquetes", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
+    loadTokenPackages();
   }, []);
+
+  const handleCreateSuccess = () => {
+    loadTokenPackages(); // Recargar los paquetes
+    setShowCreateModal(false); // Cerrar el modal
+  };
 
   const showNotification = (success: boolean, message: string) => {
     setNotification({ show: true, success, message });
@@ -592,60 +600,114 @@ export default function TokensPage() {
       pageSubtitle="Compra tokens con dinero real para usar en la plataforma."
       userRole={userRole}
     >
-      {/* Modal de confirmación */}
-      {selectedPaquete && (
-        <PurchaseConfirmationModal
-          paquete={selectedPaquete}
-          onConfirm={handleConfirmPurchase}
-          onCancel={handleCancelPurchase}
-          isProcessing={comprandoId !== null}
-        />
-      )}
-
-      {/* Modal de éxito */}
-      {successPaquete && (
-        <SuccessModal
-          paquete={successPaquete}
-          onClose={handleCloseSuccessModal}
-        />
-      )}
-
-      {/* Notificación */}
-      {notification.show && (
-        <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          zIndex: 1000,
-          padding: '15px 20px',
-          borderRadius: '8px',
-          backgroundColor: notification.success ? '#4caf50' : '#f44336',
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          animation: 'slideIn 0.3s ease-out'
-        }}>
-          {notification.success ? <FaCheckCircle size={24} /> : <FaTimesCircle size={24} />}
-          <span>{notification.message}</span>
+      <div className="p-6 md:p-8">
+        {/* Header con botón de crear (solo admin) */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Paquetes de Tokens</h1>
+            <p className="text-gray-600 mt-2">Descubre los paquetes disponibles</p>
+          </div>
+          {userRole === 'admin' && (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              + Crear Paquete
+            </button>
+          )}
         </div>
-      )}
 
-      {loading ? (
-        <p style={{ textAlign: 'center', padding: '20px' }}>Cargando paquetes...</p>
-      ) : (
-        <div className={styles.gridContainer}>
-          {paquetes.map((paquete) => (
-            <TokenItem
-              key={paquete.id}
-              paquete={paquete}
-              onComprar={handleComprarClick}
-              disabled={comprandoId === paquete.id}
-            />
-          ))}
-        </div>
-      )}
+        {/* Modal de confirmación */}
+        {selectedPaquete && (
+          <PurchaseConfirmationModal
+            paquete={selectedPaquete}
+            onConfirm={handleConfirmPurchase}
+            onCancel={handleCancelPurchase}
+            isProcessing={comprandoId !== null}
+          />
+        )}
+
+        {/* Modal de éxito */}
+        {successPaquete && (
+          <SuccessModal
+            paquete={successPaquete}
+            onClose={handleCloseSuccessModal}
+          />
+        )}
+
+        {/* Modal de crear paquete */}
+        <CreateTokenPackageModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={handleCreateSuccess}
+        />
+
+        {/* Notificación */}
+        {notification.show && (
+          <div style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            zIndex: 1000,
+            padding: '15px 20px',
+            borderRadius: '8px',
+            backgroundColor: notification.success ? '#4caf50' : '#f44336',
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            animation: 'slideIn 0.3s ease-out'
+          }}>
+            {notification.success ? <FaCheckCircle size={24} /> : <FaTimesCircle size={24} />}
+            <span>{notification.message}</span>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div
+                className="animate-spin rounded-full h-20 w-20 mx-auto mb-4"
+                style={{
+                  border: '6px solid rgba(22, 160, 133, 0.2)',
+                  borderTop: '6px solid #16a085'
+                }}
+              ></div>
+              <p className="text-gray-600 text-lg">Cargando paquetes...</p>
+            </div>
+          </div>
+        ) : paquetes.length === 0 ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <svg className="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">No hay paquetes disponibles</h3>
+              <p className="text-gray-500 mb-6">Sé el primero en crear un paquete de tokens</p>
+              {userRole === 'admin' && (
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                >
+                  Crear Paquete
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className={styles.gridContainer}>
+            {paquetes.map((paquete) => (
+              <TokenItem
+                key={paquete.id}
+                paquete={paquete}
+                onComprar={handleComprarClick}
+                disabled={comprandoId === paquete.id}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </AppLayout>
   );
 }

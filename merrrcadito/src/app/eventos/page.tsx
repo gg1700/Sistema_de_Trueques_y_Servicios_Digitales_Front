@@ -29,6 +29,7 @@ export default function EventsPage() {
     const [enrolledEvents, setEnrolledEvents] = useState<Set<number>>(new Set());
     const [loading, setLoading] = useState(true);
     const [enrollingEvent, setEnrollingEvent] = useState<number | null>(null);
+    const [filterTab, setFilterTab] = useState<'todos' | 'benefico' | 'monetizable'>('todos');
 
     // Modal states
     const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -197,6 +198,13 @@ export default function EventsPage() {
         });
     };
 
+    const getFilteredEvents = () => {
+        if (filterTab === 'todos') {
+            return events;
+        }
+        return events.filter(event => event.tipo_evento === filterTab);
+    };
+
     // Si está cargando el userId
     if (loading && !userId) {
         return (
@@ -219,22 +227,49 @@ export default function EventsPage() {
     return (
         <AppLayout pageTitle="Eventos" pageSubtitle="Descubre y participa en eventos de la comunidad" userRole={userRole}>
             <div className={styles.container}>
+                {/* Header con título y filtros */}
+                <div className={styles.header}>
+                    <h1 className={styles.pageTitle}>Eventos Disponibles</h1>
+
+                    {/* Tabs de filtro */}
+                    <div className={styles.filterTabs}>
+                        <button
+                            className={`${styles.filterTab} ${filterTab === 'todos' ? styles.filterTabActive : ''}`}
+                            onClick={() => setFilterTab('todos')}
+                        >
+                            Todos los Eventos
+                        </button>
+                        <button
+                            className={`${styles.filterTab} ${filterTab === 'benefico' ? styles.filterTabActive : ''}`}
+                            onClick={() => setFilterTab('benefico')}
+                        >
+                            Eventos Benéficos
+                        </button>
+                        <button
+                            className={`${styles.filterTab} ${filterTab === 'monetizable' ? styles.filterTabActive : ''}`}
+                            onClick={() => setFilterTab('monetizable')}
+                        >
+                            Eventos Monetizables
+                        </button>
+                    </div>
+                </div>
+
                 {loading ? (
                     <div className={styles.loading}>
                         <div className={styles.spinner}></div>
                         <p>Cargando eventos...</p>
                     </div>
-                ) : events.length === 0 ? (
+                ) : getFilteredEvents().length === 0 ? (
                     <div className={styles.empty}>
                         <div className={styles.emptyIcon}>
                             <i className="bi bi-calendar-event"></i>
                         </div>
                         <h3>No hay eventos disponibles</h3>
-                        <p>Vuelve pronto para descubrir nuevos eventos</p>
+                        <p>{filterTab === 'todos' ? 'Vuelve pronto para descubrir nuevos eventos' : `No hay eventos ${filterTab === 'benefico' ? 'benéficos' : 'monetizables'} disponibles`}</p>
                     </div>
                 ) : (
                     <div className={styles.grid}>
-                        {events.map((event) => {
+                        {getFilteredEvents().map((event) => {
                             const isEnrolled = enrolledEvents.has(event.cod_evento);
                             const isEnrolling = enrollingEvent === event.cod_evento;
 
