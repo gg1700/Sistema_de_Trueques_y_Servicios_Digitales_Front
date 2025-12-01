@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
 import MenuIcon from '@/Components/Atoms/Icons/MenuIcon';
 import styles from './SideBar.module.css';
@@ -26,15 +26,32 @@ export default function SideBar({
     menuItems,
     currentPath = ''
 }: SideBarProps) {
-    if (!isOpen) return null;
+    const [isClosing, setIsClosing] = useState(false);
+    const [shouldRender, setShouldRender] = useState(isOpen);
+
+    useEffect(() => {
+        if (isOpen) {
+            setShouldRender(true);
+            setIsClosing(false);
+        } else if (shouldRender) {
+            setIsClosing(true);
+            const timer = setTimeout(() => {
+                setShouldRender(false);
+                setIsClosing(false);
+            }, 300); // Duración de la animación
+            return () => clearTimeout(timer);
+        }
+    }, [isOpen, shouldRender]);
+
+    if (!shouldRender) return null;
 
     return (
         <>
             {/* Overlay para cerrar al hacer clic fuera */}
             {onClose && (
-                <div className={styles.overlay} onClick={onClose}></div>
+                <div className={`${styles.overlay} ${isClosing ? styles.overlayClosing : ''}`} onClick={onClose}></div>
             )}
-            <aside className={`${styles.sidebar} ${onClose ? styles.sidebarOverlay : ''}`}>
+            <aside className={`${styles.sidebar} ${onClose ? styles.sidebarOverlay : ''} ${isClosing ? styles.sidebarClosing : ''}`}>
                 <div className={styles.sidebarHeader}>
                     <h2 className={styles.sidebarTitle}>{title}</h2>
                     {onClose && (

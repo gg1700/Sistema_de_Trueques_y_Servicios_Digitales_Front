@@ -52,7 +52,7 @@ export default function PromocionesPage() {
           </div>
           <Link
             href="/promociones/create"
-            className="bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             + Crear Promoción
           </Link>
@@ -62,7 +62,13 @@ export default function PromocionesPage() {
         {loading ? (
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-teal-500 mx-auto mb-4"></div>
+              <div
+                className="animate-spin rounded-full h-20 w-20 mx-auto mb-4"
+                style={{
+                  border: '6px solid rgba(22, 160, 133, 0.2)',
+                  borderTop: '6px solid #16a085'
+                }}
+              ></div>
               <p className="text-gray-600 text-lg">Cargando promociones...</p>
             </div>
           </div>
@@ -77,7 +83,7 @@ export default function PromocionesPage() {
               <p className="text-gray-500 mb-6">{error}</p>
               <button
                 onClick={loadPromociones}
-                className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
               >
                 Reintentar
               </button>
@@ -94,7 +100,7 @@ export default function PromocionesPage() {
               <p className="text-gray-500 mb-6">Sé el primero en crear una promoción</p>
               <Link
                 href="/promociones/create"
-                className="inline-block bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
               >
                 Crear Promoción
               </Link>

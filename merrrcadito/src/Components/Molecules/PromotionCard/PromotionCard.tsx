@@ -31,7 +31,7 @@ const PromotionCard: React.FC<Props> = ({ promocion }) => {
   const isExpiringSoon = daysRemaining <= 3 && daysRemaining > 0
   const isExpired = daysRemaining < 0
 
-  // Manejar imagen base64 o usar placeholder
+  // Manejar imagen base64 o usar imagen por defecto del backend
   const getImageSrc = () => {
     // Debug: ver qué datos llegan
     console.log('Promocion data:', {
@@ -64,8 +64,8 @@ const PromotionCard: React.FC<Props> = ({ promocion }) => {
       return `data:${mimeType};base64,${cleanBase64}`
     }
 
-    // Placeholder SVG gradient si no hay imagen
-    return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="200"%3E%3Cdefs%3E%3ClinearGradient id="grad" x1="0%25" y1="0%25" x2="100%25" y2="100%25"%3E%3Cstop offset="0%25" style="stop-color:%2314b8a6;stop-opacity:1" /%3E%3Cstop offset="100%25" style="stop-color:%233b82f6;stop-opacity:1" /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width="400" height="200" fill="url(%23grad)" /%3E%3C/svg%3E'
+    // Usar imagen por defecto del backend si no hay banner
+    return `${process.env.NEXT_PUBLIC_API_URL}/images/default_image.jpg`
   }
 
   const imageSrc = getImageSrc()
@@ -75,29 +75,19 @@ const PromotionCard: React.FC<Props> = ({ promocion }) => {
       <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
         {/* Banner de la promoción */}
         <div className="relative h-48 w-full overflow-hidden bg-gray-200">
-          {imageSrc && imageSrc.startsWith('data:image') ? (
-            // CASO A: SI HAY IMAGEN, MUESTRA SOLO LA IMAGEN
-            <img
-              src={imageSrc}
-              alt={promocion.titulo_prom}
-              className="w-full h-full object-cover"
-              onLoad={() => {
-                console.log('✅ Imagen cargada exitosamente para:', promocion.titulo_prom)
-              }}
-              onError={(e) => {
-                console.error('❌ Error cargando imagen:', promocion.cod_prom)
-                e.currentTarget.style.display = 'none'
-              }}
-            />
-          ) : (
-            // CASO B: SI NO HAY IMAGEN, MUESTRA FONDO GRADIENTE
-            <div className="w-full h-full bg-gradient-to-r from-teal-400 to-blue-500 flex items-center justify-center">
-              <div className="text-white text-center">
-                <div className="text-6xl font-bold">{promocion.descuento_prom}%</div>
-                <div className="text-xl font-semibold">OFF</div>
-              </div>
-            </div>
-          )}
+          <img
+            src={imageSrc}
+            alt={promocion.titulo_prom}
+            className="w-full h-full object-cover"
+            onLoad={() => {
+              console.log('✅ Imagen cargada exitosamente para:', promocion.titulo_prom)
+            }}
+            onError={(e) => {
+              console.error('❌ Error cargando imagen:', promocion.cod_prom)
+              // Si falla, usar imagen por defecto del backend
+              e.currentTarget.src = `${process.env.NEXT_PUBLIC_API_URL}/images/default_image.jpg`
+            }}
+          />
 
           {/* Badge del porcentaje flotante - esquina superior derecha */}
           <div className="absolute top-3 right-3 z-10">
@@ -114,7 +104,7 @@ const PromotionCard: React.FC<Props> = ({ promocion }) => {
             <h3 className="text-xl font-bold text-gray-800 flex-1">
               {promocion.titulo_prom}
             </h3>
-            <span className="bg-teal-500 text-white px-3 py-1 rounded-full text-sm font-semibold ml-2 whitespace-nowrap">
+            <span style={{ backgroundColor: '#16a085' }} className="text-white px-3 py-1 rounded-full text-sm font-semibold ml-2 whitespace-nowrap">
               {promocion.descuento_prom}% OFF
             </span>
           </div>
@@ -159,14 +149,16 @@ const PromotionCard: React.FC<Props> = ({ promocion }) => {
           <div className="space-y-2 mt-4">
             <Link
               href={`/promociones/${promocion.cod_prom}`}
-              className="block w-full bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 text-center"
+              style={{ background: 'linear-gradient(135deg, #16a085 0%, #0c994b 100%)' }}
+              className="block w-full hover:opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 text-center"
             >
               Ver Productos en Promoción
             </Link>
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="w-full bg-white border-2 border-teal-500 text-teal-500 hover:bg-teal-50 font-semibold py-3 px-6 rounded-lg transition-colors text-center"
+              style={{ borderColor: '#16a085', color: '#16a085' }}
+              className="w-full bg-white border-2 hover:bg-gray-50 font-semibold py-3 px-6 rounded-lg transition-colors text-center"
             >
               + Vincular Productos
             </button>
