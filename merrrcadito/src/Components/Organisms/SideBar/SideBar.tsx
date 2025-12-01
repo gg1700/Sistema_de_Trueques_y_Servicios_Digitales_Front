@@ -1,17 +1,30 @@
 import { ReactNode } from 'react';
-import styles from './SideBar.module.css'
+import Link from 'next/link';
+import MenuIcon from '@/Components/Atoms/Icons/MenuIcon';
+import styles from './SideBar.module.css';
+
+export interface MenuItem {
+    icon: string;
+    label: string;
+    href: string;
+}
 
 interface SideBarProps {
-    children: ReactNode
-    title: string
-    isOpen?: boolean
-    onClose?: () => void
+    children?: ReactNode;
+    title?: string;
+    isOpen?: boolean;
+    onClose?: () => void;
+    menuItems?: MenuItem[];
+    currentPath?: string;
 }
+
 export default function SideBar({
     children,
-    title,
+    title = "Menú",
     isOpen = true,
-    onClose
+    onClose,
+    menuItems,
+    currentPath = ''
 }: SideBarProps) {
     if (!isOpen) return null;
 
@@ -30,7 +43,22 @@ export default function SideBar({
                         </button>
                     )}
                 </div>
-                {children}
+                {menuItems ? (
+                    <nav className={styles.sidebarNav}>
+                        {menuItems.map((item) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={`${styles.sidebarLink} ${currentPath === item.href ? styles.sidebarLinkActive : ''}`}
+                            >
+                                <MenuIcon name={item.icon} className={styles.menuIcon} />
+                                <span>{item.label}</span>
+                            </Link>
+                        ))}
+                    </nav>
+                ) : (
+                    children
+                )}
             </aside>
         </>
     );

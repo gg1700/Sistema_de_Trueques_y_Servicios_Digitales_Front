@@ -58,6 +58,8 @@
     font-size: 22px;
     font-weight: 700;
     color: #40E0D0;
+    text-align: center;
+    width: 100%;
 }
 
 /* Close button for overlay mode */
@@ -83,4 +85,52 @@
 
 .closeButton:active {
     transform: rotate(90deg) scale(0.9);
+}
+
+/* Navigation styles */
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0 18px;
+    gap: 4px;
+}
+
+.sidebarLink {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 26px;
+    color: #ecf0f1;
+    border-left: 4px solid transparent;
+    text-decoration: none;
+    font-size: 15px;
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-left-color 0.15s ease,
+        transform 0.06s ease;
+}
+
+.sidebarLink:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-left-color: #40E0D0;
+    transform: translateX(4px);
+}
+
+.sidebarLink:active {
+    transform: translateX(1px);
+}
+
+.sidebarLinkActive {
+    background: rgba(255, 255, 255, 0.08);
+    border-left-color: #40E0D0;
+    color: #40E0D0;
+    font-weight: 600;
+}
+
+.menuIcon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }

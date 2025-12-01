@@ -54,12 +54,16 @@ export default function AppLayout({
 
       {/* Sidebar Overlay */}
       <SideBar
-        title="MERRRCADITO"
+        title="Menú"
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-      >
-        <NavBar navBar={navItems} />
-      </SideBar>
+        menuItems={navItems.map(item => ({
+          icon: item.icon || 'dashboard',
+          label: item.name,
+          href: item.route
+        }))}
+        currentPath={typeof window !== 'undefined' ? window.location.pathname : ''}
+      />
 
       <main className={styles.mainContent}>
         <div className={styles.childrenContainer}>

@@ -442,7 +442,12 @@ export default function WalletView() {
     };
 
     if (loading) {
-        return <div className={styles.container}>Cargando billetera...</div>;
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+                <p className={styles.loadingText}>Cargando billetera...</p>
+            </div>
+        );
     }
 
     return (
@@ -481,25 +486,15 @@ export default function WalletView() {
                 title="Menú"
                 isOpen={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}
-            >
-                <nav className={styles.sidebarNav}>
-                    <Link href="/" className={styles.sidebarLink}>
-                        🏠 Inicio
-                    </Link>
-                    <Link href="/billetera" className={styles.sidebarLink}>
-                        💰 Billetera
-                    </Link>
-                    <Link href="/perfil" className={styles.sidebarLink}>
-                        👤 Perfil
-                    </Link>
-                    <Link href="/promociones" className={styles.sidebarLink}>
-                        🎉 Promociones
-                    </Link>
-                    <Link href="/tokens" className={styles.sidebarLink}>
-                        🪙 Tokens
-                    </Link>
-                </nav>
-            </SideBar>
+                menuItems={[
+                    { icon: 'home', label: 'Inicio', href: '/' },
+                    { icon: 'wallet', label: 'Billetera', href: '/billetera' },
+                    { icon: 'profile', label: 'Perfil', href: '/perfil' },
+                    { icon: 'promotions', label: 'Promociones', href: '/promociones' },
+                    { icon: 'tokens', label: 'Tokens', href: '/tokens' },
+                ]}
+                currentPath="/billetera"
+            />
 
             <div className={styles.container}>
                 <div className={styles.header}>

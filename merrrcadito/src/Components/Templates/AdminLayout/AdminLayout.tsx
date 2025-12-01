@@ -52,12 +52,16 @@ export default function AdminLayout({
 
       {/* Sidebar Overlay */}
       <SideBar
-        title="MERRRCADITO"
+        title="Menú"
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-      >
-        <NavBar navBar={adminNavItems} />
-      </SideBar>
+        menuItems={adminNavItems.map(item => ({
+          icon: (item as any).icon || 'dashboard',
+          label: item.name,
+          href: item.route
+        }))}
+        currentPath={typeof window !== 'undefined' ? window.location.pathname : ''}
+      />
 
       <main className={styles.mainContent}>
         <div className={styles.childrenContainer}>

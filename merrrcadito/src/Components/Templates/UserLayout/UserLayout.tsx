@@ -19,9 +19,15 @@ export default function UserLayout({
 
   return (
     <div className={styles.userLayout}>
-      <SideBar title="MERRRCADITO">
-        <NavBar navBar={userNavItems} />
-      </SideBar>
+      <SideBar
+        title="Menú"
+        menuItems={userNavItems.map(item => ({
+          icon: item.icon || 'home',
+          label: item.name,
+          href: item.route
+        }))}
+        currentPath={typeof window !== 'undefined' ? window.location.pathname : ''}
+      />
 
       <div className={styles.mainContent}>
         <HeaderPage pageTitle={pageTitle} pageSubtitle={pageSubtitle} />

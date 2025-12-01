@@ -13,6 +13,7 @@ import ExploreSection from "./ExploreSection";
 import ServiceRegistrationForm from "./ServiceRegistrationForm";
 
 import { getNavItems } from "../../../Utils/navigation";
+import SideBar from "@/Components/Organisms/SideBar/SideBar";
 import { ReportService, EventService } from "@/services";
 import { ExchangeService } from "@/services/exchangeService";
 
@@ -1974,42 +1975,17 @@ export default function UserProfile({
       </div>
 
       {isMenuOpen && (
-        <>
-          <div
-            className={styles.menuOverlay}
-            onClick={() => setIsMenuOpen(false)}
-          />
-          <aside className={styles.sideMenu}>
-            <div className={styles.sideMenuHeader}>
-              <span className={styles.sideMenuTitle}>MERRRCADITO</span>
-              <button
-                type="button"
-                className={styles.sideMenuClose}
-                onClick={() => setIsMenuOpen(false)}
-                aria-label="Cerrar menú"
-              >
-                ×
-              </button>
-            </div>
-
-            <nav className={styles.sideMenuNav}>
-              {navList.map((item) => {
-                const isActive = pathname === item.route;
-                return (
-                  <Link
-                    key={item.route}
-                    href={item.route}
-                    className={`${styles.sideMenuLink} ${isActive ? "sideMenuLinkActive" : ""
-                      }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </nav>
-          </aside>
-        </>
+        <SideBar
+          title="Menú"
+          isOpen={isMenuOpen}
+          onClose={() => setIsMenuOpen(false)}
+          menuItems={navList.map(item => ({
+            icon: item.icon || 'dashboard',
+            label: item.name,
+            href: item.route
+          }))}
+          currentPath={pathname}
+        />
       )}
 
       {showSuccessModal && (

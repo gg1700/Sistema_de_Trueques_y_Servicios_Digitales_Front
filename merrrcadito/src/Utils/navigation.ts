@@ -1,27 +1,35 @@
-export const navItems = {
+export interface NavItem {
+  name: string;
+  route: string;
+  icon?: string;
+}
+
+export const navItems: {
+  common: NavItem[];
+  admin: NavItem[];
+} = {
   common: [
-    { name: 'Dashboard', route: '/Home' },
-    { name: 'Ranking CO2', route: '/RankingCO2' },
-    { name: 'Mi Perfil', route: '/perfil' },
-    { name: 'Rankig Emprendedores', route: '/RankingSells' },
-    { name: 'Intercambios', route: '/intercambios' },
-    { name: 'Eventos', route: '/eventos' },
-    { name: 'Tienda', route: '/tokens' },
-    { name: 'Explorar Mas', route: '/Explorar' }
+    { name: 'Dashboard', route: '/Home', icon: 'dashboard' },
+    { name: 'Ranking CO2', route: '/RankingCO2', icon: 'ranking' },
+    { name: 'Mi Perfil', route: '/perfil', icon: 'profile' },
+    { name: 'Ranking Emprendedores', route: '/RankingSells', icon: 'ranking' },
+    { name: 'Intercambios', route: '/intercambios', icon: 'exchanges' },
+    { name: 'Eventos', route: '/eventos', icon: 'events' },
+    { name: 'Tienda', route: '/tokens', icon: 'stores' },
+    { name: 'Explorar Mas', route: '/Explorar', icon: 'explore' }
   ],
   admin: [
-    { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias' },
-    { name: 'Gestión de Subcategorias', route: '/admin/GestionDeSecciones/GestionDeSubcategorias' },
-    { name: 'Gestión de la Tienda', route: '/admin/usuarios' },
-    { name: 'Reportes', route: '/admin/Reportes' },
-    { name: 'Gestión de Tokens', route: '/admin/GestionTokens/NewTokenPackage' },
+    { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias', icon: 'categories' },
+    { name: 'Gestión de Subcategorias', route: '/admin/GestionDeSecciones/GestionDeSubcategorias', icon: 'subcategories' },
+    { name: 'Gestión de la Tienda', route: '/admin/usuarios', icon: 'stores' },
+    { name: 'Reportes', route: '/admin/Reportes', icon: 'reports' },
+    { name: 'Gestión de Tokens', route: '/admin/GestionTokens/NewTokenPackage', icon: 'tokens' },
   ]
 };
 
-export const getNavItems = (role: 'admin' | 'user') => {
+export const getNavItems = (role: 'admin' | 'user'): NavItem[] => {
   if (role === 'admin') {
     return [...navItems.common, ...navItems.admin];
   }
   return navItems.common;
 };
-
