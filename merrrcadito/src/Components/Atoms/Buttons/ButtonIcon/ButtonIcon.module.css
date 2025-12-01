@@ -87,3 +87,23 @@
   transform: scale(1.1);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
+
+.logout {
+  background: linear-gradient(135deg, #ff5f5f 0%, #ff4747 100%);
+  border: 2px solid white;
+  color: white;
+  border-radius: 50%;
+  padding: 10px;
+  font-size: 18px;
+  width: 45px;
+  height: 45px;
+  box-shadow: 0 4px 8px rgba(255, 95, 95, 0.3);
+}
+
+.logout:hover {
+  background: linear-gradient(135deg, #ff4747 0%, #ff2e2e 100%);
+  border-color: white;
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(255, 95, 95, 0.4);
+}

@@ -80,10 +80,17 @@ export default function EventsSection({ userId }: Props) {
         }
     };
 
-    const handleUnenroll = async (cod_evento: number) => {
-        if (!confirm("¿Estás seguro de que quieres desinscribirte de este evento?")) {
-            return;
-        }
+    const [showUnenrollModal, setShowUnenrollModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+
+    const handleUnenrollClick = (cod_evento: number) => {
+        setSelectedEventId(cod_evento);
+        setShowUnenrollModal(true);
+    };
+
+    const confirmUnenroll = async () => {
+        if (!selectedEventId) return;
 
         try {
             const res = await fetch(`${ENROLLMENTS_API_BASE}/unenroll`, {
@@ -91,7 +98,7 @@ export default function EventsSection({ userId }: Props) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ cod_us: userId, cod_evento }),
+                body: JSON.stringify({ cod_us: userId, cod_evento: selectedEventId }),
             });
 
             const json = await res.json();
@@ -101,7 +108,10 @@ export default function EventsSection({ userId }: Props) {
             }
 
             // Actualizar lista
-            setEvents((prev) => prev.filter((event) => event.cod_evento !== cod_evento));
+            setEvents((prev) => prev.filter((event) => event.cod_evento !== selectedEventId));
+            setShowUnenrollModal(false);
+            setShowSuccessModal(true); // Show success modal
+            setSelectedEventId(null);
         } catch (err: any) {
             console.error("Error unenrolling:", err);
             alert(`Error: ${err.message}`);
@@ -233,7 +243,7 @@ export default function EventsSection({ userId }: Props) {
                                 </div>
                                 <button
                                     className={styles.unenrollBtn}
-                                    onClick={() => handleUnenroll(event.cod_evento)}
+                                    onClick={() => handleUnenrollClick(event.cod_evento)}
                                 >
                                     <i className="bi bi-box-arrow-right"></i>
                                     Desinscribirse
@@ -243,6 +253,58 @@ export default function EventsSection({ userId }: Props) {
                     </div>
                 ))}
             </div>
+
+            {showUnenrollModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <div className={styles.modalHeader}>
+                            <i className="bi bi-exclamation-circle-fill"></i>
+                            <h3>Confirmar Desinscripción</h3>
+                        </div>
+                        <div className={styles.modalBody}>
+                            <p>¿Estás seguro de que deseas desinscribirte de este evento?</p>
+                            <p className={styles.modalWarning}>Esta acción no se puede deshacer y perderás tu cupo.</p>
+                        </div>
+                        <div className={styles.modalFooter}>
+                            <button
+                                className={styles.cancelBtn}
+                                onClick={() => setShowUnenrollModal(false)}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                className={styles.confirmBtn}
+                                onClick={confirmUnenroll}
+                            >
+                                Sí, desinscribirme
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showSuccessModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <div className={styles.modalHeader}>
+                            <i className="bi bi-check-circle-fill" style={{ color: '#18c0a6', background: '#e0f2ef' }}></i>
+                            <h3>¡Desinscripción Exitosa!</h3>
+                        </div>
+                        <div className={styles.modalBody}>
+                            <p>Te has desinscribido del evento correctamente.</p>
+                        </div>
+                        <div className={styles.modalFooter}>
+                            <button
+                                className={styles.confirmBtn}
+                                style={{ background: '#18c0a6' }}
+                                onClick={() => setShowSuccessModal(false)}
+                            >
+                                Entendido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

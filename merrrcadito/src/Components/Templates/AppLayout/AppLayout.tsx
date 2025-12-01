@@ -43,6 +43,18 @@ export default function AppLayout({
         <div className={styles.headerActions}>
           <ButtonIcon type="profile" icon="bi-wallet2" name="Billetera" onClick={() => router.push('/billetera')} />
           <ButtonIcon type="profile" icon="bi-person-circle" name="Perfil" onClick={() => router.push('/perfil')} />
+          <ButtonIcon
+            type="logout"
+            icon="bi-box-arrow-right"
+            name="Cerrar Sesión"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.localStorage.removeItem("currentUserHandle");
+                window.localStorage.removeItem("currentUserRole");
+                router.push("/login");
+              }
+            }}
+          />
         </div>
       </header>
 

@@ -52,8 +52,20 @@ export default function HeaderPage({ pageTitle, pageSubtitle }: HeaderTitleProps
           <ButtonIcon
             icon='bi-person-circle'
             type='profile'
-            onClick={() => console.log('Abrir profile')}
+            onClick={() => router.push('/perfil')}
             name="Perfil"
+          />
+          <ButtonIcon
+            icon='bi-box-arrow-right'
+            type='logout'
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.localStorage.removeItem("currentUserHandle");
+                window.localStorage.removeItem("currentUserRole");
+                router.push("/login");
+              }
+            }}
+            name="Cerrar Sesión"
           />
         </div>
       </div>

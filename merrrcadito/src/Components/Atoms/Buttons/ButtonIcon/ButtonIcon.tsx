@@ -3,7 +3,7 @@ import styles from './ButtonIcon.module.css'
 
 interface ButtonIconProps {
     icon: string;
-    type: 'update' | 'delete' | 'default' | 'burguer' | 'profile';
+    type: 'update' | 'delete' | 'default' | 'burguer' | 'profile' | 'logout';
     onClick: () => void;
     disabled?: boolean;
     name: string;
@@ -12,11 +12,11 @@ interface ButtonIconProps {
 
 export default function ButtonIcon({
     icon,
-    type= 'default',
+    type = 'default',
     onClick,
-    disabled= false,
+    disabled = false,
     name
-}:ButtonIconProps){
+}: ButtonIconProps) {
 
     const getTypeClass = () => {
         switch (type) {
@@ -28,12 +28,14 @@ export default function ButtonIcon({
                 return styles.burguer;
             case 'profile':
                 return styles.profile;
+            case 'logout':
+                return styles.logout;
             default:
                 return styles.default;
         }
     };
 
-    return(
+    return (
         <div className={styles.acciones}>
             <button
                 className={`${styles.btnAccion} ${getTypeClass()}`}

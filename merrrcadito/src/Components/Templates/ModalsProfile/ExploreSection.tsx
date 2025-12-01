@@ -140,8 +140,9 @@ export default function ExploreSection({ currentUserId }: ExploreSectionProps) {
             // Handle different buffer formats
             if (typeof buffer === "string") {
                 // Already a base64 string or data URL
-                if (buffer.startsWith("data:")) return buffer;
-                return `data:image/jpeg;base64,${buffer}`;
+                const strBuffer = buffer as unknown as string;
+                if (strBuffer.startsWith("data:")) return strBuffer;
+                return `data:image/jpeg;base64,${strBuffer}`;
             }
 
             // Handle array-like buffer objects from PostgreSQL
@@ -169,7 +170,12 @@ export default function ExploreSection({ currentUserId }: ExploreSectionProps) {
     };
 
     if (loading) {
-        return <div className={styles.loading}>Cargando publicaciones...</div>;
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+                <p className={styles.loadingText}>Cargando publicaciones...</p>
+            </div>
+        );
     }
 
     if (error) {
@@ -191,15 +197,16 @@ export default function ExploreSection({ currentUserId }: ExploreSectionProps) {
                 {publications.map((pub) => (
                     <div key={pub.cod_pub} className={styles.publicationCard}>
                         <div className={styles.imageContainer}>
-                            {pub.foto_pub ? (
-                                <img
-                                    src={convertBufferToBase64(pub.foto_pub)}
-                                    alt={pub.titulo}
-                                    className={styles.publicationImage}
-                                />
-                            ) : (
-                                <div className={styles.noImage}>Sin imagen</div>
-                            )}
+                            <img
+                                src={pub.foto_pub ? convertBufferToBase64(pub.foto_pub) : `${process.env.NEXT_PUBLIC_API_URL}/images/default_image.jpg`}
+                                alt={pub.titulo}
+                                className={styles.publicationImage}
+                                onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    if (target.src.includes('default_image.jpg')) return;
+                                    target.src = `${process.env.NEXT_PUBLIC_API_URL}/images/default_image.jpg`;
+                                }}
+                            />
                             <span className={styles.typeBadge}>{pub.tipo}</span>
                         </div>
                         <div className={styles.publicationContent}>

@@ -710,7 +710,7 @@ export default function UserProfile({
     image: null,
   });
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const [user, setUser] = useState<UserApi | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [services, setServices] = useState<Offer[]>([]);
@@ -766,14 +766,6 @@ export default function UserProfile({
   const router = useRouter();
   const handleFromUrl = searchParams.get("handle");
   const roleFromUrl = searchParams.get("role") as Role | null;
-
-  const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem("currentUserHandle");
-      window.localStorage.removeItem("currentUserRole");
-      router.push("/login");
-    }
-  };
 
   useEffect(() => {
     if (handleFromUrl) {
@@ -1625,26 +1617,6 @@ export default function UserProfile({
             )}
           </div>
 
-          <button
-            className={styles.logoutButton}
-            type="button"
-            aria-label="Cerrar sesión"
-            onClick={handleLogout}
-            title="Cerrar sesión"
-          >
-            <i className="bi bi-box-arrow-right"></i>
-          </button>
-
-          <button
-            className={styles.menuButton}
-            type="button"
-            aria-label="Menú"
-            onClick={() => setIsMenuOpen(true)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
         </div>
 
         <div className={styles.userInfo}>
@@ -1901,8 +1873,9 @@ export default function UserProfile({
 
       <div className={styles.tabContent}>
         {loading && (
-          <div className={styles.placeholderTab}>
-            <p>Cargando información del perfil...</p>
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
+            <p className={styles.loadingText}>Cargando información del perfil...</p>
           </div>
         )}
 
@@ -1973,20 +1946,6 @@ export default function UserProfile({
           <ExploreSection currentUserId={viewerId ?? 0} />
         )}
       </div>
-
-      {isMenuOpen && (
-        <SideBar
-          title="Menú"
-          isOpen={isMenuOpen}
-          onClose={() => setIsMenuOpen(false)}
-          menuItems={navList.map(item => ({
-            icon: item.icon || 'dashboard',
-            label: item.name,
-            href: item.route
-          }))}
-          currentPath={pathname}
-        />
-      )}
 
       {showSuccessModal && (
         <div className={styles.successModalOverlay}>

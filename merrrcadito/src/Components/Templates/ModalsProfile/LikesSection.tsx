@@ -136,7 +136,10 @@ export default function LikesSection({ userId }: Props) {
                                 src={`${PUBLICATIONS_API_BASE}/${like.cod_pub}/image`}
                                 alt={like.titulo_publicacion}
                                 onError={(e) => {
-                                    (e.target as HTMLImageElement).src = "/placeholder-product.png";
+                                    const target = e.target as HTMLImageElement;
+                                    // Prevent infinite loop if default image also fails
+                                    if (target.src.includes('default_image.jpg')) return;
+                                    target.src = `${process.env.NEXT_PUBLIC_API_URL}/images/default_image.jpg`;
                                 }}
                             />
                             <button

@@ -1,0 +1,14 @@
+
+> merrrcadito@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.5.6 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.6:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 1421ms
+ ○ Compiling /Home ...
+ ✓ Compiled /Home in 5.2s
+ GET /Home 200 in 5945ms
