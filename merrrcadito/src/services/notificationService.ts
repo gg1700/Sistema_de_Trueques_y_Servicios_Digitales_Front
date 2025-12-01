@@ -1,5 +1,6 @@
 // Notification Service
-const API_BASE = process.env.NEXT_PUBLIC_NOTIFICATIONS_API_BASE_URL || 'http://localhost:5000/api/notifications';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE = `${API_BASE_URL}/notifications`;
 
 export const notificationService = {
     async getNotifications(userId: number, unreadOnly: boolean = false) {

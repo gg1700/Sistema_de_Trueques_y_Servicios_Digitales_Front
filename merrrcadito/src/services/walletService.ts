@@ -1,8 +1,6 @@
 // Servicio para manejar las operaciones de billetera
 
-const WALLET_API_BASE =
-    process.env.NEXT_PUBLIC_WALLET_API_BASE_URL ??
-    "http://localhost:5000/api/wallets";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface WalletData {
     cod_bill: number;
@@ -21,11 +19,13 @@ export interface WalletData {
 export async function getWalletDataByUser(cod_us: number): Promise<WalletData | null> {
     try {
         const response = await fetch(
-            `${WALLET_API_BASE}/get_wallet_data_by_user?cod_us=${cod_us}`
+            `${API_BASE_URL}/wallets/get_wallet_data_by_user?cod_us=${cod_us}`
         );
 
         if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+            const errorData = await response.json().catch(() => ({}));
+            console.error(`Error ${response.status} al obtener wallet:`, errorData);
+            return null;
         }
 
         const data = await response.json();
@@ -37,7 +37,7 @@ export async function getWalletDataByUser(cod_us: number): Promise<WalletData | 
         return null;
     } catch (error) {
         console.error("Error al obtener datos de billetera:", error);
-        throw error;
+        return null;
     }
 }
 
@@ -51,8 +51,8 @@ export async function createWallet(
 ): Promise<{ success: boolean; message: string }> {
     try {
         const response = await fetch(
-            `${WALLET_API_BASE}/create_wallet?cod_us=${cod_us}&cuenta_bancaria=${cuenta_bancaria}&saldo_actual=${saldo_actual}`,
-            { method: "GET" }
+            `${API_BASE_URL}/wallets/create?cod_us=${cod_us}&cuenta_bancaria=${cuenta_bancaria}&saldo_actual=${saldo_actual}`,
+            { method: "POST" }
         );
 
         const data = await response.json();
