@@ -4,7 +4,8 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 320px;
+  /* Removed fixed width - let the grid control it */
+  min-width: 280px;
   height: 600px;
   margin: 10px;
 }

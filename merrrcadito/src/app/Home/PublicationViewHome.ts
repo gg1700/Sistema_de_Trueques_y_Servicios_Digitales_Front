@@ -28,6 +28,14 @@ const PUBLICATIONS_API_BASE =
   process.env.NEXT_PUBLIC_PUBLICATIONS_API_BASE_URL ??
   "http://localhost:5000/api/publications";
 
+// Función auxiliar para obtener elementos aleatorios de un array
+const getRandomElements = <T,>(array: T[], count: number): T[] => {
+  const shuffled = [...array].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.min(count, array.length));
+};
+
+const MAX_RANDOM_PUBLICATIONS = 12;
+
 export const usePublicationsProds = () => {
   const [publications, setPublications] = useState<Publication[]>([]);
 
@@ -56,7 +64,9 @@ export const usePublicationsProds = () => {
           marca: pub.marca_prod,
         }));
 
-        setPublications(mappedPublications);
+        // Seleccionar solo publicaciones aleatorias
+        const randomPublications = getRandomElements(mappedPublications, MAX_RANDOM_PUBLICATIONS);
+        setPublications(randomPublications);
       } catch (err) {
         console.error('Error cargando publicaciones:', err);
       }
@@ -100,7 +110,9 @@ export const usePublicationsServs = () => {
           duracion: pub.duracion
         }));
 
-        setPublications(mappedPublications);
+        // Seleccionar solo publicaciones aleatorias
+        const randomPublications = getRandomElements(mappedPublications, MAX_RANDOM_PUBLICATIONS);
+        setPublications(randomPublications);
       } catch (err) {
         console.error('Error cargando publicaciones de servicios:', err);
       }

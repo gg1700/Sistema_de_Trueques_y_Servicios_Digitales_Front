@@ -1,6 +1,7 @@
 'use client'
 import { Publication } from '@/Components/Organisms'
 import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './ListPublication.module.css'
 
 interface DataPubProps {
@@ -32,11 +33,14 @@ export default function ListPublicationProd({
     layout = 'carousel'
 }: DataPubProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
     const scroll = (direction: 'left' | 'right') => {
         const container = scrollContainerRef.current;
         if (container) {
-            const scrollAmount = direction === 'left' ? -300 : 300;
+            // Scroll by the width of 4 cards
+            const cardWidth = container.scrollWidth / (pubProd.length + 1); // +1 for explore card
+            const scrollAmount = direction === 'left' ? -(cardWidth * 4) : (cardWidth * 4);
             container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
         }
     };
@@ -93,6 +97,22 @@ export default function ListPublicationProd({
 
                     <div ref={scrollContainerRef} className={styles.scrollContainer}>
                         {renderPublications()}
+                        {/* Explore More Card */}
+                        <div
+                            className={styles.exploreMoreCard}
+                            onClick={() => router.push('/Explorar?section=products')}
+                        >
+                            <div className={styles.exploreMoreContent}>
+                                <div className={styles.exploreMoreIcon}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.35-4.35"></path>
+                                    </svg>
+                                </div>
+                                <div className={styles.exploreMoreTitle}>Explorar Más Productos</div>
+                                <div className={styles.exploreMoreSubtitle}>Ver todos los productos disponibles</div>
+                            </div>
+                        </div>
                     </div>
 
                     <button

@@ -1,11 +1,17 @@
 'use client'
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ListPublicationProd, ListPublicationServ } from "@/Components/Organisms";
 import AppLayout from "@/Components/Templates/AppLayout/AppLayout";
 import { usePublicationsProds, usePublicationsServs } from "../Home/PublicationViewHome";
 
 const ExplorarPage = () => {
-    const [activeSection, setActiveSection] = useState<'products' | 'services'>('products');
+    const searchParams = useSearchParams();
+    const sectionParam = searchParams.get('section');
+
+    const [activeSection, setActiveSection] = useState<'products' | 'services'>(
+        sectionParam === 'services' ? 'services' : 'products'
+    );
     const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
     const dataPubProd = usePublicationsProds();
     const dataPubServ = usePublicationsServs();

@@ -37,13 +37,14 @@ export default function PublicationCard({
     return (
         <div className={styles.card}>
             <div className={styles.imageContainer}>
-                {pub.foto_pub && (
-                    <img
-                        src={pub.foto_pub}
-                        alt={cod_publication}
-                        className={styles.image}
-                    />
-                )}
+                <img
+                    src={pub.foto_pub || `${process.env.NEXT_PUBLIC_API_URL}/images/default_image.jpg`}
+                    alt={cod_publication}
+                    className={styles.image}
+                    onError={(e) => {
+                        e.currentTarget.src = `${process.env.NEXT_PUBLIC_API_URL}/images/default_image.jpg`;
+                    }}
+                />
             </div>
             <div className={styles.content}>
                 <div className={styles.header}>
