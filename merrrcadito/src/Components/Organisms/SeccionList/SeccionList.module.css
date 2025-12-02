@@ -13,16 +13,16 @@
 }
 
 .mainContainer {
-   max-width: 1200px;
+   width: 100%;
    margin: 40px auto;
-   padding: 0 20px;
+   padding: 0 40px;
    height: calc(100vh - 200px);
    overflow-y: auto;
 }
 
 .seccionContainer {
    display: grid;
-   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+   grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
    gap: 20px;
    padding: 10px 0;
 }

@@ -1,31 +1,31 @@
 import axios from 'axios';
 import * as dotenv from 'dotenv';
 
-const API_BASE_URL=process.env.NEXT_PUBLIC_BACK_URL;;
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACK_URL;;
 
 
 export const SubcategoryService = {
 
-    getAllSubcategories: async () =>{
-        try{
+    getAllSubcategories: async () => {
+        try {
             const response = await axios.get(
                 `${API_BASE_URL}/subcategories`,
             );
 
             return response.data;
-        }catch(error:any){
+        } catch (error: any) {
             console.error('Error obteniendo subcategorias', error);
             throw new Error(error.response?.data?.message || 'Error al obtener subcategorías');
         }
     },
 
-    registerSubcategory: async (subcategoryData:{
+    registerSubcategory: async (subcategoryData: {
         cod_cat: number;
         nom_subcat_prod: string;
         descr_subcat_prod: string;
-        imagen_representativa: File | Blob; 
+        imagen_representativa: File | Blob;
     }) => {
-        try{
+        try {
             const formData = new FormData();
             formData.append('cod_cat', subcategoryData.cod_cat.toString());
             formData.append('nom_subcat_prod', subcategoryData.nom_subcat_prod);
@@ -37,13 +37,13 @@ export const SubcategoryService = {
                 formData,
                 {
                     headers: {
-                    'Content-Type': 'multipart/form-data'  
+                        'Content-Type': 'multipart/form-data'
                     }
                 }
             );
 
-            return  response.data;
-        }catch(error:any){
+            return response.data;
+        } catch (error: any) {
             console.error('Error registrando subcategoria:', error);
             throw new Error(error.response?.data?.error || 'Error al registrar sbcategoría');
         }
@@ -57,26 +57,36 @@ export const SubcategoryService = {
     }) => {
         try {
             const formData = new FormData();
-            
+
             if (attributes.nom_subcat_prod) formData.append('nom_subcat_prod', attributes.nom_subcat_prod);
-            if(attributes.cod_cat) formData.append('cod_cat', attributes.cod_cat.toString());
+            if (attributes.cod_cat) formData.append('cod_cat', attributes.cod_cat.toString());
             if (attributes.descr_subcat_prod) formData.append('descr_subcat_prod', attributes.descr_subcat_prod);
             if (attributes.imagen_representativa) formData.append('imagen_representativa', attributes.imagen_representativa);
             const response = await axios.put(
                 `${API_BASE_URL}/subcategory/update?cod_subcat_prod=${cod_subcat_prod}`,
                 formData,
                 {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
                 }
             );
 
             return response.data;
-        }catch (error: any) {
+        } catch (error: any) {
             console.error('Error actualizando subcategoria:', error);
             throw new Error(error.response?.data?.message || 'Error al actualizar subcategoría');
         }
+    },
+    deleteSubcategory: async (cod_subcat_prod: number) => {
+        try {
+            const response = await axios.delete(
+                `${API_BASE_URL}/subcategories/${cod_subcat_prod}`
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error('Error eliminando subcategoría:', error);
+            throw new Error(error.response?.data?.message || 'Error al eliminar subcategoría');
+        }
     }
 }
-   

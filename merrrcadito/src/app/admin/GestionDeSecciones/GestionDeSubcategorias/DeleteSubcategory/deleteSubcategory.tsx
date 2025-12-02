@@ -1,36 +1,42 @@
 import { useState } from 'react';
-import {DeleteSeccion} from '@/Components/Organisms'; 
+import { DeleteSeccion } from '@/Components/Organisms';
+import { SubcategoryService } from '@/services';
 
 interface DeleteSubcategoryProps {
   subcategoryCod: number;
-  subcategoryName: string; 
-  onSuccess: () => void; 
+  subcategoryName: string;
+  onSuccess: () => void;
   onCancel: () => void;
 }
 
 export default function DeleteSubcategory({
-  subcategoryCod, 
-  subcategoryName, 
-  onSuccess, 
-  onCancel
-}: DeleteSubcategoryProps){
-    
-    const [isLoading, setIsLoading] = useState(false);
+  subcategoryCod,
+  subcategoryName,
+  onCancel,
+  onSuccess
+}: DeleteSubcategoryProps) {
 
-    const handleConfirmDelete = () => {
-        setIsLoading(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-        console.log("Llamando SP para subcategoría:", subcategoryCod);
-        onSuccess();
-        setIsLoading(false);
+  const handleConfirmDelete = async () => {
+    setIsLoading(true);
+    try {
+      console.log("Llamando SP para subcategoría:", subcategoryCod);
+      await SubcategoryService.deleteSubcategory(subcategoryCod);
+      onSuccess();
+    } catch (error) {
+      console.error("Error eliminando subcategoría:", error);
+    } finally {
+      setIsLoading(false);
     }
-         
-    return (
-      <DeleteSeccion 
-        type='subcategory'
-        seccionName={subcategoryName}
-        onConfirm={handleConfirmDelete}
-        onCancel={onCancel}
-      />
-    );
+  }
+
+  return (
+    <DeleteSeccion
+      type='subcategory'
+      seccionName={subcategoryName}
+      onConfirm={handleConfirmDelete}
+      onCancel={onCancel}
+    />
+  );
 }

@@ -1,0 +1,115 @@
+.publishForm {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.formRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.formCol {
+    flex: 1;
+}
+
+.formColFull {
+    flex: 1 0 100%;
+}
+
+.fieldLabel {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #2c3e50;
+    font-weight: 600;
+    display: block;
+}
+
+.profileInput,
+.selectInput,
+.textarea {
+    width: 100% !important;
+    border-radius: 10px !important;
+    border: 2px solid #e0f2ef !important;
+    background-color: #f8fffe !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.profileInput:focus,
+.selectInput:focus,
+.textarea:focus {
+    border-color: #1fb7a1 !important;
+    background-color: white !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 161, 0.1) !important;
+}
+
+.textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.formRowBottom {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+.formColImage {
+    flex: 1;
+}
+
+.formColButtons {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.actionsRowInline {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.submitButton {
+    background: linear-gradient(135deg, #1fb7a1 0%, #16a085 100%);
+    color: white;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 26px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(31, 183, 161, 0.3);
+    transition: all 0.3s ease;
+}
+
+.submitButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(31, 183, 161, 0.4);
+}
+
+.cancelButton {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+}

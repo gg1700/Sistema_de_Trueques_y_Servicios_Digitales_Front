@@ -1,32 +1,32 @@
 import axios from 'axios';
 
-const API_BASE_URL=process.env.NEXT_PUBLIC_BACK_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACK_URL;
 
 export const CategoryService = {
 
-    getAllCategory: async () =>{
-        try{
-            const response= await axios.get(
-               `${API_BASE_URL}/categories`,
+    getAllCategory: async () => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/categories`,
             );
 
             console.log("Categorías obtenidas:", response.data);
             return response.data;
-        }catch(error){
+        } catch (error) {
             console.log(error);
             console.error("Error al obtener las categorias");
             throw error;
         }
 
-        
+
     },
-    registerCategory: async (categoryData:{
+    registerCategory: async (categoryData: {
         nom_cat: string;
         descr_cat: string;
-        imagen_repr: File | Blob; 
+        imagen_repr: File | Blob;
         tipo_cat: string;
     }) => {
-        try{
+        try {
 
             const formData = new FormData();
 
@@ -42,7 +42,7 @@ export const CategoryService = {
 
             return response.data;
 
-        }catch(error:any){
+        } catch (error: any) {
             console.error('Error registrando categoria:', error.response?.data || error.message);
             throw new Error(error.response?.data?.error || 'Error al registrar categoría');
         }
@@ -55,7 +55,7 @@ export const CategoryService = {
     }) => {
         try {
             const formData = new FormData();
-            
+
             if (attributes.nom_cat) formData.append('nom_cat', attributes.nom_cat);
             if (attributes.descr_cat) formData.append('descr_cat', attributes.descr_cat);
             if (attributes.imagen_repr) formData.append('imagen_repr', attributes.imagen_repr);
@@ -65,17 +65,27 @@ export const CategoryService = {
                 `${API_BASE_URL}/categories/${cod_cat}`,
                 formData,
                 {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
                 }
             );
 
             return response.data;
-        }catch (error: any) {
+        } catch (error: any) {
             console.error('Error actualizando categoria:', error);
             throw new Error(error.response?.data?.message || 'Error al actualizar categoría');
         }
+    },
+    deleteCategory: async (cod_cat: number) => {
+        try {
+            const response = await axios.delete(
+                `${API_BASE_URL}/categories/${cod_cat}`
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error('Error eliminando categoría:', error);
+            throw new Error(error.response?.data?.message || 'Error al eliminar categoría');
+        }
     }
 }
-   
