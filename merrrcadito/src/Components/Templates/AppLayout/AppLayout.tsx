@@ -38,7 +38,12 @@ export default function AppLayout({
           <span></span>
           <span></span>
         </button>
-        <h1 className={styles.logoText}>MERRRCADITO</h1>
+        <img
+          src="/images/logo_merrrcadito.png"
+          alt="MERRRCADITO"
+          className={styles.logoImage}
+          onClick={() => router.push('/Home')}
+        />
 
         <div className={styles.headerActions}>
           <ButtonIcon type="profile" icon="bi-wallet2" name="Billetera" onClick={() => router.push('/billetera')} />

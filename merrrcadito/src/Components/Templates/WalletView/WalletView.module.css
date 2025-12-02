@@ -38,7 +38,7 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 70px;
+    height: 120px;
     background: linear-gradient(135deg, #16a085 0%, #138f75 100%);
     display: flex;
     align-items: center;
@@ -88,6 +88,21 @@
     color: white;
     letter-spacing: 1.5px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.logoImage {
+    height: 90px;
+    width: auto;
+    object-fit: contain;
+    margin: 0 12px;
+    cursor: pointer;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+}
+
+.logoImage:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.4)) brightness(1.1);
 }
 
 .headerActions {

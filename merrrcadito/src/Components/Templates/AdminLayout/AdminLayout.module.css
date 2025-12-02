@@ -11,7 +11,7 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 70px;
+    height: 120px;
     background: linear-gradient(135deg, #16a085 0%, #138f75 100%);
     display: flex;
     align-items: center;
@@ -54,6 +54,21 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.logoImage {
+    height: 90px;
+    width: auto;
+    object-fit: contain;
+    margin: 0 12px;
+    cursor: pointer;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+}
+
+.logoImage:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.4)) brightness(1.1);
+}
+
 .headerActions {
     margin-left: auto;
     display: flex;
@@ -63,11 +78,11 @@
 /* Sub Header */
 .subHeader {
     position: fixed;
-    top: 70px;
+    top: 120px;
     /* Below top header */
     left: 0;
     right: 0;
-    height: 60px;
+    height: 75px;
     background-color: rgba(12, 153, 75, 0.7);
     /* Green from carousel buttons */
     display: flex;
@@ -95,7 +110,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    margin-top: 130px;
+    margin-top: 195px;
     /* 70px header + 60px subheader */
     min-width: 0;
 }
@@ -121,7 +136,7 @@
     }
 
     .mainContent {
-        margin-top: 140px;
+        margin-top: 205px;
         /* Adjusted for potentially taller subheader */
     }
 

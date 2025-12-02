@@ -463,7 +463,12 @@ export default function WalletView() {
                     <span></span>
                     <span></span>
                 </button>
-                <h1 className={styles.logoText}>MERRRCADITO</h1>
+                <img
+                    src="/images/logo_merrrcadito.png"
+                    alt="MERRRCADITO"
+                    className={styles.logoImage}
+                    onClick={() => router.push('/Home')}
+                />
 
                 <div className={styles.headerActions}>
                     <ButtonIcon
