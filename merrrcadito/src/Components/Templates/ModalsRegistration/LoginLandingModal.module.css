@@ -30,35 +30,21 @@
   animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.logoRow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 24px;
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(8px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+
+
+.loginLogo {
+  height: 160px;
+  width: auto;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  cursor: default;
+  margin-bottom: 20px;
 }
 
-.logoSvg {
-  width: 64px;
-  height: 64px;
-  display: block;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-}
-
-.brand {
-  color: var(--ink);
-  font-size: 42px;
-  line-height: 1;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--purple) 0%, #4a2c5a 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.loginLogo:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.3)) brightness(1.05);
 }
 
 .buttons {
