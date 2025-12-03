@@ -365,8 +365,9 @@ function PublishSection({
                 value={productForm.material}
                 onChange={handleProductChange}
                 className={styles.selectInput}
+                required // Made required again
               >
-                <option value="">Seleccionar material</option>
+                <option value="">Seleccione un material</option>
                 {materials.map((mat) => (
                   <option key={mat.cod_mat} value={mat.cod_mat}>
                     {mat.nom_mat}
@@ -1314,6 +1315,7 @@ export default function UserProfile({
             productForm.description.trim() !== ""
             ? productForm.description
             : null,
+        cod_mat: productForm.material ? Number(productForm.material) : null, // CRITICAL for CO2 calculation
       };
 
       const resProduct = await fetch(
