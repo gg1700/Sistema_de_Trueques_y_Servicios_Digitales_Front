@@ -92,11 +92,21 @@ export default function WalletView() {
     const [userName, setUserName] = useState("Usuario");
     const [userId, setUserId] = useState<number | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [userRole, setUserRole] = useState<string | null>(null);
+
+    // CV Exchange Modal States
+    const [showExchangeModal, setShowExchangeModal] = useState(false);
+    const [selectedCVAmount, setSelectedCVAmount] = useState<number | null>(null);
+    const [showCVExchangeSuccessModal, setShowCVExchangeSuccessModal] = useState(false);
+    const [exchangeResult, setExchangeResult] = useState<any>(null);
 
     // Get user ID (simulated or from local storage/context)
     useEffect(() => {
         // Try to get from localStorage first
         const storedHandle = typeof window !== 'undefined' ? localStorage.getItem("currentUserHandle") : null;
+        const storedRole = typeof window !== 'undefined' ? localStorage.getItem("currentUserRole") : null;
+
+        setUserRole(storedRole);
 
         if (storedHandle) {
             fetchUserByHandle(storedHandle);
@@ -442,6 +452,39 @@ export default function WalletView() {
         }
     };
 
+    const confirmCVExchange = async () => {
+        if (!selectedCVAmount || !userId) return;
+
+        try {
+            const res = await fetch(`${USERS_API_BASE}/exchange_cv_to_bs`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cod_us: userId,
+                    cv_amount: selectedCVAmount
+                }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                setShowExchangeModal(false);
+                setExchangeResult(data.data);
+                setShowCVExchangeSuccessModal(true);
+
+                // Refresh wallet data to show new balances
+                fetchWalletData(userId);
+            } else {
+                alert('Error al canjear CV: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error exchanging CV:', error);
+            alert('Error de conexión al canjear CV.');
+        }
+    };
+
     if (loading) {
         return (
             <div className={styles.loadingContainer}>
@@ -587,6 +630,58 @@ export default function WalletView() {
                         <h2 className={styles.sectionTitle}>Cobros</h2>
 
                         {/* Filter Tabs */}
+                        {/* CV Exchange Section - Only for Entrepreneurs */}
+                        {userRole === 'entrepreneur' && (
+                            <div className={styles.cvExchangeSection} style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '10px', border: '1px solid #e9ecef' }}>
+                                <h3 style={{ color: '#10b981', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.1rem' }}>
+                                    <i className="bi bi-arrow-repeat"></i>
+                                    Canjear Créditos Verdes por Bolivianos
+                                </h3>
+                                <p style={{ color: '#6c757d', marginBottom: '20px', fontSize: '14px' }}>
+                                    <i className="bi bi-info-circle"></i> Tasa de cambio oficial: <strong>35 CV = 1 Bs</strong>. El monto se acreditará a tu saldo en Bolivianos.
+                                </p>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '15px' }}>
+                                    {[100, 250, 500, 1000, 2000].map((amount) => {
+                                        const bsAmount = (amount / 35).toFixed(2);
+                                        return (
+                                            <button
+                                                key={amount}
+                                                onClick={() => {
+                                                    setSelectedCVAmount(amount);
+                                                    setShowExchangeModal(true);
+                                                }}
+                                                style={{
+                                                    padding: '15px',
+                                                    backgroundColor: 'white',
+                                                    border: '1px solid #10b981',
+                                                    borderRadius: '8px',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s',
+                                                    textAlign: 'center',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    gap: '5px'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#10b981';
+                                                    e.currentTarget.style.color = 'white';
+                                                    // Force children color change if needed, though inheritance usually works
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = 'white';
+                                                    e.currentTarget.style.color = 'inherit';
+                                                }}
+                                            >
+                                                <span style={{ fontSize: '18px', fontWeight: 'bold', color: 'inherit' }}>{amount} CV</span>
+                                                <span style={{ fontSize: '13px', opacity: 0.8, color: 'inherit' }}>≈ {bsAmount} Bs</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
                         <div className={styles.collectionFilters}>
                             <button
                                 className={`${styles.filterTab} ${collectionFilter === 'retenido' ? styles.activeFilterTab : ''}`}
@@ -1093,6 +1188,82 @@ export default function WalletView() {
                                 onClick={() => setShowExchangeSuccessModal(false)}
                             >
                                 Aceptar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* CV Exchange Confirmation Modal */}
+            {showExchangeModal && selectedCVAmount && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h3 className={styles.modalTitle} style={{ color: '#10b981' }}>Confirmar Canje de CV</h3>
+                        <p className={styles.modalText}>
+                            Estás a punto de canjear tus Créditos Verdes por Bolivianos.
+                        </p>
+                        <div className={styles.modalDetails} style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '15px', borderRadius: '8px', margin: '15px 0' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                <strong>Canjeas:</strong>
+                                <span style={{ color: '#10b981', fontWeight: 'bold' }}>{selectedCVAmount} CV</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                <strong>Recibes:</strong>
+                                <span style={{ color: '#047857', fontWeight: 'bold' }}>{(selectedCVAmount / 35).toFixed(2)} Bs</span>
+                            </div>
+                            <div style={{ borderTop: '1px dashed #bbf7d0', paddingTop: '10px', marginTop: '10px', fontSize: '0.9em', color: '#6c757d' }}>
+                                Tasa de cambio: 35 CV = 1 Bs
+                            </div>
+                        </div>
+                        <p className={styles.modalWarning} style={{ fontSize: '0.9em' }}>
+                            Esta acción descontará los CV de tu saldo y acreditará los Bs correspondientes. ¿Deseas continuar?
+                        </p>
+                        <div className={styles.modalActions}>
+                            <button
+                                className={styles.cancelButton}
+                                onClick={() => setShowExchangeModal(false)}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                className={styles.confirmButton}
+                                onClick={confirmCVExchange}
+                                style={{ backgroundColor: '#10b981' }}
+                            >
+                                Confirmar Canje
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* CV Exchange Success Modal */}
+            {showCVExchangeSuccessModal && exchangeResult && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+                            <i className="bi bi-check-circle-fill" style={{ fontSize: '3rem', color: '#10b981' }}></i>
+                        </div>
+                        <h3 className={styles.modalTitle} style={{ textAlign: 'center' }}>¡Canje Exitoso!</h3>
+                        <p className={styles.modalText} style={{ textAlign: 'center' }}>
+                            Has canjeado correctamente tus Créditos Verdes.
+                        </p>
+                        <div className={styles.modalDetails} style={{ textAlign: 'center' }}>
+                            <p style={{ fontSize: '1.2em', margin: '10px 0' }}>
+                                Has recibido: <strong>{exchangeResult.bs_received.toFixed(2)} Bs</strong>
+                            </p>
+                            <p style={{ fontSize: '0.9em', color: '#6c757d' }}>
+                                Nuevo saldo CV: {exchangeResult.new_cv_balance} CV<br />
+                                Nuevo saldo Bs: {exchangeResult.new_bs_balance.toFixed(2)} Bs
+                            </p>
+                        </div>
+                        <div className={styles.modalActions} style={{ justifyContent: 'center' }}>
+                            <button
+                                className={styles.confirmButton}
+                                onClick={() => setShowCVExchangeSuccessModal(false)}
+                                style={{ backgroundColor: '#10b981', width: '100%' }}
+                            >
+                                Entendido
                             </button>
                         </div>
                     </div>
