@@ -15,7 +15,7 @@ import eventStyles from '../eventos/page.module.css';
 import tokenStyles from '../tokens/tokens.module.css';
 
 export default function Home() {
-    const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
+    const [userRole, setUserRole] = useState<'admin' | 'user' | 'entrepreneur'>('user');
     const router = useRouter();
 
     const dataPubProd = usePublicationsProds();
@@ -27,8 +27,8 @@ export default function Home() {
 
     useEffect(() => {
         const storedRole = localStorage.getItem('currentUserRole');
-        if (storedRole === 'admin' || storedRole === 'user') {
-            setUserRole(storedRole);
+        if (storedRole === 'admin' || storedRole === 'user' || storedRole === 'entrepreneur') {
+            setUserRole(storedRole as 'admin' | 'user' | 'entrepreneur');
         }
     }, []);
 

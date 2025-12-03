@@ -5,12 +5,12 @@ import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
 import UserProfile from '@/Components/Templates/ModalsProfile/UserProfile';
 
 export default function PerfilPage() {
-  const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
+  const [userRole, setUserRole] = useState<'admin' | 'user' | 'entrepreneur'>('user');
 
   useEffect(() => {
     const storedRole = localStorage.getItem('currentUserRole');
-    if (storedRole === 'admin' || storedRole === 'user') {
-      setUserRole(storedRole);
+    if (storedRole === 'admin' || storedRole === 'user' || storedRole === 'entrepreneur') {
+      setUserRole(storedRole as 'admin' | 'user' | 'entrepreneur');
     }
   }, []);
 

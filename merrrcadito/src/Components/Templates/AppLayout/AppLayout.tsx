@@ -13,7 +13,7 @@ interface LayoutProps {
   children: React.ReactNode;
   pageTitle: string;
   pageSubtitle: string;
-  userRole: 'admin' | 'user';
+  userRole: 'admin' | 'user' | 'entrepreneur';
 }
 
 export default function AppLayout({

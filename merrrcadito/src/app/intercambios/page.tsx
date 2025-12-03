@@ -21,13 +21,16 @@ interface Exchange {
 }
 
 export default function ExchangesPage() {
-    const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
+    const [userRole, setUserRole] = useState<'admin' | 'user' | 'entrepreneur'>('user');
     const [userId, setUserId] = useState<number | null>(null);
     const [viewMode, setViewMode] = useState<'list' | 'detailed'>('list');
-    const [exchanges, setExchanges] = useState<Exchange[]>([]);
-    const [selectedExchange, setSelectedExchange] = useState<any | null>(null);
-    const [showModal, setShowModal] = useState(false);
+    const [exchanges, setExchanges] = useState<any[]>([]);
+    const [selectedExchange, setSelectedExchange] = useState<any>(null);
+    const [showExchangeModal, setShowExchangeModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -35,8 +38,8 @@ export default function ExchangesPage() {
         const storedUserId = localStorage.getItem('userId');
         const storedRole = localStorage.getItem('currentUserRole');
 
-        if (storedRole === 'admin' || storedRole === 'user') {
-            setUserRole(storedRole);
+        if (storedRole === 'admin' || storedRole === 'user' || storedRole === 'entrepreneur') {
+            setUserRole(storedRole as 'admin' | 'user' | 'entrepreneur');
         }
 
         if (storedUserId) {
@@ -64,7 +67,7 @@ export default function ExchangesPage() {
 
     const handleProposeClick = (exchange: Exchange) => {
         setSelectedExchange(exchange);
-        setShowModal(true);
+        setShowExchangeModal(true);
     };
 
     const handleSuccess = () => {
@@ -165,10 +168,10 @@ export default function ExchangesPage() {
                     </div>
                 )}
 
-                {showModal && selectedExchange && (
+                {showExchangeModal && selectedExchange && (
                     <ProposeExchangeModal
                         exchange={selectedExchange}
-                        onClose={() => setShowModal(false)}
+                        onClose={() => setShowExchangeModal(false)}
                         onSuccess={handleSuccess}
                     />
                 )}

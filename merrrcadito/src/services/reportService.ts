@@ -228,7 +228,6 @@ export const ReportService = {
         }
     },
 
-    // IMPACTO AMBIENTAL DE USUARIO
     get_user_environmental_impact: async (cod_us: number) => {
         try {
             const response = await axios.get(
@@ -237,6 +236,103 @@ export const ReportService = {
             return response.data;
         } catch (error) {
             console.error("Error al obtener impacto ambiental del usuario");
+            throw error;
+        }
+    },
+
+    // TOTAL DE VENTAS DE USUARIO
+    get_user_total_sales: async (cod_us: number) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/users/${cod_us}/total_sales`
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error al obtener total de ventas del usuario");
+            throw error;
+        }
+    },
+
+    // TOTAL DE INGRESOS DE USUARIO (SUMA DE CV)
+    get_user_total_income: async (cod_us: number) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/users/${cod_us}/total_income`
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error al obtener total de ingresos del usuario");
+            throw error;
+        }
+    },
+
+    // VENTAS POR CATEGORIA DE USUARIO
+    get_user_sales_by_category: async (cod_us: number, month?: number, year?: number) => {
+        try {
+            let url = `${API_BASE_URL}/users/${cod_us}/sales_by_category`;
+            const params = new URLSearchParams();
+
+            if (month) params.append('month', month.toString());
+            if (year) params.append('year', year.toString());
+
+            if (params.toString()) {
+                url += `?${params.toString()}`;
+            }
+
+            console.log('🌐 CALLING API:', url);
+            console.log('📊 Params:', { cod_us, month, year });
+
+            const response = await axios.get(url);
+
+            console.log('📥 API Response:', response.data);
+
+            return response.data;
+        } catch (error) {
+            console.error("❌ Error al obtener ventas por categoría del usuario:", error);
+            throw error;
+        }
+    },
+
+    // VENTAS POR MES DE USUARIO
+    get_user_sales_by_month: async (cod_us: number, year?: number) => {
+        try {
+            let url = `${API_BASE_URL}/users/${cod_us}/sales_by_month`;
+
+            if (year) {
+                url += `?year=${year}`;
+            }
+
+            console.log('🌐 CALLING API (Sales by Month):', url);
+
+            const response = await axios.get(url);
+
+            console.log('📥 API Response (Sales by Month):', response.data);
+
+            return response.data;
+        } catch (error) {
+            console.error("❌ Error al obtener ventas por mes del usuario:", error);
+            throw error;
+        }
+    },
+
+    // INGRESOS POR MES DE USUARIO
+    get_user_income_by_month: async (cod_us: number, year?: number) => {
+        try {
+            let url = `${API_BASE_URL}/users/${cod_us}/income_by_month`;
+
+            if (year) {
+                url += `?year=${year}`;
+            }
+
+            console.log('🌐 CALLING API (Income by Month):', url);
+
+            const response = await axios.get(url);
+
+            console.log('📥 API Response (Income by Month):', response.data);
+
+            return response.data;
+        } catch (error) {
+            console.error("❌ Error al obtener ingresos por mes del usuario:", error);
             throw error;
         }
     }

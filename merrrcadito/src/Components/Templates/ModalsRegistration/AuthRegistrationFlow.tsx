@@ -30,10 +30,13 @@ const ORG_API_BASE =
 
 const PROFILE_ROUTE_BASE = "/Home";
 
-const mapCodRolToRole = (codRol?: number): Role => {
+const mapCodRolToRole = (codRol?: number | string): Role => {
+  const roleId = Number(codRol);
   // cod_rol 3 = admin
-  if (codRol === 3) return "admin";
-  // cod_rol 1 = user común, cod_rol 2 = entrepreneur (ambos se tratan como 'user')
+  if (roleId === 3) return "admin";
+  // cod_rol 2 = entrepreneur
+  if (roleId === 2) return "entrepreneur";
+  // cod_rol 1 = user común
   return "user";
 };
 

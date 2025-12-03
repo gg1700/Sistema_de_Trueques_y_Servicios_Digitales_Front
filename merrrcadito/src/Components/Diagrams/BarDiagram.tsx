@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -46,9 +47,18 @@ const defaultOptions = {
 };
 
 export default function BarDiagram({ data, title, height = 400 }: BarDiagramProps) {
-  const options = {
+  // Generar una clave única basada en los datos para forzar re-render
+  const dataKey = useMemo(() => {
+    return JSON.stringify({
+      labels: data.labels,
+      dataValues: data.datasets.map(d => d.data),
+      title
+    });
+  }, [data.labels, data.datasets, title]);
+
+  const options = useMemo(() => ({
     ...defaultOptions,
-    maintainAspectRatio: false, // Importante para que respete la altura del contenedor
+    maintainAspectRatio: false,
     plugins: {
       ...defaultOptions.plugins,
       title: {
@@ -56,11 +66,11 @@ export default function BarDiagram({ data, title, height = 400 }: BarDiagramProp
         text: title || defaultOptions.plugins.title.text,
       },
     },
-  };
+  }), [title]);
 
   return (
     <div style={{ height: `${height}px`, width: '100%', position: 'relative' }}>
-      <Bar options={options} data={data} />
+      <Bar key={dataKey} options={options} data={data} />
     </div>
   );
 }

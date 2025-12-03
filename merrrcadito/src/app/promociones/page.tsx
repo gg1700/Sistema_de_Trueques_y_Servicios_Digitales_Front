@@ -19,7 +19,7 @@ interface Promocion {
 }
 
 export default function PromocionesPage() {
-  const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
+  const [userRole, setUserRole] = useState<'admin' | 'user' | 'entrepreneur'>('user');
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,8 +28,8 @@ export default function PromocionesPage() {
 
   useEffect(() => {
     const storedRole = localStorage.getItem('currentUserRole');
-    if (storedRole === 'admin' || storedRole === 'user') {
-      setUserRole(storedRole);
+    if (storedRole === 'admin' || storedRole === 'user' || storedRole === 'entrepreneur') {
+      setUserRole(storedRole as 'admin' | 'user' | 'entrepreneur');
     }
   }, []);
 

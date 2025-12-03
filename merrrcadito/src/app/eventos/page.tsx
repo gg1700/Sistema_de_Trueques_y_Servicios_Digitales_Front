@@ -23,7 +23,7 @@ interface Event {
 }
 
 export default function EventsPage() {
-    const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
+    const [userRole, setUserRole] = useState<'admin' | 'user' | 'entrepreneur'>('user');
     const [userId, setUserId] = useState<number | null>(null);
     const [events, setEvents] = useState<Event[]>([]);
     const [enrolledEvents, setEnrolledEvents] = useState<Set<number>>(new Set());
@@ -47,8 +47,8 @@ export default function EventsPage() {
         const storedUserId = localStorage.getItem('userId');
         const storedRole = localStorage.getItem('currentUserRole');
 
-        if (storedRole === 'admin' || storedRole === 'user') {
-            setUserRole(storedRole);
+        if (storedRole === 'admin' || storedRole === 'user' || storedRole === 'entrepreneur') {
+            setUserRole(storedRole as 'admin' | 'user' | 'entrepreneur');
         }
 
         if (storedUserId) {

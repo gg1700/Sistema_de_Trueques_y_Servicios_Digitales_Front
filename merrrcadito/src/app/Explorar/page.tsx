@@ -15,14 +15,15 @@ const ExplorarContent = () => {
     const [activeSection, setActiveSection] = useState<'products' | 'services'>(
         sectionParam === 'services' ? 'services' : 'products'
     );
-    const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
+    const [userRole, setUserRole] = useState<'admin' | 'user' | 'entrepreneur'>('user');
+    const [searchTerm, setSearchTerm] = useState('');
     const dataPubProd = usePublicationsProds();
     const dataPubServ = usePublicationsServs();
 
     useEffect(() => {
         const storedRole = localStorage.getItem('currentUserRole');
-        if (storedRole === 'admin' || storedRole === 'user') {
-            setUserRole(storedRole);
+        if (storedRole === 'admin' || storedRole === 'user' || storedRole === 'entrepreneur') {
+            setUserRole(storedRole as 'admin' | 'user' | 'entrepreneur');
         }
     }, []);
 

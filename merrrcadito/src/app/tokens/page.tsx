@@ -487,7 +487,7 @@ const TokenItem = ({
 };
 
 export default function TokensPage() {
-  const [userRole, setUserRole] = useState<'admin' | 'user'>('user');
+  const [userRole, setUserRole] = useState<'admin' | 'user' | 'entrepreneur'>('user');
   const [paquetes, setPaquetes] = useState<TokenPackageDB[]>([]);
   const [loading, setLoading] = useState(true);
   const [comprandoId, setComprandoId] = useState<number | null>(null);
@@ -501,8 +501,8 @@ export default function TokensPage() {
 
   useEffect(() => {
     const storedRole = localStorage.getItem('currentUserRole');
-    if (storedRole === 'admin' || storedRole === 'user') {
-      setUserRole(storedRole);
+    if (storedRole === 'admin' || storedRole === 'user' || storedRole === 'entrepreneur') {
+      setUserRole(storedRole as 'admin' | 'user' | 'entrepreneur');
     }
 
     const storedUserId = localStorage.getItem('userId');
