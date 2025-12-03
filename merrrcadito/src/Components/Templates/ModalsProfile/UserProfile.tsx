@@ -232,6 +232,7 @@ interface PublishSectionProps {
   onChangeEventImage: (file: File | null) => void;
   userProducts: Product[];
   availableRewards: Array<{ cod_rec: number, monto_rec: number }>;
+  userRole: Role; // NEW: User role to determine event visibility
 }
 
 function PublishSection({
@@ -266,6 +267,7 @@ function PublishSection({
   onChangeEventImage,
   userProducts,
   availableRewards,
+  userRole,
 }: PublishSectionProps) {
   // 🔹 Lógica para diferenciar opciones según tipo de cuenta
   const [accountType, setAccountType] = useState<string | null>(null);
@@ -283,6 +285,8 @@ function PublishSection({
   }, [publishType, setPublishType]);
 
   const isOrg = accountType === "organization";
+  const isRegularUser = userRole === "user"; // Usuario común (cod_rol = 1)
+  const canCreateEvents = isOrg || userRole === "entrepreneur" || userRole === "admin";
 
   return (
     <div className={styles.publishSection}>
@@ -312,13 +316,15 @@ function PublishSection({
             </button>
           </>
         )}
-        <button
-          type="button"
-          className={`${styles.publishTab} ${publishType === "event" ? styles.publishTabActive : ""}`}
-          onClick={() => setPublishType("event")}
-        >
-          Evento
-        </button>
+        {canCreateEvents && (
+          <button
+            type="button"
+            className={`${styles.publishTab} ${publishType === "event" ? styles.publishTabActive : ""}`}
+            onClick={() => setPublishType("event")}
+          >
+            Evento
+          </button>
+        )}
       </div>
 
       {publishType === "product" ? (
@@ -2172,6 +2178,7 @@ export default function UserProfile({
             setModalTitle={setModalTitle}
             setModalMessage={setModalMessage}
             setShowSuccessModal={setShowSuccessModal}
+            userRole={effectiveRole}
           />
         )}
 

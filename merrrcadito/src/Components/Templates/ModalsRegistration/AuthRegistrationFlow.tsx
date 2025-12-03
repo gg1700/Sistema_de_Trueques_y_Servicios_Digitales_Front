@@ -40,6 +40,7 @@ const mapCodRolToRole = (codRol?: number): Role => {
 const AuthRegistrationFlow: React.FC = () => {
   const [step, setStep] = useState<Step>("landing");
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [registerError, setRegisterError] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -185,8 +186,62 @@ const AuthRegistrationFlow: React.FC = () => {
     email: string;
     phone: string;
     photo?: File | null;
+    username?: string;
+    password?: string;
+    rol?: string;
   }) => {
     console.log("Registro Usuario (callback padre):", data);
+
+    try {
+      setRegisterError(null);
+
+      const AUTH_API_BASE =
+        process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api";
+
+      // Construir FormData
+      const formData = new FormData();
+      formData.append("ci", data.ci);
+      formData.append("nom_us", data.firstName);
+      formData.append("ap_pat_us", data.lastNameFather);
+      formData.append("ap_mat_us", data.lastNameMother || "");
+      formData.append("fecha_nacimiento", data.birth);
+      formData.append("sexo", data.sex);
+      formData.append("correo_us", data.email);
+      formData.append("telefono_us", data.phone);
+      formData.append("handle_name", data.username || "");
+      formData.append("contra_us", data.password || "");
+      formData.append("rol", data.rol || "usuario_comun");
+
+      if (data.photo) {
+        formData.append("foto_us", data.photo);
+      }
+
+      console.log("[FRONTEND REGISTER] Enviando solicitud de registro...");
+
+      const response = await fetch(`${AUTH_API_BASE}/auth/register`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Error al registrar usuario");
+      }
+
+      console.log("[FRONTEND REGISTER] ✅ Registro exitoso:", result);
+
+      // Mostrar modal de éxito o redirigir
+      setStep("landing");
+
+    } catch (error) {
+      console.error("[FRONTEND REGISTER] Error:", error);
+      setRegisterError(
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un error al registrar el usuario"
+      );
+    }
   };
 
   return (
