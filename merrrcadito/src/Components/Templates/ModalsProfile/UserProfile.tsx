@@ -149,6 +149,18 @@ interface UserApi {
   fecha_nac_us?: string | null;
   genero_us?: string | null;
   fecha_registro?: string | null;
+  // Campos de organización (opcionales para reutilizar la interfaz)
+  cod_org?: number;
+  nom_com_org?: string;
+  nom_leg_org?: string;
+  tipo_org?: string;
+  rubro_org?: string;
+  cif?: string;
+  correo_org?: string;
+  telf_org?: string;
+  dir_org?: string;
+  sitio_web?: string;
+  logo_org?: string;
 }
 
 interface Category {
@@ -220,6 +232,7 @@ interface PublishSectionProps {
   onChangeEventImage: (file: File | null) => void;
   userProducts: Product[];
   availableRewards: Array<{ cod_rec: number, monto_rec: number }>;
+  userRole: Role; // NEW: User role to determine event visibility
 }
 
 function PublishSection({
@@ -254,38 +267,64 @@ function PublishSection({
   onChangeEventImage,
   userProducts,
   availableRewards,
+  userRole,
 }: PublishSectionProps) {
+  // 🔹 Lógica para diferenciar opciones según tipo de cuenta
+  const [accountType, setAccountType] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const type = localStorage.getItem("accountType");
+      setAccountType(type);
+
+      // Si es organización, forzar la pestaña de eventos
+      if (type === "organization" && publishType !== "event") {
+        setPublishType("event");
+      }
+    }
+  }, [publishType, setPublishType]);
+
+  const isOrg = accountType === "organization";
+  const isRegularUser = userRole === "user"; // Usuario común (cod_rol = 1)
+  const canCreateEvents = isOrg || userRole === "entrepreneur" || userRole === "admin";
+
   return (
     <div className={styles.publishSection}>
       <div className={styles.publishTabs}>
-        <button
-          type="button"
-          className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""}`}
-          onClick={() => setPublishType("product")}
-        >
-          Producto
-        </button>
-        <button
-          type="button"
-          className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""}`}
-          onClick={() => setPublishType("service")}
-        >
-          Servicio
-        </button>
-        <button
-          type="button"
-          className={`${styles.publishTab} ${publishType === "exchange" ? styles.publishTabActive : ""}`}
-          onClick={() => setPublishType("exchange")}
-        >
-          Intercambio
-        </button>
-        <button
-          type="button"
-          className={`${styles.publishTab} ${publishType === "event" ? styles.publishTabActive : ""}`}
-          onClick={() => setPublishType("event")}
-        >
-          Evento
-        </button>
+        {!isOrg && (
+          <>
+            <button
+              type="button"
+              className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""}`}
+              onClick={() => setPublishType("product")}
+            >
+              Producto
+            </button>
+            <button
+              type="button"
+              className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""}`}
+              onClick={() => setPublishType("service")}
+            >
+              Servicio
+            </button>
+            <button
+              type="button"
+              className={`${styles.publishTab} ${publishType === "exchange" ? styles.publishTabActive : ""}`}
+              onClick={() => setPublishType("exchange")}
+            >
+              Intercambio
+            </button>
+          </>
+        )}
+        {canCreateEvents && (
+          <button
+            type="button"
+            className={`${styles.publishTab} ${publishType === "event" ? styles.publishTabActive : ""}`}
+            onClick={() => setPublishType("event")}
+          >
+            Evento
+          </button>
+        )}
       </div>
 
       {publishType === "product" ? (
@@ -1182,10 +1221,80 @@ export default function UserProfile({
     }
   };
 
+  const ORG_API_BASE =
+    process.env.NEXT_PUBLIC_ORG_API_BASE_URL ??
+    "http://127.0.0.1:5000/api/organization";
+
+  // ... (existing code)
+
   useEffect(() => {
+    // Verificar si es organización
+    const accountType = typeof window !== "undefined" ? localStorage.getItem("accountType") : null;
+    const orgId = typeof window !== "undefined" ? localStorage.getItem("orgId") : null;
+
+    if (accountType === "organization" && orgId) {
+      const fetchOrgData = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const resOrg = await fetch(`${ORG_API_BASE}/${orgId}`);
+          const jsonOrg = await resOrg.json();
+
+          if (!resOrg.ok || !jsonOrg.success || !jsonOrg.data) {
+            throw new Error(jsonOrg.message || "No se pudieron cargar los datos de la organización.");
+          }
+
+          const rawData = jsonOrg.data;
+          const orgData = Array.isArray(rawData) ? rawData[0] : rawData;
+
+          // Mapear datos de organización a estructura de usuario para compatibilidad
+          const mappedUser: UserApi = {
+            cod_us: orgData.cod_org,
+            cod_rol: 2, // Asumimos rol de emprendedor/organización
+            handle_name: orgData.nom_com_org.replace(/\s+/g, '').toLowerCase(),
+            nom_us: orgData.nom_com_org,
+            ap_pat_us: orgData.nom_leg_org,
+            correo_us: orgData.correo_org,
+            telefono_us: orgData.telf_org,
+            ci_us: orgData.cif, // Opcional: enmascarar si es sensible
+            fecha_registro: orgData.fecha_registro_org,
+            // Campos extra de organización
+            cod_org: orgData.cod_org,
+            nom_com_org: orgData.nom_com_org,
+            nom_leg_org: orgData.nom_leg_org,
+            tipo_org: orgData.tipo_org,
+            rubro_org: orgData.rubro_org,
+            cif: orgData.cif,
+            correo_org: orgData.correo_org,
+            telf_org: orgData.telf_org,
+            dir_org: orgData.dir_org,
+            sitio_web: orgData.sitio_web,
+          };
+
+          setUser(mappedUser);
+
+          // Cargar eventos de la organización (si aplica)
+          // await fetchOffersForUser(orgData.cod_org); 
+
+        } catch (err: any) {
+          console.error(err);
+          setError(err?.message ?? "Ocurrió un error al cargar los datos de la organización.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchOrgData();
+      return;
+    }
+
     if (!resolvedHandle) {
-      setError("No se encontró información de sesión del usuario.");
-      setLoading(false);
+      // Solo mostrar error si NO es organización (ya manejado arriba) y no hay handle
+      if (accountType !== "organization") {
+        setError("No se encontró información de sesión del usuario.");
+        setLoading(false);
+      }
       return;
     }
 
@@ -1633,8 +1742,17 @@ export default function UserProfile({
         formData.append("banner_evento", eventForm.image);
       }
 
-      // Agregar cod_us a la URL como query parameter
-      const response = await fetch(`${API_BASE_URL}/events/create?cod_us=${user.cod_us}`, {
+      let url = `${API_BASE_URL}/events/create`;
+
+      // Si es organización, enviar cod_org en el body
+      if (user.cod_org) {
+        formData.append("cod_org", user.cod_org.toString());
+      } else {
+        // Si es usuario, enviar cod_us en la URL
+        url += `?cod_us=${user.cod_us}`;
+      }
+
+      const response = await fetch(url, {
         method: 'POST',
         body: formData
       });
@@ -1673,17 +1791,25 @@ export default function UserProfile({
 
   const fullName =
     user &&
-    `${user.nom_us} ${user.ap_pat_us} ${user.ap_mat_us ?? ""}`.trim();
+    (user.nom_com_org
+      ? user.nom_com_org
+      : `${user.nom_us} ${user.ap_pat_us} ${user.ap_mat_us ?? ""}`.trim());
 
   const roleLabel =
-    effectiveRole === "admin"
-      ? "Administrador"
-      : effectiveRole === "entrepreneur"
-        ? "Emprendedor"
-        : "Usuario Común";
+    user?.nom_com_org
+      ? "Organización"
+      : effectiveRole === "admin"
+        ? "Administrador"
+        : effectiveRole === "entrepreneur"
+          ? "Emprendedor"
+          : "Usuario Común";
 
   const avatarUrl =
-    user && user.cod_us ? `${USERS_API_BASE}/${user.cod_us}/image` : null;
+    user && user.cod_us
+      ? user.nom_com_org
+        ? `${ORG_API_BASE}/${user.cod_us}/image`
+        : `${USERS_API_BASE}/${user.cod_us}/image`
+      : null;
 
   return (
     <section className={styles.profilePage}>
@@ -1774,44 +1900,73 @@ export default function UserProfile({
             {/* Información Adicional (Expandible) */}
             {showMoreInfo && (
               <div className={styles.additionalInfo}>
-                <h3 className={styles.infoSectionTitle}>Información Personal:</h3>
+                <h3 className={styles.infoSectionTitle}>
+                  {user?.nom_com_org ? "Información de la Organización:" : "Información Personal:"}
+                </h3>
 
                 <div className={styles.infoGrid}>
                   <div className={styles.infoItem}>
                     <i className="bi bi-card-text" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
                     <div className={styles.infoContent}>
-                      <span className={styles.infoLabel}>Cédula de Identidad:</span>
-                      <span className={styles.infoValue}>{user?.ci_us ?? "—"}</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.infoItem}>
-                    <i className="bi bi-calendar-check" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
-                    <div className={styles.infoContent}>
-                      <span className={styles.infoLabel}>Fecha de Nacimiento:</span>
+                      <span className={styles.infoLabel}>
+                        {user?.nom_com_org ? "CIF:" : "Cédula de Identidad:"}
+                      </span>
                       <span className={styles.infoValue}>
-                        {user?.fecha_nac_us
-                          ? new Date(user.fecha_nac_us).toLocaleDateString('es-ES', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                          })
-                          : "—"}
+                        {user?.nom_com_org ? user.cif : (user?.ci_us ?? "—")}
                       </span>
                     </div>
                   </div>
 
-                  <div className={styles.infoItem}>
-                    <i className="bi bi-gender-ambiguous" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
-                    <div className={styles.infoContent}>
-                      <span className={styles.infoLabel}>Género/Sexo:</span>
-                      <span className={styles.infoValue}>
-                        {user?.genero_us
-                          ? (user.genero_us === 'M' ? 'Masculino' : user.genero_us === 'F' ? 'Femenino' : user.genero_us)
-                          : "—"}
-                      </span>
-                    </div>
-                  </div>
+                  {!user?.nom_com_org && (
+                    <>
+                      <div className={styles.infoItem}>
+                        <i className="bi bi-calendar-check" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                        <div className={styles.infoContent}>
+                          <span className={styles.infoLabel}>Fecha de Nacimiento:</span>
+                          <span className={styles.infoValue}>
+                            {user?.fecha_nac_us
+                              ? new Date(user.fecha_nac_us).toLocaleDateString('es-ES', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                              })
+                              : "—"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className={styles.infoItem}>
+                        <i className="bi bi-gender-ambiguous" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                        <div className={styles.infoContent}>
+                          <span className={styles.infoLabel}>Género/Sexo:</span>
+                          <span className={styles.infoValue}>
+                            {user?.genero_us
+                              ? (user.genero_us === 'M' ? 'Masculino' : user.genero_us === 'F' ? 'Femenino' : user.genero_us)
+                              : "—"}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {user?.nom_com_org && (
+                    <>
+                      <div className={styles.infoItem}>
+                        <i className="bi bi-building" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                        <div className={styles.infoContent}>
+                          <span className={styles.infoLabel}>Razón Social:</span>
+                          <span className={styles.infoValue}>{user.nom_leg_org ?? "—"}</span>
+                        </div>
+                      </div>
+                      <div className={styles.infoItem}>
+                        <i className="bi bi-briefcase" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
+                        <div className={styles.infoContent}>
+                          <span className={styles.infoLabel}>Rubro:</span>
+                          <span className={styles.infoValue}>{user.rubro_org ?? "—"}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   <div className={styles.infoItem}>
                     <i className="bi bi-check-circle" style={{ fontSize: '20px', color: '#1fb7a1' }}></i>
@@ -2023,6 +2178,7 @@ export default function UserProfile({
             setModalTitle={setModalTitle}
             setModalMessage={setModalMessage}
             setShowSuccessModal={setShowSuccessModal}
+            userRole={effectiveRole}
           />
         )}
 
