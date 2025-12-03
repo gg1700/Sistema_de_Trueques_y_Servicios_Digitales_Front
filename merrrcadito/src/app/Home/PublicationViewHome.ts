@@ -80,7 +80,7 @@ export const usePublicationsProds = () => {
 
         // Seleccionar solo publicaciones aleatorias
         const randomPublications = getRandomElements(filteredPublications, MAX_RANDOM_PUBLICATIONS);
-        setPublications(randomPublications);
+        setPublications(randomPublications as Publication[]);
       } catch (err) {
         console.error('Error cargando publicaciones:', err);
       }
@@ -138,7 +138,7 @@ export const usePublicationsServs = () => {
 
         // Seleccionar solo publicaciones aleatorias
         const randomPublications = getRandomElements(filteredPublications, MAX_RANDOM_PUBLICATIONS);
-        setPublications(randomPublications);
+        setPublications(randomPublications as Publication[]);
       } catch (err) {
         console.error('Error cargando publicaciones de servicios:', err);
       }

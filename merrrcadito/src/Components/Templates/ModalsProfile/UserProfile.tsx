@@ -888,7 +888,7 @@ export default function UserProfile({
         const mappedOffers: Offer[] = jsonPosts.data
           .filter((p: any) => p.cod_us === codUs)
           .map((p: any) => {
-            let descriptionLines = [];
+            const descriptionLines = [];
 
             // Descripción del producto
             const productDesc = p.desc_prod ?? "";
@@ -945,7 +945,7 @@ export default function UserProfile({
           // Si cod_us_1 es null, es una oferta abierta (sin propuesta aún)
           const isOpenOffer = ex.cod_us_1 === null;
 
-          let descriptionLines = [];
+          const descriptionLines = [];
 
           if (isOpenOffer) {
             descriptionLines.push('📝 Oferta abierta de intercambio');
@@ -984,7 +984,7 @@ export default function UserProfile({
           const imageUrl = ev.tiene_banner ? `${API_BASE_URL}/events/${ev.cod_evento}/image` : null;
 
           // Construir descripción con líneas separadas
-          let descriptionLines = [];
+          const descriptionLines = [];
 
           if (ev.descripcion_evento) {
             descriptionLines.push(`📝 ${ev.descripcion_evento.length > 50 ? ev.descripcion_evento.slice(0, 50) + '...' : ev.descripcion_evento}`);

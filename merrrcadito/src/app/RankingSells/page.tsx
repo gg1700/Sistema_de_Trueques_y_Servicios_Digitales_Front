@@ -51,6 +51,7 @@ export default function RankingSells() {
                     nombreUsuario={sell.nombreUsuario}
                     points={sell.points}
                     puesto={sell.puesto}
+                    label="Ventas"
                 />
             ))}
         </AppLayout>

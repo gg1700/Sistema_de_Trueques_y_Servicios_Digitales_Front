@@ -71,7 +71,7 @@ export default function UpdateSubcategory({
         cod_cat: Number(form.seccion),
         nom_subcat_prod: form.nombre,
         descr_subcat_prod: form.descripcion,
-        imagen_representativa: form.imagen
+        imagen_representativa: form.imagen || undefined
       };
 
       console.log("Actualizando subcategoría:", updateData);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import AppLayout from '@/Components/Templates/AppLayout/AppLayout';
 import UserProfile from '@/Components/Templates/ModalsProfile/UserProfile';
 
@@ -20,7 +20,9 @@ export default function PerfilPage() {
       pageSubtitle="Información de tu cuenta"
       userRole={userRole}
     >
-      <UserProfile />
+      <Suspense fallback={<div>Cargando perfil...</div>}>
+        <UserProfile />
+      </Suspense>
     </AppLayout>
   );
 }

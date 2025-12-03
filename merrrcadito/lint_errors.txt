@@ -1,0 +1,215 @@
+
+> merrrcadito@0.1.0 lint
+> eslint
+
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/reportService.remote.ts
+  40:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Atoms/Input/FileInput/FileInput.tsx
+  78:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Molecules/HeaderPage/HeaderPage.tsx
+  2:10  warning  'useState' is defined but never used   @typescript-eslint/no-unused-vars
+  2:20  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Molecules/NotificationDropdown/NotificationDropdown.tsx
+  39:8  warning  React Hook useEffect has a missing dependency: 'fetchNotifications'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Molecules/PromotionCard/PromotionCard.tsx
+  79:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Molecules/PublicationCard/PublicationCard.tsx
+   1:10  warning  'ButtonForm' is defined but never used                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  45:11  warning  'cod_publication' is assigned a value but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  50:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Molecules/PublicationMore/PublicationProducto.tsx
+    7:7   warning  'USERS_API_BASE' is assigned a value but never used                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  198:37  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Molecules/RankingCard/RankingCard.tsx
+  19:5   warning  'imagenUsuario' is defined but never used                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  42:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  49:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Molecules/SeccionCard/SeccionCard.tsx
+  54:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  68:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Organisms/Forms/CreatePromotionForm/CreatePromotionForm.tsx
+  285:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Organisms/Forms/CreateTokenPackageForm/CreateTokenPackageForm.tsx
+  209:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Organisms/Forms/FormProfile/FormProfile.tsx
+  3:20  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Organisms/Forms/FormPublication/FormPublicationService.tsx
+   7:18  warning  'setForm' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  16:12  warning  'error' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  16:19  warning  'setError' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Organisms/ModalManagement/modalManagement.tsx
+  3:42  warning  'onCancelar' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Organisms/Publication/Publication.tsx
+  190:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Organisms/ViewSeccionComponent/ViewSeccion.tsx
+  32:5  warning  'triggerText' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/AdminLayout/AdminLayout.tsx
+   6:10  warning  'NavBar' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   8:8   warning  'Link' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  39:9   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/AppLayout/AppLayout.tsx
+   6:10  warning  'NavBar' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   8:8   warning  'Link' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  41:9   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ExchangesView/ExchangesView.tsx
+  21:8  warning  React Hook useEffect has a missing dependency: 'fetchExchanges'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsProfile/EventsSection.tsx
+   41:8   warning  React Hook useEffect has a missing dependency: 'fetchEvents'. Either include it or remove the dependency array                                                                                                                                                                           react-hooks/exhaustive-deps
+  172:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  180:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsProfile/ExploreSection.tsx
+   35:8   warning  React Hook useEffect has a missing dependency: 'fetchPublications'. Either include it or remove the dependency array                                                                                                                                                                     react-hooks/exhaustive-deps
+  200:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  220:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsProfile/FileInput.tsx
+  80:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsProfile/LikesSection.tsx
+   37:8   warning  React Hook useEffect has a missing dependency: 'fetchLikes'. Either include it or remove the dependency array                                                                                                                                                                            react-hooks/exhaustive-deps
+  135:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsProfile/OrganizationProfile.tsx
+    3:31  warning  'useRef' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+    7:10  warning  'getNavItems' is defined but never used                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   77:8   warning  React Hook useEffect has a missing dependency: 'fetchOrgData'. Either include it or remove the dependency array                                                                                                                                                                          react-hooks/exhaustive-deps
+  209:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  255:37  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsProfile/ServiceRegistrationForm.tsx
+    5:8   warning  'ProfileInput' is defined but never used      @typescript-eslint/no-unused-vars
+   42:12  warning  'success' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  116:26  warning  'e' is defined but never used                 @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsProfile/UserProfile.tsx
+     4:8   warning  'Link' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+    16:8   warning  'SideBar' is defined but never used                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+    50:7   warning  'EVENTS_API_BASE' is assigned a value but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+    54:7   warning  'EXCHANGES_API_BASE' is assigned a value but never used                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   217:3   warning  'serviceForm' is defined but never used                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   219:3   warning  'onChangeServiceImage' is defined but never used                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   221:3   warning  'handleServiceChange' is defined but never used                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   223:3   warning  'handleSubmitService' is defined but never used                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   224:3   warning  'handleCancelProduct' is defined but never used                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   225:3   warning  'handleCancelService' is defined but never used                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   235:3   warning  'handleCancelExchange' is defined but never used                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   240:3   warning  'handleCancelEvent' is defined but never used                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   242:3   warning  'userProducts' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   666:10  warning  'modalTitle' is assigned a value but never used                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   667:10  warning  'modalMessage' is assigned a value but never used                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   743:9   warning  'pathname' is assigned a value but never used                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   745:9   warning  'router' is assigned a value but never used                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   779:9   warning  'navList' is assigned a value but never used                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   891:17  error    'descriptionLines' is never reassigned. Use 'const' instead                                                                                                                                                                                                                              prefer-const
+   944:78  warning  'index' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   948:15  error    'descriptionLines' is never reassigned. Use 'const' instead                                                                                                                                                                                                                              prefer-const
+   987:15  error    'descriptionLines' is never reassigned. Use 'const' instead                                                                                                                                                                                                                              prefer-const
+  1581:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  1993:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsRegistration/LogInModal.tsx
+  5:8  warning  'ButtonCancel' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsRegistration/LoginLandingModal.tsx
+  26:9  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsRegistration/SignInOrganizationModal.tsx
+  12:8  warning  'ButtonCancel' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/ModalsRegistration/SignInUserModal.tsx
+  13:8  warning  'ButtonCancel' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/UserLayout/UserLayout.tsx
+  3:10  warning  'NavBar' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/Components/Templates/WalletView/WalletView.tsx
+    5:10  warning  'useSearchParams' is defined but never used                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+    7:8   warning  'Link' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   79:7   warning  'PUBLICATIONS_API_BASE' is assigned a value but never used                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  240:25  error    'enrichedTrans' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                 prefer-const
+  466:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/Home/page.tsx
+   19:11  warning  'router' is assigned a value but never used                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   95:11  warning  'handleConfirmProposal' is assigned a value but never used                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  118:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  220:8   warning  React Hook useEffect has a missing dependency: 'checkEnrollments'. Either include it or remove the dependency array                                                                                                                                                                      react-hooks/exhaustive-deps
+  361:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  827:57  error    React Hook "React.useState" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function                                                                                                                                 react-hooks/rules-of-hooks
+  834:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/Profile/UpdateProfile/UpdateProfile.tsx
+  4:12  warning  'UserDataProps' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/Profile/UpdateProfile/page.tsx
+  3:10  warning  'FormProfile' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/admin/GestionDeSecciones/GestionDeCategorias/DeleteCategory/deleteCategory.tsx
+  21:10  warning  'isLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/admin/GestionDeSecciones/GestionDeCategorias/ViewCategories/viewCategories.tsx
+  3:8  warning  'UpdateCategory' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/admin/GestionDeSecciones/GestionDeSubcategorias/DeleteSubcategory/deleteSubcategory.tsx
+  19:10  warning  'isLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/admin/GestionDeSecciones/GestionDeSubcategorias/NewSubcategory/newSubcategory.tsx
+  17:9  warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/admin/GestionDeSecciones/GestionDeSubcategorias/ViewSubcategories/ViewSubcategories.tsx
+  4:8  warning  'UpdateSubcategory' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/admin/GestionTokens/NewTokenPackage/page.tsx
+  122:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/admin/Transactions/page.tsx
+  8:38  warning  'codUs' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/eventos/page.tsx
+  279:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/intercambios/page.tsx
+   26:22  warning  'setViewMode' is assigned a value but never used                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  122:37  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/promociones/page.tsx
+   8:8  warning  'Link' is defined but never used             @typescript-eslint/no-unused-vars
+  27:9  warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/app/tokens/page.tsx
+   26:35  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render                                                                                                                                                              react-hooks/rules-of-hooks
+   97:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  451:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  495:10  warning  'isProcessing' is assigned a value but never used                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  495:24  warning  'setIsProcessing' is assigned a value but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/services/reportService.ts
+  40:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/jhosua/Sistema_de_Trueques_y_Servicios_Digitales_Front/merrrcadito/src/services/subcategoryService.ts
+  2:13  warning  'dotenv' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 111 problems (6 errors, 105 warnings)
+  4 errors and 0 warnings potentially fixable with the `--fix` option.
+

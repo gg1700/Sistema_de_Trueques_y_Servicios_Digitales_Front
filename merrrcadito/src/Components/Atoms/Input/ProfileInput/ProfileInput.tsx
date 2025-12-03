@@ -1,13 +1,13 @@
 import styles from './ProfileInput.module.css'
 
 interface ProfileInputProps {
-    type: 'text' | 'date'; 
-    name: string;                            
-    value: string | number;                         
+    type: 'text' | 'date' | 'datetime-local' | 'number';
+    name: string;
+    value: string | number;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;//Ver si se mantiene 
-    placeholder?: string;                    
-    disabled?: boolean;                    
-    required?: boolean;                      
+    placeholder?: string;
+    disabled?: boolean;
+    required?: boolean;
 }
 
 export default function ProfileInput({
@@ -19,16 +19,16 @@ export default function ProfileInput({
     disabled = false,
     required = false
 }: ProfileInputProps) {
-    return(
-        <input 
-           type={type}
-           name={name}
-           value={value}
-           onChange={onChange}
-           placeholder={placeholder}
-           disabled={disabled}
-           required={required}
-           className={styles.profileInput}
+    return (
+        <input
+            type={type}
+            name={name}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            disabled={disabled}
+            required={required}
+            className={styles.profileInput}
         />
     );
 }

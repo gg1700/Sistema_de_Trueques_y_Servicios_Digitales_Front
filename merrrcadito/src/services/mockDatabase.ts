@@ -33,7 +33,7 @@ export interface Potenciador {
 
 // 1. La billetera del usuario (EL ESTADO QUE CAMBIARÁ)
 // La exportamos con 'let' para poder modificarla desde otros archivos
-export let mockBilletera: Billetera = {
+export const mockBilletera: Billetera = {
   cod_bill: 1,
   cod_us: 1,
   saldo_actual: 50, // El usuario empieza con 50 Tokens

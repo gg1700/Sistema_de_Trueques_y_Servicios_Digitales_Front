@@ -67,6 +67,7 @@ interface PendingCollection {
     desc_trans: string;
     nombre_origen: string;
     handle_origen: string;
+    nombre_item?: string;
 }
 
 const WALLET_API_BASE = "http://localhost:5000/api/wallets";
@@ -237,7 +238,7 @@ export default function WalletView() {
             // Enriquecer transacciones con títulos reales y vendedores
             const enrichedTransactions = await Promise.all(
                 transactionsList.map(async (trans) => {
-                    let enrichedTrans = { ...trans };
+                    const enrichedTrans = { ...trans };
 
                     // Obtener título real según el tipo de transacción
                     if (trans.cod_pub) {
@@ -615,7 +616,7 @@ export default function WalletView() {
                                         <div key={collection.cod_escrow} className={styles.transactionCard}>
                                             <div className={styles.cardHeader}>
                                                 <h3 className={styles.transactionTitle}>
-                                                    Cobro Pendiente: {collection.desc_trans || "Transacción"}
+                                                    Cobro Pendiente: {collection.nombre_item || collection.desc_trans || "Transacción"}
                                                 </h3>
                                             </div>
 

@@ -51,7 +51,7 @@ export default function UpdateCategory({
       const updateData = {
         nom_cat: form.nombre,
         descr_cat: form.descripcion,
-        imagen_repr: form.imagen,
+        imagen_repr: form.imagen || undefined,
         tipo_cat: form.seccion
       };
 

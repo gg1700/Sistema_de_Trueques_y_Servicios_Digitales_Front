@@ -7,6 +7,7 @@ export interface NavItem {
 export const navItems: {
   common: NavItem[];
   admin: NavItem[];
+  entrepreneur: NavItem[];
 } = {
   common: [
     { name: 'Dashboard', route: '/Home', icon: 'dashboard' },
@@ -24,12 +25,18 @@ export const navItems: {
     { name: 'Gestión de la Tienda', route: '/admin/usuarios', icon: 'stores' },
     { name: 'Reportes', route: '/admin/Reportes', icon: 'reports' },
     { name: 'Promociones', route: '/promociones', icon: 'promotions' },
+  ],
+  entrepreneur: [
+    { name: 'Mis Reportes', route: '/mis-reportes', icon: 'reports' },
   ]
 };
 
-export const getNavItems = (role: 'admin' | 'user'): NavItem[] => {
+export const getNavItems = (role: 'admin' | 'user' | 'entrepreneur'): NavItem[] => {
   if (role === 'admin') {
     return [...navItems.common, ...navItems.admin];
+  }
+  if (role === 'entrepreneur') {
+    return [...navItems.common, ...navItems.entrepreneur];
   }
   return navItems.common;
 };

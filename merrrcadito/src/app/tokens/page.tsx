@@ -21,9 +21,10 @@ const PurchaseConfirmationModal = ({
   onCancel: () => void;
   isProcessing: boolean;
 }) => {
+  const [imgError, setImgError] = useState(false);
+
   if (!paquete) return null;
 
-  const [imgError, setImgError] = useState(false);
   const imageUrl = `${API_URL}/token_package/${paquete.id}/image`;
 
   return (

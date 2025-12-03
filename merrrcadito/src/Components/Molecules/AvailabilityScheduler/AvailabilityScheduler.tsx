@@ -96,13 +96,13 @@ export default function AvailabilityScheduler({ value, onChange, error }: Props)
         dayId: number,
         slotIndex: number,
         field: "start_time" | "end_time",
-        value: string
+        newValue: string
     ) => {
         const daySchedule = getDaySchedule(dayId);
         if (!daySchedule) return;
 
         const newSlots = daySchedule.slots.map((slot, i) =>
-            i === slotIndex ? { ...slot, [field]: value } : slot
+            i === slotIndex ? { ...slot, [field]: newValue } : slot
         );
 
         onChange(

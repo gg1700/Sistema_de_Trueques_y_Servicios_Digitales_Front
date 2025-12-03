@@ -6,7 +6,9 @@ import AppLayout from "@/Components/Templates/AppLayout/AppLayout";
 import { usePublicationsProds, usePublicationsServs } from "../Home/PublicationViewHome";
 import styles from './page.module.css';
 
-const ExplorarPage = () => {
+import { Suspense } from 'react';
+
+const ExplorarContent = () => {
     const searchParams = useSearchParams();
     const sectionParam = searchParams.get('section');
 
@@ -114,6 +116,14 @@ const ExplorarPage = () => {
                 </div>
             </div>
         </AppLayout>
+    );
+};
+
+const ExplorarPage = () => {
+    return (
+        <Suspense fallback={<div>Cargando...</div>}>
+            <ExplorarContent />
+        </Suspense>
     );
 };
 

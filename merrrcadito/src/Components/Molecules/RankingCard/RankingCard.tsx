@@ -12,7 +12,8 @@ interface RankingCardProps {
     handlename: string,
     nombreUsuario: string,
     points: number | string,
-    puesto: number
+    puesto: number,
+    label?: string
 }
 export default function RankingCard({
     cod_us,
@@ -20,7 +21,8 @@ export default function RankingCard({
     handlename,
     nombreUsuario,
     points,
-    puesto
+    puesto,
+    label = "Puntos"
 }: RankingCardProps) {
     const [imageError, setImageError] = useState(false);
 
@@ -58,7 +60,7 @@ export default function RankingCard({
                 <h4 className={styles.userName}>{nombreUsuario}</h4>
             </div>
             <div className={styles.pointsContainer}>
-                <span className={styles.pointsLabel}>Puntos</span>
+                <span className={styles.pointsLabel}>{label}</span>
                 <span className={styles.point}>{points}</span>
             </div>
         </div>
