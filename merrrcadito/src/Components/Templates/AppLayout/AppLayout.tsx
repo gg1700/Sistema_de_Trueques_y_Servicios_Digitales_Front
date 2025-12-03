@@ -27,7 +27,15 @@ export default function AppLayout({
 
   // 🔹 Usar navegación de admin si el rol es admin
   const navRole = userRole === 'admin' ? 'admin' : 'user';
-  const navItems = getNavItems(navRole);
+  let navItems = getNavItems(navRole);
+
+  // 🔹 Filtrar "Intercambios" para organizaciones
+  if (typeof window !== 'undefined') {
+    const accountType = localStorage.getItem('accountType');
+    if (accountType === 'organization') {
+      navItems = navItems.filter(item => item.route !== '/intercambios');
+    }
+  }
 
   const router = useRouter();
 

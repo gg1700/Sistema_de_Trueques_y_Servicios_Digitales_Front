@@ -277,53 +277,65 @@ function PublishSection({
     if (typeof window !== "undefined") {
       const type = localStorage.getItem("accountType");
       setAccountType(type);
-
-      // Si es organización, forzar la pestaña de eventos
-      if (type === "organization" && publishType !== "event") {
-        setPublishType("event");
-      }
     }
-  }, [publishType, setPublishType]);
+  }, []); // Solo al montar, sin dependencias de publishType
 
   const isOrg = accountType === "organization";
   const isRegularUser = userRole === "user"; // Usuario común (cod_rol = 1)
-  const canCreateEvents = isOrg || userRole === "entrepreneur"; // ⚠️ Admin NO puede crear eventos (por ahora)
+  const canCreateEvents = isOrg; // Solo organizaciones pueden crear eventos
 
   return (
     <div className={styles.publishSection}>
       <div className={styles.publishTabs}>
-        {!isOrg && (
+        {/* Usuario común solo puede intercambiar */}
+        {isRegularUser && (
+          <button
+            type="button"
+            className={`${styles.publishTab} ${publishType === "exchange" ? styles.publishTabActive : ""}`}
+            onClick={() => setPublishType("exchange")}
+          >
+            <i className="bi bi-arrow-left-right"></i> Intercambio
+          </button>
+        )}
+
+        {/* Organizaciones, emprendedores y admin pueden publicar producto/servicio */}
+        {!isRegularUser && (
           <>
             <button
               type="button"
               className={`${styles.publishTab} ${publishType === "product" ? styles.publishTabActive : ""}`}
               onClick={() => setPublishType("product")}
             >
-              Producto
+              <i className="bi bi-box-seam"></i> Producto
             </button>
             <button
               type="button"
               className={`${styles.publishTab} ${publishType === "service" ? styles.publishTabActive : ""}`}
               onClick={() => setPublishType("service")}
             >
-              Servicio
+              <i className="bi bi-gear"></i> Servicio
             </button>
-            <button
-              type="button"
-              className={`${styles.publishTab} ${publishType === "exchange" ? styles.publishTabActive : ""}`}
-              onClick={() => setPublishType("exchange")}
-            >
-              Intercambio
-            </button>
+            {/* Emprendedores y admin también pueden intercambiar */}
+            {!isOrg && (
+              <button
+                type="button"
+                className={`${styles.publishTab} ${publishType === "exchange" ? styles.publishTabActive : ""}`}
+                onClick={() => setPublishType("exchange")}
+              >
+                <i className="bi bi-arrow-left-right"></i> Intercambio
+              </button>
+            )}
           </>
         )}
+
+        {/* Organizaciones y emprendedores pueden crear eventos */}
         {canCreateEvents && (
           <button
             type="button"
             className={`${styles.publishTab} ${publishType === "event" ? styles.publishTabActive : ""}`}
             onClick={() => setPublishType("event")}
           >
-            Evento
+            <i className="bi bi-calendar-event"></i> Evento
           </button>
         )}
       </div>
@@ -788,10 +800,32 @@ export default function UserProfile({
 }: UserProfileProps) {
   const [activeTab, setActiveTab] = useState<Tab>("offers");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState("Â¡Publicación Exitosa!");
+  const [modalTitle, setModalTitle] = useState("¡Publicación Exitosa!");
   const [modalMessage, setModalMessage] = useState("Tu producto ha sido publicado correctamente y ya está visible en el mercado.");
+
   const [publishType, setPublishType] = useState<PublishType>("product");
   const [showMoreInfo, setShowMoreInfo] = useState(false); // Estado para expandir/colapsar
+
+  // 🔹 Establecer publishType correcto al montar según el rol
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const accountType = localStorage.getItem('accountType');
+      const storedRole = localStorage.getItem('currentUserRole');
+
+      // Usuario común solo puede intercambiar
+      if (storedRole === 'user' && accountType !== 'organization') {
+        setPublishType('exchange');
+      }
+      // Organización empieza en producto (tienen producto, servicio, evento)
+      else if (accountType === 'organization') {
+        setPublishType('product');
+      }
+      // Admin y emprendedor empiezan en producto
+      else {
+        setPublishType('product');
+      }
+    }
+  }, []); // Solo al montar
 
   const [productForm, setProductForm] = useState<ProductFormState>({
     name: "",
