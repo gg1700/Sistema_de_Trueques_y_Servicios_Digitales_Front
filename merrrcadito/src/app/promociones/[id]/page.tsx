@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import UserLayout from '@/Components/Templates/UserLayout/UserLayout'
+import AppLayout from '@/Components/Templates/AppLayout/AppLayout'
 import Link from 'next/link'
 
 interface Product {
@@ -23,11 +23,19 @@ export default function PromotionDetailsPage() {
     const router = useRouter()
     const promotionId = params.id as string
 
+    const [userRole, setUserRole] = useState<'admin' | 'user'>('user')
     const [products, setProducts] = useState<Product[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [promotionTitle, setPromotionTitle] = useState('')
     const [purchasingId, setPurchasingId] = useState<number | null>(null)
+
+    useEffect(() => {
+        const storedRole = localStorage.getItem('currentUserRole')
+        if (storedRole === 'admin' || storedRole === 'user') {
+            setUserRole(storedRole)
+        }
+    }, [])
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -107,32 +115,23 @@ export default function PromotionDetailsPage() {
     }
 
     return (
-        <UserLayout
+        <AppLayout
             pageTitle={promotionTitle || 'Productos en Promoción'}
             pageSubtitle="Productos con descuento especial"
+            userRole={userRole}
+            actionButton={
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Volver
+                </button>
+            }
         >
-            <div className="p-6 md:p-8">
-                {/* Header con botón volver */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => router.back()}
-                            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                            Volver
-                        </button>
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-800">{promotionTitle}</h1>
-                            <p className="text-gray-600 mt-1">
-                                {products.length} {products.length === 1 ? 'producto' : 'productos'} en promoción
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
+            <div className="pb-8">
                 {/* Loading state */}
                 {loading ? (
                     <div className="flex items-center justify-center min-h-[400px]">
@@ -260,6 +259,6 @@ export default function PromotionDetailsPage() {
                     </div>
                 )}
             </div>
-        </UserLayout>
+        </AppLayout>
     )
 }

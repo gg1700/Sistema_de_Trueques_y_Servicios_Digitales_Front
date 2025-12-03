@@ -239,6 +239,66 @@ export function useBoostersMonetizationReport(mes: string, anio: string) {
     return data;
 }
 
+// REPORTE 11: CRECIMIENTO DE USUARIOS
+export function useUserGrowthReport(anio: string) {
+    const [data, setData] = useState<any[]>([]);
+
+    useEffect(() => {
+        async function loadReport() {
+            try {
+                const response = await ReportService.get_user_growth_report(anio);
+                if (response.success) {
+                    setData(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching user growth report", error);
+            }
+        }
+        if (anio) loadReport();
+    }, [anio]);
+    return data;
+}
+
+// REPORTE 12: IMPACTO AMBIENTAL EN EL TIEMPO
+export function useImpactGrowthReport(anio: string) {
+    const [data, setData] = useState<any[]>([]);
+
+    useEffect(() => {
+        async function loadReport() {
+            try {
+                const response = await ReportService.get_impact_growth_report(anio);
+                if (response.success) {
+                    setData(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching impact growth report", error);
+            }
+        }
+        if (anio) loadReport();
+    }, [anio]);
+    return data;
+}
+
+// REPORTE 13: VOLUMEN DE TRANSACCIONES
+export function useTransactionVolumeReport(anio: string) {
+    const [data, setData] = useState<any[]>([]);
+
+    useEffect(() => {
+        async function loadReport() {
+            try {
+                const response = await ReportService.get_transaction_volume_report(anio);
+                if (response.success) {
+                    setData(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching transaction volume report", error);
+            }
+        }
+        if (anio) loadReport();
+    }, [anio]);
+    return data;
+}
+
 // Exportar todos los hooks
 export const Reports = {
     useCategoryProdsReport,
@@ -253,5 +313,8 @@ export const Reports = {
     useExchangesVsPurchasesReport,
     useAchievementsGamificationReport,
     useRatingsSatisfactionReport,
-    useBoostersMonetizationReport
+    useBoostersMonetizationReport,
+    useUserGrowthReport,
+    useImpactGrowthReport,
+    useTransactionVolumeReport
 }

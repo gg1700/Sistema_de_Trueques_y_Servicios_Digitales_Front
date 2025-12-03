@@ -15,13 +15,15 @@ interface LayoutProps {
   pageTitle: string;
   pageSubtitle: string;
   userRole: 'admin' | 'user';
+  actionButton?: React.ReactNode;
 }
 
 export default function AppLayout({
   children,
   pageTitle,
   pageSubtitle,
-  userRole = 'user'
+  userRole = 'user',
+  actionButton
 }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -78,8 +80,15 @@ export default function AppLayout({
 
       {/* Sub Header */}
       <div className={styles.subHeader}>
-        <h2 className={styles.pageTitle}>{pageTitle}</h2>
-        <p className={styles.pageSubtitle}>{pageSubtitle}</p>
+        <div>
+          <h2 className={styles.pageTitle}>{pageTitle}</h2>
+          <p className={styles.pageSubtitle}>{pageSubtitle}</p>
+        </div>
+        {actionButton && (
+          <div className={styles.headerAction}>
+            {actionButton}
+          </div>
+        )}
       </div>
 
       {/* Sidebar Overlay */}

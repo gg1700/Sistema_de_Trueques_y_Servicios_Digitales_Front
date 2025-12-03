@@ -15,14 +15,14 @@ export const navItems: {
     { name: 'Ranking Emprendedores', route: '/RankingSells', icon: 'ranking' },
     { name: 'Intercambios', route: '/intercambios', icon: 'exchanges' },
     { name: 'Eventos', route: '/eventos', icon: 'events' },
-    { name: 'Explorar Mas', route: '/Explorar', icon: 'explore' }
+    { name: 'Explorar Mas', route: '/Explorar', icon: 'explore' },
+    { name: 'Promociones', route: '/promociones', icon: 'promotions' },
+    { name: 'Tienda de Tokens', route: '/tokens', icon: 'stores' }
   ],
   admin: [
     { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias', icon: 'categories' },
     { name: 'Gestión de Subcategorias', route: '/admin/GestionDeSecciones/GestionDeSubcategorias', icon: 'subcategories' },
-    { name: 'Gestión de Tokens', route: '/tokens', icon: 'stores' },
     { name: 'Reportes', route: '/admin/Reportes', icon: 'reports' },
-    { name: 'Promociones', route: '/promociones', icon: 'promotions' },
   ]
 };
 

@@ -67,22 +67,16 @@ export default function PromocionesPage() {
       pageTitle="Promociones"
       pageSubtitle="¡Aprovecha los descuentos y ofertas especiales!"
       userRole={userRole}
+      actionButton={
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md text-sm"
+        >
+          + Crear Promoción
+        </button>
+      }
     >
-      <div className="p-6 md:p-8">
-        {/* Header con botón de crear */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Promociones Activas</h1>
-            <p className="text-gray-600 mt-2">Descubre las mejores ofertas disponibles</p>
-          </div>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
-          >
-            + Crear Promoción
-          </button>
-        </div>
-
+      <div className="pb-8">
         {/* Loading state */}
         {loading ? (
           <div className="flex items-center justify-center min-h-[400px]">

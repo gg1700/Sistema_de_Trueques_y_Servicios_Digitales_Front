@@ -218,7 +218,7 @@ export const ReportService = {
     get_boosters_monetization_report: async (mes: string, anio: string) => {
         try {
             const response = await axios.get(
-                `${API_BASE_URL}/reports/boosters_monetization`,
+                `${API_BASE_URL}/reports/boosters-monetization`,
                 { params: { mes, anio } }
             );
             return response.data;
@@ -237,6 +237,48 @@ export const ReportService = {
             return response.data;
         } catch (error) {
             console.error("Error al obtener impacto ambiental del usuario");
+            throw error;
+        }
+    },
+
+    // REPORTE 11: Crecimiento de Usuarios
+    get_user_growth_report: async (anio: string) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/reports/user-growth`,
+                { params: { anio } }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error al obtener reporte de crecimiento de usuarios");
+            throw error;
+        }
+    },
+
+    // REPORTE 12: Impacto Ambiental en el Tiempo
+    get_impact_growth_report: async (anio: string) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/reports/impact-growth`,
+                { params: { anio } }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error al obtener reporte de impacto ambiental en el tiempo");
+            throw error;
+        }
+    },
+
+    // REPORTE 13: Volumen de Transacciones
+    get_transaction_volume_report: async (anio: string) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/reports/transaction-volume`,
+                { params: { anio } }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error al obtener reporte de volumen de transacciones");
             throw error;
         }
     }

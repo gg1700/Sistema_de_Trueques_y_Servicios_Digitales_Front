@@ -1,273 +1,307 @@
 'use client'
 import { useState } from 'react';
-import { AccordionForm } from '@/Components/Organisms';
 import BarDiagram from '@/Components/Diagrams/BarDiagram';
+import LineDiagram from '@/Components/Diagrams/LineDiagram';
 import styles from './reportsAdmin.module.css'
 import {
-    useCategoryProdsReport,
-    useActivityWeek,
-    useActionsUsers,
-    useWalletFlowReport,
-    usePromotionPerformanceReport,
-    useEventsOrganizationReport,
-    useTopProductsServicesReport,
-    useEnvironmentalImpactReport,
-    useUserBehaviorReport,
-    useExchangesVsPurchasesReport,
-    useAchievementsGamificationReport,
-    useRatingsSatisfactionReport,
-    useBoostersMonetizationReport
-} from './ReportsAdmins'
+    Reports
+} from './ReportsAdmins';
 
 export default function ReportsAdmin() {
-    const [openIndex, setOpenIndex] = useState<number | null>(null);
-    const [currentMonth, setCurrentMonth] = useState("11");
-    const [currentYear, setCurrentYear] = useState("2025");
+    const [currentMonth, setCurrentMonth] = useState<string>(new Date().getMonth() + 1 + "");
+    const [currentYear, setCurrentYear] = useState<string>(new Date().getFullYear() + "");
 
-    // Reportes existentes
-    const reporteUno = useCategoryProdsReport(currentMonth);
-    const safeReporteUno = Array.isArray(reporteUno) ? reporteUno : [];
+    // Hooks para reportes existentes
+    const categoryProdsData = Reports.useCategoryProdsReport(currentMonth);
+    const activityWeekData = Reports.useActivityWeek();
+    const actionsUsersData = Reports.useActionsUsers(currentMonth);
+    const walletFlowData = Reports.useWalletFlowReport();
+    const promotionPerformanceData = Reports.usePromotionPerformanceReport("2024-01-01", "2024-12-31");
+    const eventsOrganizationData = Reports.useEventsOrganizationReport(currentMonth, currentYear);
+    const topProductsServicesData = Reports.useTopProductsServicesReport(currentMonth, currentYear);
+    const environmentalImpactData = Reports.useEnvironmentalImpactReport(currentMonth, currentYear);
+    const userBehaviorData = Reports.useUserBehaviorReport(currentMonth, currentYear);
+    const exchangesVsPurchasesData = Reports.useExchangesVsPurchasesReport(currentMonth, currentYear);
+    const achievementsGamificationData = Reports.useAchievementsGamificationReport();
+    const ratingsSatisfactionData = Reports.useRatingsSatisfactionReport(currentMonth, currentYear);
+    const boostersMonetizationData = Reports.useBoostersMonetizationReport(currentMonth, currentYear);
 
-    // Filtrar categorías que tienen al menos una compra o intercambio
-    const filteredReporteUno = safeReporteUno.filter((dato: any) =>
-        (dato.compras > 0 || dato.intercambios > 0)
-    );
+    // Nuevos reportes de series de tiempo
+    const userGrowthData = Reports.useUserGrowthReport(currentYear);
+    const impactGrowthData = Reports.useImpactGrowthReport(currentYear);
+    const transactionVolumeData = Reports.useTransactionVolumeReport(currentYear);
 
-    const categoriasData = {
-        labels: filteredReporteUno.map((dato: any) => dato.categoria),
-        datasets: [{
-            label: 'Compras',
-            data: filteredReporteUno.map((dato: any) => dato.compras),
-            backgroundColor: 'rgba(255, 99, 132, 0.8)',
-        }, {
-            label: 'Intercambios',
-            data: filteredReporteUno.map((dato: any) => dato.intercambios),
-            backgroundColor: 'rgba(54, 162, 235, 0.8)',
-        }]
+    // Configuración de datos para los gráficos de línea
+    const userGrowthChartData = {
+        labels: userGrowthData?.map((d: any) => {
+            const date = new Date();
+            date.setDate(1);
+            date.setMonth(d.mes - 1);
+            return date.toLocaleString('es-ES', { month: 'short' });
+        }) || [],
+        datasets: [
+            {
+                label: 'Nuevos Usuarios',
+                data: userGrowthData?.map((d: any) => d.cantidad) || [],
+                borderColor: '#4299e1',
+                backgroundColor: 'rgba(66, 153, 225, 0.2)',
+                fill: true,
+            }
+        ]
     };
 
-    const reporteDos = useActivityWeek();
-    const safeReporteDos = Array.isArray(reporteDos) ? reporteDos : [];
-
-    const usuariosActivityData = {
-        labels: safeReporteDos.map((dato: any) => dato.fecha),
-        datasets: [{
-            label: 'Activos',
-            data: safeReporteDos.map((dato: any) => dato.cant_us),
-            backgroundColor: 'rgba(75, 192, 192, 0.8)',
-        }]
+    const impactGrowthChartData = {
+        labels: impactGrowthData?.map((d: any) => {
+            const date = new Date();
+            date.setDate(1);
+            date.setMonth(d.mes - 1);
+            return date.toLocaleString('es-ES', { month: 'short' });
+        }) || [],
+        datasets: [
+            {
+                label: 'Impacto Total (kg CO2)',
+                data: impactGrowthData?.map((d: any) => d.total) || [],
+                borderColor: '#48bb78',
+                backgroundColor: 'rgba(72, 187, 120, 0.2)',
+                fill: true,
+            }
+        ]
     };
 
-    const reporteTres = useActionsUsers(currentMonth);
-    const safeReporteTres = Array.isArray(reporteTres) ? reporteTres : [];
-
-    // Extraer el primer elemento si existe (ya que el SP devuelve un solo registro)
-    const actionsData = safeReporteTres.length > 0 ? safeReporteTres[0] : {
-        cant_compras_publicaciones_prod: 0,
-        cant_compras_publicaciones_serv: 0,
-        cant_intercambios: 0,
-        cant_compras_potenciadores: 0,
-        cant_paquetes_tokens: 0
+    const transactionVolumeChartData = {
+        labels: transactionVolumeData?.map((d: any) => {
+            const date = new Date();
+            date.setDate(1);
+            date.setMonth(d.mes - 1);
+            return date.toLocaleString('es-ES', { month: 'short' });
+        }) || [],
+        datasets: [
+            {
+                label: 'Compras de Tokens',
+                data: transactionVolumeData?.map((d: any) => d.compras_tokens) || [],
+                borderColor: '#ed8936',
+                backgroundColor: 'rgba(237, 137, 54, 0.2)',
+            },
+            {
+                label: 'Compras de Productos',
+                data: transactionVolumeData?.map((d: any) => d.compras_productos) || [],
+                borderColor: '#805ad5',
+                backgroundColor: 'rgba(128, 90, 213, 0.2)',
+            }
+        ]
     };
 
-    const usuariosActionsData = {
-        labels: ['Productos', 'Servicios', 'Intercambios', 'Potenciadores', 'CV'],
-        datasets: [{
-            label: 'Cantidad',
-            data: [
-                actionsData.cant_compras_publicaciones_prod || 0,
-                actionsData.cant_compras_publicaciones_serv || 0,
-                actionsData.cant_intercambios || 0,
-                actionsData.cant_compras_potenciadores || 0,
-                actionsData.cant_paquetes_tokens || 0
-            ],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)'
-            ],
-        }]
+    // Transformación de datos para gráficos de barras
+    const safeCategoryProdsData = Array.isArray(categoryProdsData) ? categoryProdsData : [];
+    const categoryProdsChartData = {
+        labels: safeCategoryProdsData.map((d: any) => d.categoria),
+        datasets: [
+            {
+                label: 'Compras',
+                data: safeCategoryProdsData.map((d: any) => d.compras),
+                backgroundColor: 'rgba(255, 99, 132, 0.8)',
+            },
+            {
+                label: 'Intercambios',
+                data: safeCategoryProdsData.map((d: any) => d.intercambios),
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+            }
+        ]
     };
 
-    // NUEVOS REPORTES
-
-    // Reporte 1: Flujo de Billeteras (Datos únicos)
-    const walletFlowData: any = useWalletFlowReport();
-
-    // Reporte 2: Rendimiento de Promociones
-    const promotionData = usePromotionPerformanceReport("2025-01-01", "2025-12-31");
-    const safePromotionData = Array.isArray(promotionData) ? promotionData : [];
-    const promotionChartData = {
-        labels: safePromotionData.map((d: any) => d.promocion),
-        datasets: [{
-            label: 'Ingresos (CV)',
-            data: safePromotionData.map((d: any) => d.ingresos),
-            backgroundColor: 'rgba(255, 206, 86, 0.8)',
-        }, {
-            label: 'Tasa Conversión (%)',
-            data: safePromotionData.map((d: any) => d.conversion),
-            backgroundColor: 'rgba(75, 192, 192, 0.8)',
-        }]
+    const safeActivityWeekData = Array.isArray(activityWeekData) ? activityWeekData : [];
+    const activityWeekChartData = {
+        labels: safeActivityWeekData.map((d: any) => d.fecha),
+        datasets: [
+            {
+                label: 'Usuarios Activos',
+                data: safeActivityWeekData.map((d: any) => d.cant_us),
+                backgroundColor: 'rgba(75, 192, 192, 0.8)',
+            }
+        ]
     };
 
-    // Reporte 3: Eventos por Organización
-    const eventsData = useEventsOrganizationReport(currentMonth, currentYear);
-    const safeEventsData = Array.isArray(eventsData) ? eventsData : [];
-    const eventsChartData = {
-        labels: safeEventsData.map((d: any) => d.evento),
-        datasets: [{
-            label: 'Inscritos',
-            data: safeEventsData.map((d: any) => d.inscritos),
-            backgroundColor: 'rgba(153, 102, 255, 0.8)',
-        }, {
-            label: 'Ganancia (CV)',
-            data: safeEventsData.map((d: any) => d.ganancia),
-            backgroundColor: 'rgba(255, 159, 64, 0.8)',
-        }]
+    const safeActionsUsersData = Array.isArray(actionsUsersData) ? actionsUsersData : [];
+    const actionsData: any = safeActionsUsersData.length > 0 ? safeActionsUsersData[0] : {};
+    const actionsUsersChartData = {
+        labels: ['Productos', 'Servicios', 'Intercambios', 'Potenciadores', 'Tokens'],
+        datasets: [
+            {
+                label: 'Cantidad',
+                data: [
+                    actionsData.cant_compras_publicaciones_prod || 0,
+                    actionsData.cant_compras_publicaciones_serv || 0,
+                    actionsData.cant_intercambios || 0,
+                    actionsData.cant_compras_potenciadores || 0,
+                    actionsData.cant_paquetes_tokens || 0
+                ],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)'
+                ]
+            }
+        ]
     };
 
-    // Reporte 4: Top Productos/Servicios
-    const topProductsData = useTopProductsServicesReport(currentMonth, currentYear);
-    const safeTopProductsData = Array.isArray(topProductsData) ? topProductsData : [];
-    const topProductsChartData = {
-        labels: safeTopProductsData.map((d: any) => d.nombre),
-        datasets: [{
-            label: 'Ventas',
-            data: safeTopProductsData.map((d: any) => d.ventas),
-            backgroundColor: 'rgba(255, 99, 132, 0.8)',
-        }, {
-            label: 'Ingresos (CV)',
-            data: safeTopProductsData.map((d: any) => d.ingresos),
-            backgroundColor: 'rgba(54, 162, 235, 0.8)',
-        }]
+    const safeEventsOrganizationData = Array.isArray(eventsOrganizationData) ? eventsOrganizationData : [];
+    const eventsOrganizationChartData = {
+        labels: safeEventsOrganizationData.map((d: any) => d.evento),
+        datasets: [
+            {
+                label: 'Inscritos',
+                data: safeEventsOrganizationData.map((d: any) => d.inscritos),
+                backgroundColor: 'rgba(153, 102, 255, 0.8)',
+            },
+            {
+                label: 'Ganancia (CV)',
+                data: safeEventsOrganizationData.map((d: any) => d.ganancia),
+                backgroundColor: 'rgba(255, 159, 64, 0.8)',
+            }
+        ]
     };
 
-    // Reporte 5: Impacto Ambiental (Datos únicos)
-    const environmentalData: any = useEnvironmentalImpactReport(currentMonth, currentYear);
-
-    // Reporte 6: Comportamiento de Usuarios (Datos únicos)
-    const userBehaviorData: any = useUserBehaviorReport(currentMonth, currentYear);
-
-    // Reporte 7: Intercambios vs Compras (Datos únicos)
-    const exchangesVsPurchasesData: any = useExchangesVsPurchasesReport(currentMonth, currentYear);
-
-    // Reporte 8: Logros y Gamificación (Datos únicos)
-    const achievementsData: any = useAchievementsGamificationReport();
-
-    // Reporte 9: Calificaciones y Satisfacción (Datos únicos)
-    const ratingsData: any = useRatingsSatisfactionReport(currentMonth, currentYear);
-
-    // Reporte 10: Potenciadores (Datos únicos)
-    const boostersData: any = useBoostersMonetizationReport(currentMonth, currentYear);
+    const safeTopProductsServicesData = Array.isArray(topProductsServicesData) ? topProductsServicesData : [];
+    const topProductsServicesChartData = {
+        labels: safeTopProductsServicesData.map((d: any) => d.nombre),
+        datasets: [
+            {
+                label: 'Ventas',
+                data: safeTopProductsServicesData.map((d: any) => d.ventas),
+                backgroundColor: 'rgba(255, 99, 132, 0.8)',
+            },
+            {
+                label: 'Ingresos (CV)',
+                data: safeTopProductsServicesData.map((d: any) => d.ingresos),
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+            }
+        ]
+    };
 
     const reportConfigs = [
-        // Reportes existentes
         {
-            title: "Categorias de Productos y sus Ventas o Intercambios",
-            data: categoriasData,
-            type: 'chart'
-        },
-        {
-            title: "Usuarios Activos de la Semana",
-            data: usuariosActivityData,
-            type: 'chart'
-        },
-        {
-            title: "Acciones de usuarios en el mes",
-            data: usuariosActionsData,
-            type: 'chart'
-        },
-        // Nuevos reportes
-        {
-            title: "💰 Flujo de Billeteras - Salud Financiera del Sistema",
+            title: "Flujo de Billeteras",
+            description: "Resumen del estado financiero de las billeteras de los usuarios.",
             data: walletFlowData,
-            type: 'summary',
-            description: "Monitorea la liquidez y distribución de riqueza en el ecosistema"
+            type: 'summary'
         },
         {
-            title: "📈 Rendimiento de Promociones - ROI de Marketing",
-            data: promotionChartData,
-            type: 'chart',
-            description: "Mide la efectividad de las campañas promocionales"
+            title: "Actividad Semanal",
+            description: "Distribución de la actividad de los usuarios durante la semana.",
+            data: activityWeekChartData,
+            type: 'chart'
         },
         {
-            title: "📅 Eventos por Organización - Desempeño de Eventos",
-            data: eventsChartData,
-            type: 'chart',
-            description: "Analiza el éxito de eventos benéficos y monetizables"
+            title: "Acciones de Usuarios",
+            description: "Conteo de diferentes tipos de acciones realizadas por los usuarios.",
+            data: actionsUsersChartData,
+            type: 'chart'
         },
         {
-            title: "🏆 Productos y Servicios Más Vendidos - Top Sellers",
-            data: topProductsChartData,
-            type: 'chart',
-            description: "Identifica los productos y servicios con mayor demanda"
+            title: "Categorías de Productos",
+            description: "Cantidad de productos por categoría.",
+            data: categoryProdsChartData,
+            type: 'chart'
         },
         {
-            title: "🌱 Impacto Ambiental Comparativo - Huella de CO2",
-            data: environmentalData,
-            type: 'summary',
-            description: "Compara el impacto ambiental entre usuarios y categorías"
+            title: "Rendimiento de Promociones",
+            description: "Análisis del impacto de las promociones.",
+            data: promotionPerformanceData,
+            type: 'summary'
         },
         {
-            title: "👥 Comportamiento de Usuarios - Retención y Engagement",
+            title: "Eventos por Organización",
+            description: "Cantidad de eventos organizados por cada organización.",
+            data: eventsOrganizationChartData,
+            type: 'chart'
+        },
+        {
+            title: "Productos/Servicios Top",
+            description: "Los productos y servicios más populares.",
+            data: topProductsServicesChartData,
+            type: 'chart'
+        },
+        {
+            title: "Impacto Ambiental",
+            description: "Métricas relacionadas con el impacto ambiental.",
+            data: environmentalImpactData,
+            type: 'summary'
+        },
+        {
+            title: "Comportamiento de Usuarios",
+            description: "Análisis del comportamiento de los usuarios.",
             data: userBehaviorData,
-            type: 'summary',
-            description: "Analiza patrones de uso y salud de la base de usuarios"
+            type: 'summary'
         },
         {
-            title: "🔄 Intercambios vs Compras - Preferencias del Sistema",
+            title: "Intercambios vs Compras",
+            description: "Comparación entre intercambios y compras directas.",
             data: exchangesVsPurchasesData,
-            type: 'summary',
-            description: "Compara las dos modalidades principales de transacción"
+            type: 'summary'
         },
         {
-            title: "🏅 Logros y Gamificación - Efectividad del Sistema",
-            data: achievementsData,
-            type: 'summary',
-            description: "Evalúa la efectividad del sistema de logros"
+            title: "Logros y Gamificación",
+            description: "Estado de los logros y la gamificación.",
+            data: achievementsGamificationData,
+            type: 'summary'
         },
         {
-            title: "⭐ Calificaciones y Satisfacción - Calidad del Servicio",
-            data: ratingsData,
-            type: 'summary',
-            description: "Mide la satisfacción general y calidad del servicio"
+            title: "Calificaciones y Satisfacción",
+            description: "Niveles de satisfacción de los usuarios.",
+            data: ratingsSatisfactionData,
+            type: 'summary'
         },
         {
-            title: "💎 Potenciadores y Monetización - Ingresos del Sistema",
-            data: boostersData,
-            type: 'summary',
-            description: "Analiza el uso de potenciadores y su impacto en ingresos"
+            title: "Potenciadores y Monetización",
+            description: "Uso de potenciadores y métricas de monetización.",
+            data: boostersMonetizationData,
+            type: 'summary'
+        },
+        // Nuevos reportes de línea
+        {
+            title: "Crecimiento de Usuarios",
+            description: "Nuevos usuarios registrados por mes.",
+            data: userGrowthChartData,
+            type: 'line'
+        },
+        {
+            title: "Impacto Ambiental en el Tiempo",
+            description: "Evolución del impacto ambiental (kg CO2) mensual.",
+            data: impactGrowthChartData,
+            type: 'line'
+        },
+        {
+            title: "Volumen de Transacciones",
+            description: "Comparativa mensual de compras de tokens vs productos.",
+            data: transactionVolumeChartData,
+            type: 'line'
         }
     ];
 
-    const handleToggle = (index: number) => {
-        setOpenIndex(openIndex === index ? null : index);
-    }
+    // Separar reportes por tipo
+    const summaryReports = reportConfigs.filter(r => r.type === 'summary');
+    const chartReports = reportConfigs.filter(r => r.type === 'chart');
+    const lineReports = reportConfigs.filter(r => r.type === 'line');
 
-    // Componente para mostrar datos de resumen con nuevo diseño
-    const SummaryReport = ({ data }: { data: any }) => {
-        if (!data) return <div className={styles.loading}>Cargando datos...</div>;
+    // Componente para mostrar datos de resumen
+    const SummaryCardContent = ({ data, title, description }: { data: any, title: string, description?: string }) => {
+        if (!data) return <div className={styles.loading}>Cargando...</div>;
 
-        // Si es un array, tomamos el primer elemento (para reportes que devuelven array de 1 objeto)
         const displayData = Array.isArray(data) ? data[0] : data;
-
-        if (!displayData) return <div className={styles.loading}>No hay datos disponibles</div>;
+        if (!displayData) return <div className={styles.loading}>Sin datos</div>;
 
         return (
-            <div className={styles.summaryContainer}>
+            <>
                 {Object.entries(displayData).map(([key, value]: [string, any]) => {
-                    // Formatear la etiqueta
                     const label = key
                         .replace(/_/g, ' ')
-                        .replace(/([A-Z])/g, ' $1') // Separar camelCase
-                        .replace(/\b\w/g, l => l.toUpperCase()); // Capitalizar
+                        .replace(/([A-Z])/g, ' $1')
+                        .replace(/\b\w/g, l => l.toUpperCase());
 
-                    // Formatear el valor
                     let formattedValue = value;
                     if (typeof value === 'number') {
-                        // Si parece dinero o porcentaje
                         if (key.includes('precio') || key.includes('ingresos') || key.includes('gasto') || key.includes('costo')) {
                             formattedValue = `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                         } else if (key.includes('porcentaje') || key.includes('tasa') || key.includes('promedio')) {
@@ -280,12 +314,15 @@ export default function ReportsAdmin() {
 
                     return (
                         <div key={key} className={styles.summaryCard}>
-                            <span className={styles.summaryLabel}>{label}</span>
+                            <span className={styles.summaryLabel}>{title.split('-')[0].trim()}</span>
                             <span className={styles.summaryValue}>{formattedValue}</span>
+                            <span style={{ fontSize: '0.8rem', color: '#8898aa', marginTop: '0.5rem' }}>
+                                {label}
+                            </span>
                         </div>
                     );
                 })}
-            </div>
+            </>
         );
     };
 
@@ -311,27 +348,56 @@ export default function ReportsAdmin() {
                 </label>
             </div>
 
-            <div className={styles.subtitleSection}>
-                {reportConfigs.map((config, index) => (
-                    <div key={index} className={styles.subtitleItem}>
-                        <AccordionForm
-                            triggerText={config.title}
-                            isOpen={openIndex === index}
-                            onToggle={() => handleToggle(index)}
-                            variant='FullWidth'
-                        >
-                            {config.description && (
-                                <p className={styles.description}>{config.description}</p>
-                            )}
-                            {config.type === 'chart' ? (
-                                <BarDiagram
-                                    data={config.data}
-                                    title={config.title}
-                                />
-                            ) : (
-                                <SummaryReport data={config.data} />
-                            )}
-                        </AccordionForm>
+            {/* Sección de Resúmenes (KPIs) */}
+            <div className={styles.dashboardGrid}>
+                {summaryReports.map((config, index) => (
+                    <SummaryCardContent
+                        key={index}
+                        data={config.data}
+                        title={config.title}
+                        description={config.description}
+                    />
+                ))}
+            </div>
+
+            {/* Sección de Gráficos de Línea (Tendencias) */}
+            {lineReports.length > 0 && (
+                <>
+                    <h2 className={styles.principalTitle} style={{ fontSize: '1.8rem', marginTop: '3rem' }}>Tendencias y Crecimiento</h2>
+                    <div className={styles.chartsGrid}>
+                        {lineReports.map((config, index) => (
+                            <div key={index} className={styles.chartCard}>
+                                <h3 className={styles.chartTitle}>{config.title}</h3>
+                                {config.description && (
+                                    <p className={styles.chartDescription}>{config.description}</p>
+                                )}
+                                <div style={{ flex: 1, minHeight: '300px' }}>
+                                    <LineDiagram
+                                        data={config.data}
+                                        title=""
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+
+            {/* Sección de Gráficos de Barras */}
+            <h2 className={styles.principalTitle} style={{ fontSize: '1.8rem', marginTop: '3rem' }}>Análisis Detallado</h2>
+            <div className={styles.chartsGrid}>
+                {chartReports.map((config, index) => (
+                    <div key={index} className={styles.chartCard}>
+                        <h3 className={styles.chartTitle}>{config.title}</h3>
+                        {config.description && (
+                            <p className={styles.chartDescription}>{config.description}</p>
+                        )}
+                        <div style={{ flex: 1, minHeight: '300px' }}>
+                            <BarDiagram
+                                data={config.data}
+                                title="" // Título ya mostrado arriba
+                            />
+                        </div>
                     </div>
                 ))}
             </div>
