@@ -150,7 +150,8 @@ export default function SignInOrganizationModal({
       formData.append("sitio_web", form.sitio_web || "");
       formData.append("logo_org", logoFile);
 
-      const res = await fetch(`${API_BASE}/register`, {
+      // ✅ USANDO ENDPOINT SEGURO QUE HASHEA EL CIF
+      const res = await fetch(`${API_BASE.replace('/organization', '/auth')}/register-organization`, {
         method: "POST",
         body: formData,
       });

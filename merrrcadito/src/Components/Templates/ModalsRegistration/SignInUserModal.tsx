@@ -17,7 +17,7 @@ import ButtonIcon from "@/Components/Atoms/Buttons/ButtonIcon/ButtonIcon";
 import EntrepreneurAvailabilityModal from "@/Components/Templates/ModalsRegistration/EntrepreneurAvailabilityModal";
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api/users";
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api";
 
 type Sex = "M" | "F" | "";
 
@@ -52,7 +52,7 @@ type CredentialErrors = Partial<Record<keyof CredentialForm, string>>;
 interface Props {
   open: boolean;
   onCancel?: () => void;
-  onConfirm?: (data: SignInForm & { photo?: File | null }) => void | Promise<void>;
+  onConfirm?: (data: SignInForm & { photo?: File | null; username?: string; password?: string }) => void | Promise<void>;
   onGoEntrepreneur?: () => void;
 }
 
@@ -186,6 +186,11 @@ const SignInUserModal: React.FC<Props> = ({
     }
 
     try {
+      // ❌ DESHABILITADO: Este modal ya no hace el registro directamente
+      // El registro se hace a través del callback onConfirm en AuthRegistrationFlow
+      // Esto evita registros duplicados
+
+      /* CÓDIGO ANTERIOR (DESHABILITADO):
       let codRol = 1;
       if (credMode === "admin") codRol = 3;
       if (credMode === "entrepreneur") codRol = 2;
@@ -208,7 +213,7 @@ const SignInUserModal: React.FC<Props> = ({
         formData.append("foto_us", photoFile);
       }
 
-      const res = await fetch(`${API_BASE}/register`, {
+      const res = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         body: formData,
       });
@@ -218,6 +223,7 @@ const SignInUserModal: React.FC<Props> = ({
       if (!res.ok || json.success === false) {
         throw new Error(json.message || "Error al registrar el usuario.");
       }
+      */
 
       let successMessage = "Usuario registrado con éxito.";
       if (credMode === "admin") {
@@ -231,8 +237,14 @@ const SignInUserModal: React.FC<Props> = ({
         message: successMessage,
       });
 
+      // ✅ SOLO USAMOS EL CALLBACK - El registro real se hace en AuthRegistrationFlow
       if (onConfirm) {
-        await onConfirm({ ...form, photo: photoFile });
+        await onConfirm({
+          ...form,
+          photo: photoFile,
+          username: credentials.username,
+          password: credentials.password
+        });
       }
     } catch (err: any) {
       setPopup({

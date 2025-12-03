@@ -48,77 +48,111 @@ const AuthRegistrationFlow: React.FC = () => {
     setLoginError(null);
 
     try {
-      // 1) Intentar como USUARIO (handle_name)
-      const resUser = await fetch(
-        `${USERS_API_BASE}/get_user_data?handle_name=${encodeURIComponent(
-          username
-        )}`,
-        { method: "GET" }
-      );
+      const AUTH_API_BASE =
+        process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api";
 
-      const jsonUser = await resUser.json().catch(() => ({} as any));
+      console.log('[FRONTEND LOGIN] Intentando autenticación...');
+      console.log('[FRONTEND LOGIN] Usuario:', username);
 
-      const rawData = jsonUser?.data;
-      const userData = Array.isArray(rawData) ? rawData[0] : rawData;
+      // ========================================
+      // INTENTO 1: LOGIN COMO USUARIO
+      // ========================================
+      let userLoginResponse = await fetch(`${AUTH_API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          correo_us: username,
+          contra_us: password,
+        }),
+      });
 
-      const userFound =
-        resUser.ok && jsonUser.success !== false && userData != null;
+      let userLoginData = await userLoginResponse.json();
 
-      if (userFound) {
-        const role = mapCodRolToRole(userData.cod_rol);
+      // Si login de usuario exitoso
+      if (userLoginResponse.ok && userLoginData.success && userLoginData.user) {
+        const user = userLoginData.user;
+        const role = mapCodRolToRole(user.cod_rol || 1);
 
-        // 🔹 Guardamos info en localStorage para que /Home pueda leerla
+        console.log('[FRONTEND LOGIN] ✅ Login de USUARIO exitoso');
+
+        // Guardar en localStorage
         if (typeof window !== "undefined") {
           try {
-            window.localStorage.setItem("currentUserHandle", username);
-            window.localStorage.setItem("currentUserRole", role);
-            // 🔔 Guardamos el userId para el sistema de notificaciones
-            window.localStorage.setItem("userId", userData.cod_us?.toString() || "");
-          } catch {
-            // si falla localStorage no rompemos el flujo
+            localStorage.setItem("accountType", "user");
+            localStorage.setItem("userId", user.cod_us.toString());
+            localStorage.setItem("userName", user.nom_us);
+            localStorage.setItem("userHandle", user.handle_name);
+            localStorage.setItem("userEmail", user.correo_us);
+            localStorage.setItem("currentUserHandle", user.handle_name);
+            localStorage.setItem("currentUserRole", role);
+          } catch (err) {
+            console.error('[FRONTEND LOGIN] Error guardando en localStorage:', err);
           }
         }
 
-        // puedes dejar la URL “limpia” o con query, ambas sirven ahora
+        // Redirigir al perfil
         router.push(
           `${PROFILE_ROUTE_BASE}?type=user&role=${role}&handle=${encodeURIComponent(
-            username
+            user.handle_name
           )}`
         );
         return;
       }
 
-      // 2) Si no es usuario, intentar como ORGANIZACIÓN
-      const resOrg = await fetch(
-        `${ORG_API_BASE}/get_org_data?nom_leg_org=${encodeURIComponent(
-          username
-        )}&cif=${encodeURIComponent(password)}`,
-        { method: "GET" }
-      );
+      // ========================================
+      // INTENTO 2: LOGIN COMO ORGANIZACIÓN
+      // ========================================
+      console.log('[FRONTEND LOGIN] Login de usuario falló, intentando como organización...');
 
-      const jsonOrg = await resOrg.json().catch(() => ({} as any));
+      const orgLoginResponse = await fetch(`${AUTH_API_BASE}/auth/login-organization`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          correo_org: username,
+          cif: password,
+        }),
+      });
 
-      const orgFound =
-        resOrg.ok &&
-        jsonOrg.success !== false &&
-        jsonOrg.data &&
-        jsonOrg.data.length > 0;
+      const orgLoginData = await orgLoginResponse.json();
 
-      if (orgFound) {
-        // si luego quieres perfil de org, aquí podrías guardar otra cosa
+      // Si login de organización exitoso
+      if (orgLoginResponse.ok && orgLoginData.success && orgLoginData.organization) {
+        const org = orgLoginData.organization;
+
+        console.log('[FRONTEND LOGIN] ✅ Login de ORGANIZACIÓN exitoso');
+
+        // Guardar en localStorage
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("accountType", "organization");
+            localStorage.setItem("orgId", org.cod_org.toString());
+            localStorage.setItem("orgName", org.nom_com_org);
+            localStorage.setItem("orgLegalName", org.nom_leg_org);
+            localStorage.setItem("orgEmail", org.correo_org);
+          } catch (err) {
+            console.error('[FRONTEND LOGIN] Error guardando en localStorage:', err);
+          }
+        }
+
+        // Redirigir al perfil de organización
         router.push(
           `${PROFILE_ROUTE_BASE}?type=org&nom_leg_org=${encodeURIComponent(
-            username
+            org.nom_leg_org
           )}`
         );
         return;
       }
 
-      // 3) No se encontró ni usuario ni organización
+      // ========================================
+      // AMBOS LOGINS FALLARON
+      // ========================================
+      console.log('[FRONTEND LOGIN] ❌ Ambos intentos de login fallaron');
       setLoginError(
-        "Usuario u organización no registrados o credenciales incorrectas."
+        "Credenciales incorrectas. Verifica tu correo/usuario y contraseña/CIF."
       );
-    } catch {
+
+    } catch (error) {
+      console.error('[FRONTEND LOGIN] Error en autenticación:', error);
       setLoginError(
         "Ocurrió un problema al iniciar sesión. Inténtalo de nuevo."
       );
