@@ -22,6 +22,7 @@ interface Publication {
   hrs_ini_serv?: string;
   hrs_fin_serv?: string;
   duracion?: number;
+  impacto_amb_pub?: number; // Environmental impact in CO2 pts
 }
 
 const PUBLICATIONS_API_BASE =
@@ -55,17 +56,18 @@ export const usePublicationsProds = () => {
           calif_pond_pub: pub.calif_pond_pub,
           calidad: pub.calidad_prod,
           estado_pub: pub.estado_pub,
-          descripcion: pub.desc_prod,
+          descripcion: pub.desc_prod || pub.contenido || '',  // Use actual description, NOT hardcoded
           fecha_ini_pub: pub.fecha_ini_pub,
           contacto_correo: pub.correo_us,
           contacto_numero: pub.telefono_us,
           handlename: pub.handle_name,
           cantidad: pub.cantidad,
           marca: pub.marca_prod,
+          impacto_amb_pub: Number(pub.impacto_amb_pub) || 0, // CO2 impact - ensure number
         }));
 
         // Seleccionar solo publicaciones aleatorias
-        const randomPublications = getRandomElements(mappedPublications, MAX_RANDOM_PUBLICATIONS);
+        const randomPublications = getRandomElements(mappedPublications as Publication[], MAX_RANDOM_PUBLICATIONS);
         setPublications(randomPublications);
       } catch (err) {
         console.error('Error cargando publicaciones:', err);
@@ -90,20 +92,21 @@ export const usePublicationsServs = () => {
         const mappedPublications = data.map((pub: any) => ({
           cod_pub: pub.cod_pub,
           nombre_publicacion: pub.nom_serv,
-          nombre_categoria: 'Servicio', // O mapear si viene del back
-          nombre_subcat: '', // Servicios no parecen tener subcat en la query actual
+          nombre_categoria: 'Servicio',
+          nombre_subcat: '',
           precio_pub: pub.precio_serv,
           foto_pub: `${PUBLICATIONS_API_BASE}/${pub.cod_pub}/image`,
           calif_pond_pub: pub.calif_pond_pub,
-          calidad: '', // Servicios no tienen calidad
+          calidad: '',
           estado_pub: pub.estado_pub,
-          descripcion: pub.desc_serv,
-          fecha_ini_pub: '', // No estaba en la query, verificar si es necesario
-          contacto_correo: '', // No estaba en la query
-          contacto_numero: 0, // No estaba en la query
-          handlename: '', // Falta join con usuario para obtener esto
+          descripcion: pub.desc_serv || pub.contenido || '',  // Use actual description
+          fecha_ini_pub: '',
+          contacto_correo: '',
+          contacto_numero: 0,
+          handlename: pub.handle_name || '',  // Now included from query
           cantidad: 0,
           marca: null,
+          impacto_amb_pub: Number(pub.impacto_amb_pub) || 0, // CO2 impact - ensure number
           // Props especificos de servicio
           hrs_ini_serv: pub.hrs_ini_serv,
           hrs_fin_serv: pub.hrs_fin_serv,
@@ -111,7 +114,7 @@ export const usePublicationsServs = () => {
         }));
 
         // Seleccionar solo publicaciones aleatorias
-        const randomPublications = getRandomElements(mappedPublications, MAX_RANDOM_PUBLICATIONS);
+        const randomPublications = getRandomElements(mappedPublications as Publication[], MAX_RANDOM_PUBLICATIONS);
         setPublications(randomPublications);
       } catch (err) {
         console.error('Error cargando publicaciones de servicios:', err);

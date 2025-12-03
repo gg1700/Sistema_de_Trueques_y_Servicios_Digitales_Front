@@ -23,6 +23,7 @@ interface DataPubProps {
         handlename: string;
         cantidad: number;
         marca?: string | null;
+        impacto_amb_pub?: number; // CO2 impact
     }[]
     layout?: 'carousel' | 'grid';
 }
@@ -60,7 +61,9 @@ export default function ListPublicationProd({
                     calif_pond_pub: pubP.calif_pond_pub,
                     calidad: pubP.calidad,
                     estado_pub: pubP.estado_pub,
-                    handlename: pubP.handlename
+                    handlename: pubP.handlename,
+                    descripcion: pubP.descripcion, // CRITICAL: Pass description
+                    impacto_amb_pub: pubP.impacto_amb_pub // CRITICAL: Pass CO2 impact
                 }}
                 pubP={{
                     descripcion: pubP.descripcion,

@@ -24,6 +24,7 @@ interface DataPubProps {
         hrs_ini_serv?: string;
         hrs_fin_serv?: string;
         duracion?: number;
+        impacto_amb_pub?: number; // CO2 impact
     }[]
     layout?: 'carousel' | 'grid';
 }
@@ -61,7 +62,9 @@ export default function ListPublicationServ({
                     calif_pond_pub: pubS.calif_pond_pub,
                     calidad: pubS.calidad,
                     estado_pub: pubS.estado_pub,
-                    handlename: pubS.handlename
+                    handlename: pubS.handlename,
+                    descripcion: pubS.descripcion, // CRITICAL: Pass description
+                    impacto_amb_pub: pubS.impacto_amb_pub // CRITICAL: Pass CO2 impact
                 }}
                 pubS={{
                     descripcion: pubS.descripcion,
