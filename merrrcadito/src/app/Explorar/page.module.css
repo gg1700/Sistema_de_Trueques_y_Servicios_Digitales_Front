@@ -1,0 +1,78 @@
+/* Force 3-column grid layout matching Events page */
+.exploreGrid :global(.gridContainer) {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.5rem !important;
+    padding: 0 !important;
+}
+
+/* Responsive grid - maintain 3 columns on desktop */
+@media (min-width: 1024px) {
+    .exploreGrid :global(.gridContainer) {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .exploreGrid :global(.gridContainer) {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .exploreGrid :global(.gridContainer) {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Hide the section header from the list components */
+.exploreGrid :global(.sectionHeader) {
+    display: none !important;
+}
+
+/* Hide the list container padding */
+.exploreGrid :global(.listContainer) {
+    padding: 0 !important;
+}
+
+/* Filter Tabs - estilo exacto de eventos */
+.filterTabs {
+    display: flex;
+    gap: 32px;
+    border-bottom: 2px solid #e0f2ef;
+    padding-bottom: 4px;
+    margin-bottom: 24px;
+}
+
+.filterTab {
+    background: none;
+    border: none;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 17px;
+    color: #7c8a99;
+    position: relative;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.filterTab:hover {
+    color: #1fb7a1;
+}
+
+.filterTabActive {
+    font-weight: 600;
+    color: #1fb7a1;
+}
+
+.filterTabActive::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1fb7a1 0%, #16a085 100%);
+    box-shadow: 0 2px 8px rgba(31, 183, 161, 0.4);
+}
