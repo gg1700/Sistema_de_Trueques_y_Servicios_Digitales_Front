@@ -54,7 +54,7 @@ export default function Home() {
 
                 {/* Promociones Carousel */}
                 {promotions.length > 0 && (
-                    <PromotionsCarousel promotions={promotions} />
+                    <PromotionsCarousel promotions={promotions} userRole={userRole} />
                 )}
 
                 {/* Paquetes de Tokens Carousel */}
@@ -735,7 +735,7 @@ function EventsCarousel({ events }: any) {
 }
 
 // Promotions Carousel Component
-function PromotionsCarousel({ promotions }: any) {
+function PromotionsCarousel({ promotions, userRole }: any) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
@@ -765,7 +765,7 @@ function PromotionsCarousel({ promotions }: any) {
                 <div ref={scrollContainerRef} className={styles.scrollContainer}>
                     {promotions.map((promo: any) => (
                         <div key={promo.cod_prom} style={{ minWidth: '280px', height: '600px', overflow: 'hidden' }}>
-                            <PromotionCard promocion={promo} />
+                            <PromotionCard promocion={promo} userRole={userRole} />
                         </div>
                     ))}
                     <div className={styles.exploreMoreCard} onClick={() => router.push('/promociones')}>

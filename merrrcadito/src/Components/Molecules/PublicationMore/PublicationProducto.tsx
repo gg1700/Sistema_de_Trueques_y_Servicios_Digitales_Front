@@ -20,8 +20,12 @@ interface PubPropsProd {
     publicationData?: {
         cod_pub: number,
         nombre_publicacion: string,
+        nombre_categoria?: string,
+        nombre_subcat?: string,
         precio_pub?: number,
-        foto_pub: string | null
+        foto_pub: string | null,
+        calidad?: string,
+        impacto_amb_pub?: number
     }
 }
 
@@ -71,52 +75,71 @@ export default function PublicationProducto({
     }
 
     return (
-        <div>
-            <div className={styles.container}>
-                <div className={styles.description}>
-                    <p>{pub.descripcion}</p>
-                </div>
-                <div className={styles.detailsGrid}>
-                    <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Cantidad</span>
-                        <span className={styles.pOrsBadge}>{pub.cantidad} unidades</span>
+        <>
+            <div className={styles.modalContent}>
+                <h2 className={styles.modalTitle}>Información de Contacto</h2>
+
+                <div className={styles.formGrid}>
+                    {/* Left Column - Seller */}
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Vendedor</label>
+                        <div className={styles.displayField}>
+                            <i className="bi bi-person-circle"></i>
+                            @{pub.handlename}
+                        </div>
                     </div>
+
+                    {/* Right Column - Quantity */}
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Cantidad</label>
+                        <div className={styles.displayField}>
+                            <i className="bi bi-box-seam"></i>
+                            {pub.cantidad} unidades
+                        </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Correo Electrónico</label>
+                        <div className={styles.displayField}>
+                            <i className="bi bi-envelope"></i>
+                            {pub.contacto_correo}
+                        </div>
+                    </div>
+
+                    {/* Brand */}
                     {pub.marca && (
-                        <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Marca</span>
-                            <span className={styles.pOrsBadge}>{pub.marca}</span>
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>Marca</label>
+                            <div className={styles.displayField}>
+                                <i className="bi bi-tag"></i>
+                                {pub.marca}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Phone */}
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Teléfono</label>
+                        <div className={styles.displayField}>
+                            <i className="bi bi-telephone"></i>
+                            {pub.contacto_numero}
+                        </div>
+                    </div>
+
+                    {/* Quality */}
+                    {publicationData?.calidad && (
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>Calidad</label>
+                            <div className={styles.displayField}>
+                                <i className="bi bi-gem"></i>
+                                {publicationData.calidad}
+                            </div>
                         </div>
                     )}
                 </div>
 
-                <div className={styles.contactSection}>
-                    <h3 className={styles.contactTitle}>Información de Contacto</h3>
-                    <div className={styles.contactInfo}>
-                        <div className={styles.contactItem}>
-                            <span className={styles.contactText}>{pub.contacto_correo}</span>
-                        </div>
-                        <div className={styles.contactItem}>
-                            <span className={styles.contactText}>{pub.contacto_numero}</span>
-                        </div>
-                    </div>
-                </div>
-                <div className={styles.buttonsContainer}>
-                    <button
-                        onClick={() => setShowConfirmModal(true)}
-                        style={{
-                            flex: 1,
-                            padding: '12px 24px',
-                            borderRadius: '8px',
-                            border: 'none',
-                            backgroundColor: '#1fb7a1',
-                            color: 'white',
-                            fontSize: '16px',
-                            fontWeight: '600',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Comprar
-                    </button>
+                <div className={styles.buttonGroup}>
                     <ButtonCancel onClick={onCancel} />
                 </div>
             </div>
@@ -348,6 +371,6 @@ export default function PublicationProducto({
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }

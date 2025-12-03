@@ -124,8 +124,12 @@ export default function Publication({
                             publicationData={{
                                 cod_pub: pub.cod_pub,
                                 nombre_publicacion: pub.nombre_publicacion,
+                                nombre_categoria: pub.nombre_categoria,
+                                nombre_subcat: pub.nombre_subcat,
                                 precio_pub: pub.precio_pub,
-                                foto_pub: pub.foto_pub
+                                foto_pub: pub.foto_pub,
+                                calidad: pub.calidad,
+                                impacto_amb_pub: pub.impacto_amb_pub
                             }}
                         />
                     ) : clase === 'Servicio' && pubS ? (

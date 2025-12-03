@@ -1,141 +1,85 @@
-.container {
-  padding: 16px;
+/* EXACT COPY FROM SUBCATEGORY MODAL STYLE */
+
+.modalContent {
   background: white;
-  border-radius: 8px;
-}
-
-.description {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #333;
-  margin-bottom: 16px;
-  padding: 12px;
-  background: #f9f9f9;
-  border-radius: 6px;
-}
-
-.detailsGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.detailItem {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.detailLabel {
-  font-size: 12px;
-  font-weight: 600;
-  color: #666;
-}
-
-.pOrsBadge {
-  font-size: 14px;
-  color: #333;
-}
-
-.serviceInfo {
-  font-size: 14px;
-  color: #333;
-}
-
-.contactSection {
-  padding: 16px;
-  background: #f5f5f5;
-  border-radius: 6px;
-}
-
-.contactTitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 12px;
-}
-
-.contactInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.contactItem {
-  font-size: 14px;
-  color: #333;
-}
-
-.buttonsContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-  margin-top: 20px;
-}
-
-@media (max-width: 480px) {
-  .buttonsContainer {
-    grid-template-columns: 1fr; 
-  }
-}
-
-.modalContainer {
-    background: white;
-    border-radius: 12px;
-    padding: 0;
-    max-width: 400px;
-    margin: 0 auto;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-}
-
-.modalHeader {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
-    text-align: center;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 800px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .modalTitle {
-    color: white;
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
-.modalBody {
-    padding: 30px 25px;
-    text-align: center;
+/* Form Grid - 2 columns */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.iconContainer {
-    margin-bottom: 15px;
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.questionIcon {
-    font-size: 48px;
-    display: block;
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.25rem;
 }
 
-.confirmationText {
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 8px;
-    line-height: 1.4;
+/* Display Field - looks like input but read-only */
+.displayField {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  background-color: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 42px;
 }
 
-.detailText {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.4;
+.displayField i {
+  color: #16a085;
+  font-size: 1.125rem;
 }
 
-.modalFooter {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 20px 25px;
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
+/* Button Group */
+.buttonGroup {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modalContent {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .modalTitle {
+    font-size: 1.25rem;
+  }
 }
