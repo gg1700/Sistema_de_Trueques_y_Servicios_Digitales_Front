@@ -76,8 +76,11 @@ interface Offer {
 
 interface ProductFormState {
   name: string;
-  weightKg: string;
-  material: string;
+  peso_prod: string;           // Peso del producto en kg (para cálculo físico)
+  cantidad: string;            // Cantidad de unidades en la publicación
+  unidad_medida: string;       // "kg", "unidades", "litros", etc.
+  material: string;            // cod_mat del material (para CO2)
+  marca: string;               // Marca del producto (opcional)
   category: string;
   subcategory: string;
   quality: string;
@@ -116,6 +119,14 @@ interface EventFormState {
   cost: string;
   rewardId: string;
   image: File | null;
+}
+
+interface Material {
+  cod_mat: number;
+  nom_mat: string;
+  descr_mat?: string;
+  factor_co2: number;
+  unidad_medida_co2: string;
 }
 
 interface Product {
@@ -200,6 +211,7 @@ interface PublishSectionProps {
   handleCancelService: () => void;
   categories: Category[];
   filteredSubcategories: Subcategory[];
+  materials: Material[];  // NEW: Materials for CO2 calculation
   userId: number;
   setModalTitle: (title: string) => void;
   setModalMessage: (msg: string) => void;
@@ -237,6 +249,7 @@ function PublishSection({
   handleCancelService,
   categories,
   filteredSubcategories,
+  materials,  // ADDED: Materials for dropdown
   userId,
   setModalTitle,
   setModalMessage,
@@ -374,6 +387,78 @@ function PublishSection({
                 className={styles.textarea}
                 placeholder="Describe tu producto..."
               />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Material (Opcional)</label>
+              <select
+                name="material"
+                value={productForm.material}
+                onChange={handleProductChange}
+                className={styles.selectInput}
+                required // Made required again
+              >
+                <option value="">Seleccione un material</option>
+                {materials.map((mat) => (
+                  <option key={mat.cod_mat} value={mat.cod_mat}>
+                    {mat.nom_mat}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Marca (Opcional)</label>
+              <ProfileInput
+                type="text"
+                name="marca"
+                value={productForm.marca}
+                onChange={handleProductChange}
+                placeholder="Ej. Canon, Sony, etc."
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Peso (kg) *</label>
+              <ProfileInput
+                type="number"
+                step="0.01"
+                name="peso_prod"
+                value={productForm.peso_prod}
+                onChange={handleProductChange}
+                placeholder="Ej. 2.5"
+                required
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Cantidad *</label>
+              <ProfileInput
+                type="number"
+                name="cantidad"
+                value={productForm.cantidad}
+                onChange={handleProductChange}
+                placeholder="Ej. 10"
+                required
+              />
+            </div>
+            <div className={styles.formCol}>
+              <label className={styles.fieldLabel}>Unidad *</label>
+              <select
+                name="unidad_medida"
+                value={productForm.unidad_medida}
+                onChange={handleProductChange}
+                className={styles.selectInput}
+                required
+              >
+                <option value="unidades">Unidades</option>
+                <option value="kg">Kilogramos</option>
+                <option value="litros">Litros</option>
+                <option value="metros">Metros</option>
+                <option value="cajas">Cajas</option>
+              </select>
             </div>
           </div>
 
@@ -703,11 +788,14 @@ export default function UserProfile({
 
   const [productForm, setProductForm] = useState<ProductFormState>({
     name: "",
-    weightKg: "",
+    peso_prod: "",
+    cantidad: "1",
+    unidad_medida: "unidades",
     material: "",
+    marca: "",
     category: "",
     subcategory: "",
-    quality: "",
+    quality: "nuevo",
     description: "",
     priceTokens: "",
     image: null,
@@ -741,6 +829,7 @@ export default function UserProfile({
   const [filteredSubcategories, setFilteredSubcategories] = useState<
     Subcategory[]
   >([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
 
   // Estado para datos de impacto ambiental
   const [environmentalData, setEnvironmentalData] = useState<any>(null);
@@ -853,6 +942,20 @@ export default function UserProfile({
           setSubcategories(jsonSub.data as Subcategory[]);
         } else {
           setSubcategories([]);
+        }
+
+        // Fetch materials for CO2 calculation
+        try {
+          const resMat = await fetch(`${API_BASE_URL}/materials`);
+          const jsonMat = await resMat.json().catch(() => ({} as any));
+          if (resMat.ok && jsonMat.success && jsonMat.materials && Array.isArray(jsonMat.materials)) {
+            setMaterials(jsonMat.materials);
+          } else if (resMat.ok && jsonMat.data && Array.isArray(jsonMat.data)) {
+            setMaterials(jsonMat.data);
+          }
+        } catch (matError) {
+          console.warn("Materials endpoint not available yet:", matError);
+          setMaterials([]);
         }
       } catch (err) {
         console.error("Error cargando subcategorías:", err);
@@ -1282,34 +1385,40 @@ export default function UserProfile({
       setError(null);
 
       const pesoNumber =
-        productForm.weightKg.trim() === ""
-          ? 1
-          : Number(productForm.weightKg);
+        productForm.peso_prod.trim() === ""
+          ? 0
+          : Number(productForm.peso_prod);
 
       const precioNumber =
         productForm.priceTokens.trim() === ""
           ? 0
           : Number(productForm.priceTokens);
 
+      const cantidadNumber =
+        productForm.cantidad.trim() === ""
+          ? 1
+          : Number(productForm.cantidad);
+
       const productPayload: any = {
         nom_prod:
           productForm.name && productForm.name.trim() !== ""
             ? productForm.name
             : "Producto sin nombre",
-        peso_prod: isNaN(pesoNumber) ? 1 : pesoNumber,
+        peso_prod: isNaN(pesoNumber) ? 0 : pesoNumber,  // Peso real del producto
         calidad_prod:
           (productForm.quality as "nuevo" | "usado") || "nuevo",
         estado_prod: "disponible",
         precio_prod: isNaN(precioNumber) ? 0 : precioNumber,
         marca_prod:
-          productForm.material && productForm.material.trim() !== ""
-            ? productForm.material
-            : null,
+          productForm.marca && productForm.marca.trim() !== ""
+            ? productForm.marca
+            : null,  // Marca real, no material
         desc_prod:
           productForm.description &&
             productForm.description.trim() !== ""
             ? productForm.description
             : null,
+        cod_mat: productForm.material ? Number(productForm.material) : null, // CRITICAL for CO2 calculation
       };
 
       const resProduct = await fetch(
@@ -1368,13 +1477,15 @@ export default function UserProfile({
         "contenido",
         productForm.description || productForm.name || ""
       );
+      // Usar cantidad y unidad_medida correctos
       formData.append(
         "cant_prod",
-        productForm.weightKg.trim() === ""
-          ? "1"
-          : productForm.weightKg
+        cantidadNumber.toString()
       );
-      formData.append("unidad_medida", "kg");
+      formData.append("unidad_medida", productForm.unidad_medida);
+
+      // Agregar cod_mat para vincular material (CO2 calculation)
+      formData.append("cod_mat", productForm.material);
 
       if (productForm.image) {
         formData.append("foto_pub", productForm.image);
@@ -1468,11 +1579,14 @@ export default function UserProfile({
   const handleCancelProduct = () => {
     setProductForm({
       name: "",
-      weightKg: "",
+      peso_prod: "",
+      cantidad: "1",
+      unidad_medida: "unidades",
       material: "",
+      marca: "",
       category: "",
       subcategory: "",
-      quality: "",
+      quality: "nuevo",
       description: "",
       priceTokens: "",
       image: null,
@@ -2052,6 +2166,7 @@ export default function UserProfile({
             userProducts={userProducts}
             categories={categories}
             filteredSubcategories={filteredSubcategories}
+            materials={materials}
             availableRewards={availableRewards}
             userId={user?.cod_us ?? 0}
             setModalTitle={setModalTitle}
@@ -2135,8 +2250,8 @@ function OffersSection({ offers, services, events, exchanges }: OffersSectionPro
           {title}
         </h3>
         <div className={styles.offersSection}>
-          {items.map((offer) => (
-            <article key={offer.id} className={styles.offerCard}>
+          {items.map((offer, index) => (
+            <article key={`${offer.type}-${offer.id}-${index}`} className={styles.offerCard}>
               <div className={styles.offerImage}>
                 {offer.image ? (
                   <img

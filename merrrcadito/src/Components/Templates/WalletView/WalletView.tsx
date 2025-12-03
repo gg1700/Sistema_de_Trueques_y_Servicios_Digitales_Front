@@ -615,7 +615,7 @@ export default function WalletView() {
                                         <div key={collection.cod_escrow} className={styles.transactionCard}>
                                             <div className={styles.cardHeader}>
                                                 <h3 className={styles.transactionTitle}>
-                                                    Cobro Pendiente: {collection.desc_trans || "Transacción"}
+                                                    Cobro Pendiente: {collection.titulo_publicacion || collection.desc_trans || "Transacción"}
                                                 </h3>
                                             </div>
 

@@ -6,9 +6,10 @@ import LinkProductsModal from '@/Components/Molecules/LinkProductsModal'
 
 interface Props {
   promocion: any
+  userRole?: string
 }
 
-const PromotionCard: React.FC<Props> = ({ promocion }) => {
+const PromotionCard: React.FC<Props> = ({ promocion, userRole }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const formatDate = (date: string | Date) => {
@@ -155,13 +156,15 @@ const PromotionCard: React.FC<Props> = ({ promocion }) => {
               Ver Productos en Promoción
             </Link>
 
-            <button
-              onClick={() => setIsModalOpen(true)}
-              style={{ borderColor: '#16a085', color: '#16a085' }}
-              className="w-full bg-white border-2 hover:bg-gray-50 font-semibold py-3 px-6 rounded-lg transition-colors text-center"
-            >
-              + Vincular Productos
-            </button>
+            {userRole === 'admin' && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                style={{ borderColor: '#16a085', color: '#16a085' }}
+                className="w-full bg-white border-2 hover:bg-gray-50 font-semibold py-3 px-6 rounded-lg transition-colors text-center"
+              >
+                + Vincular Productos
+              </button>
+            )}
           </div>
         </div>
       </div>
