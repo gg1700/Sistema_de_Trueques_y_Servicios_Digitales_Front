@@ -22,6 +22,7 @@ interface Publication {
   hrs_ini_serv?: string;
   hrs_fin_serv?: string;
   duracion?: number;
+  impacto_amb_pub?: number;
 }
 
 const PUBLICATIONS_API_BASE =
@@ -42,6 +43,11 @@ export const usePublicationsProds = () => {
   useEffect(() => {
     async function loadPublicationsProds() {
       try {
+        // Obtener el ID del usuario actual
+        const currentUserId = typeof window !== 'undefined'
+          ? localStorage.getItem('userId')
+          : null;
+
         const response = await PublicationService.getAllPubProds();
         const data = response.data;
 
@@ -62,10 +68,18 @@ export const usePublicationsProds = () => {
           handlename: pub.handle_name,
           cantidad: pub.cantidad,
           marca: pub.marca_prod,
+          impacto_amb_pub: Number(pub.impacto_amb_pub || 0),
+          // Guardar el cod_us para filtrar
+          cod_us: pub.cod_us
         }));
 
+        // Filtrar publicaciones propias
+        const filteredPublications = currentUserId
+          ? mappedPublications.filter((pub: any) => pub.cod_us !== parseInt(currentUserId))
+          : mappedPublications;
+
         // Seleccionar solo publicaciones aleatorias
-        const randomPublications = getRandomElements(mappedPublications, MAX_RANDOM_PUBLICATIONS);
+        const randomPublications = getRandomElements(filteredPublications, MAX_RANDOM_PUBLICATIONS);
         setPublications(randomPublications);
       } catch (err) {
         console.error('Error cargando publicaciones:', err);
@@ -84,34 +98,46 @@ export const usePublicationsServs = () => {
   useEffect(() => {
     async function loadPublicationsServs() {
       try {
+        // Obtener el ID del usuario actual
+        const currentUserId = typeof window !== 'undefined'
+          ? localStorage.getItem('userId')
+          : null;
+
         const response = await PublicationService.getAllPubServs();
         const data = response.data;
 
         const mappedPublications = data.map((pub: any) => ({
           cod_pub: pub.cod_pub,
           nombre_publicacion: pub.nom_serv,
-          nombre_categoria: 'Servicio', // O mapear si viene del back
-          nombre_subcat: '', // Servicios no parecen tener subcat en la query actual
-          precio_pub: pub.precio_serv,
+          nombre_categoria: pub.nom_cat,
+          nombre_subcat: '', // Servicios no tienen subcategoría
+          precio_pub: pub.precio_pub,
           foto_pub: `${PUBLICATIONS_API_BASE}/${pub.cod_pub}/image`,
           calif_pond_pub: pub.calif_pond_pub,
           calidad: '', // Servicios no tienen calidad
           estado_pub: pub.estado_pub,
-          descripcion: pub.desc_serv,
-          fecha_ini_pub: '', // No estaba en la query, verificar si es necesario
-          contacto_correo: '', // No estaba en la query
-          contacto_numero: 0, // No estaba en la query
-          handlename: '', // Falta join con usuario para obtener esto
+          descripcion: pub.contenido,
+          fecha_ini_pub: pub.fecha_ini_pub,
+          contacto_correo: pub.correo_us,
+          contacto_numero: pub.telefono_us,
+          handlename: pub.handle_name,
           cantidad: 0,
           marca: null,
           // Props especificos de servicio
           hrs_ini_serv: pub.hrs_ini_serv,
           hrs_fin_serv: pub.hrs_fin_serv,
-          duracion: pub.duracion
+          duracion: pub.duracion,
+          // Guardar el cod_us para filtrar
+          cod_us: pub.cod_us
         }));
 
+        // Filtrar publicaciones propias
+        const filteredPublications = currentUserId
+          ? mappedPublications.filter((pub: any) => pub.cod_us !== parseInt(currentUserId))
+          : mappedPublications;
+
         // Seleccionar solo publicaciones aleatorias
-        const randomPublications = getRandomElements(mappedPublications, MAX_RANDOM_PUBLICATIONS);
+        const randomPublications = getRandomElements(filteredPublications, MAX_RANDOM_PUBLICATIONS);
         setPublications(randomPublications);
       } catch (err) {
         console.error('Error cargando publicaciones de servicios:', err);

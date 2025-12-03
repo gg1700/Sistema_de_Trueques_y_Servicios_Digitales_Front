@@ -40,6 +40,7 @@ interface PublicationProps {
         calidad?: string,
         handlename: string,
         estado_pub: 'activo' | 'inactivo',
+        impacto_amb_pub?: number,
     },
     pubP?: PubProdProps | null,
     pubS?: PubServProps | null

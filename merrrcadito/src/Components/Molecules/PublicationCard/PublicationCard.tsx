@@ -12,7 +12,8 @@ interface PublicationProps {
         calif_pond_pub: number,
         calidad?: string,
         handlename: string,
-        estado_pub: 'activo' | 'inactivo'
+        estado_pub: 'activo' | 'inactivo',
+        impacto_amb_pub?: number
     },
     onOpenModal: () => void,
     onPurchaseClick?: () => void
@@ -45,6 +46,12 @@ export default function PublicationCard({
                         e.currentTarget.src = `${process.env.NEXT_PUBLIC_API_URL}/images/default_image.jpg`;
                     }}
                 />
+                {pub.impacto_amb_pub !== undefined && (
+                    <div className={styles.co2Badge}>
+                        <i className="bi bi-tree-fill"></i>
+                        <span>{pub.impacto_amb_pub.toFixed(1)} pts CO2</span>
+                    </div>
+                )}
             </div>
             <div className={styles.content}>
                 <div className={styles.header}>
