@@ -1986,8 +1986,8 @@ function OffersSection({ offers, services, events, exchanges }: OffersSectionPro
           {title}
         </h3>
         <div className={styles.offersSection}>
-          {items.map((offer) => (
-            <article key={offer.id} className={styles.offerCard}>
+          {items.map((offer, index) => (
+            <article key={`${offer.type}-${offer.id}-${index}`} className={styles.offerCard}>
               <div className={styles.offerImage}>
                 {offer.image ? (
                   <img
