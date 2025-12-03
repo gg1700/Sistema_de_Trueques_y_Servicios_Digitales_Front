@@ -5,6 +5,7 @@ import { getNavItems } from '@/Utils/navigation';
 import { SideBar } from '@/Components/Organisms';
 import { NavBar } from '@/Components/Molecules';
 import { ButtonIcon } from '@/Components/Atoms';
+import Footer from '@/Components/Organisms/Footer/Footer';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './AdminLayout.module.css';
@@ -85,6 +86,8 @@ export default function AdminLayout({
           {children}
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { getNavItems } from '@/Utils/navigation';
 import { SideBar } from '@/Components/Organisms';
 import { NavBar } from '@/Components/Molecules';
 import { ButtonIcon } from '@/Components/Atoms';
+import Footer from '@/Components/Organisms/Footer/Footer';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './AppLayout.module.css';
@@ -91,6 +92,8 @@ export default function AppLayout({
           {children}
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

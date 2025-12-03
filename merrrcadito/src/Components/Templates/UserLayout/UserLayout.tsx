@@ -1,6 +1,7 @@
 import { getNavItems } from '@/Utils/navigation';
 import { SideBar } from '@/Components/Organisms';
 import { NavBar, HeaderPage } from '@/Components/Molecules';
+import Footer from '@/Components/Organisms/Footer/Footer';
 import styles from './UserLayout.module.css';
 
 interface LayoutProps {
@@ -35,6 +36,8 @@ export default function UserLayout({
           {children}
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }
