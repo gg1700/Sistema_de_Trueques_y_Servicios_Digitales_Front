@@ -40,6 +40,8 @@ interface PublicationProps {
         calidad?: string,
         handlename: string,
         estado_pub: 'activo' | 'inactivo',
+        descripcion?: string,  // CRITICAL: For card description
+        impacto_amb_pub?: number,  // CRITICAL: For CO2 badge
     },
     pubP?: PubProdProps | null,
     pubS?: PubServProps | null

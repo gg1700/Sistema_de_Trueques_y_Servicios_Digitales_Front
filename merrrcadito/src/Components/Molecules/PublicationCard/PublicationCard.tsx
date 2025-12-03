@@ -38,7 +38,7 @@ export default function PublicationCard({
     };
 
     const truncateDescription = (text: string | undefined, maxLength: number = 100) => {
-        if (!text) return 'Sin descripción disponible';
+        if (!text || text.trim() === '') return '';
         return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
     };
 
