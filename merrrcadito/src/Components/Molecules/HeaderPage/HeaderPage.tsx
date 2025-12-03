@@ -58,11 +58,43 @@ export default function HeaderPage({ pageTitle, pageSubtitle }: HeaderTitleProps
           <ButtonIcon
             icon='bi-box-arrow-right'
             type='logout'
-            onClick={() => {
-              if (typeof window !== "undefined") {
-                window.localStorage.removeItem("currentUserHandle");
-                window.localStorage.removeItem("currentUserRole");
-                router.push("/login");
+            onClick={async () => {
+              try {
+                if (typeof window !== "undefined") {
+                  const userId = localStorage.getItem("userId");
+
+                  // Llamar al endpoint de logout si hay userId
+                  if (userId) {
+                    const AUTH_API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api";
+
+                    await fetch(`${AUTH_API_BASE}/auth/logout`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        cod_us: parseInt(userId)
+                      })
+                    });
+                  }
+
+                  // Limpiar localStorage
+                  window.localStorage.removeItem("currentUserHandle");
+                  window.localStorage.removeItem("currentUserRole");
+                  window.localStorage.removeItem("userId");
+                  window.localStorage.removeItem("accountType");
+                  window.localStorage.removeItem("orgId");
+
+                  // Redirigir al login
+                  router.push("/login");
+                }
+              } catch (error) {
+                console.error('[LOGOUT ERROR]', error);
+                // Incluso si falla el API, limpiar localStorage y redirigir
+                if (typeof window !== "undefined") {
+                  window.localStorage.clear();
+                  router.push("/login");
+                }
               }
             }}
             name="Cerrar Sesión"
