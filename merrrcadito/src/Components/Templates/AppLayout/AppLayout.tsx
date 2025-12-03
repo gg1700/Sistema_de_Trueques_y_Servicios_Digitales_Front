@@ -20,10 +20,14 @@ export default function AppLayout({
   children,
   pageTitle,
   pageSubtitle,
-  userRole
+  userRole = 'user'
 }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navItems = getNavItems(userRole);
+
+  // 🔹 Usar navegación de admin si el rol es admin
+  const navRole = userRole === 'admin' ? 'admin' : 'user';
+  const navItems = getNavItems(navRole);
+
   const router = useRouter();
 
   return (
@@ -75,7 +79,7 @@ export default function AppLayout({
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         menuItems={navItems.map(item => ({
-          icon: item.icon || 'dashboard',
+          icon: (item as any).icon || 'dashboard',
           label: item.name,
           href: item.route
         }))}

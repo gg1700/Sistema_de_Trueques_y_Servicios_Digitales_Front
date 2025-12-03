@@ -52,7 +52,7 @@ type CredentialErrors = Partial<Record<keyof CredentialForm, string>>;
 interface Props {
   open: boolean;
   onCancel?: () => void;
-  onConfirm?: (data: SignInForm & { photo?: File | null; username?: string; password?: string }) => void | Promise<void>;
+  onConfirm?: (data: SignInForm & { photo?: File | null; username?: string; password?: string; rol?: string }) => void | Promise<void>;
   onGoEntrepreneur?: () => void;
 }
 
@@ -239,11 +239,20 @@ const SignInUserModal: React.FC<Props> = ({
 
       // ✅ SOLO USAMOS EL CALLBACK - El registro real se hace en AuthRegistrationFlow
       if (onConfirm) {
+        // Determinar el rol basado en credMode
+        let rol = "usuario_comun";
+        if (credMode === "admin") {
+          rol = "administrador";
+        } else if (credMode === "entrepreneur") {
+          rol = "emprendedor";
+        }
+
         await onConfirm({
           ...form,
           photo: photoFile,
           username: credentials.username,
-          password: credentials.password
+          password: credentials.password,
+          rol: rol  // ✅ Enviar el rol correcto
         });
       }
     } catch (err: any) {

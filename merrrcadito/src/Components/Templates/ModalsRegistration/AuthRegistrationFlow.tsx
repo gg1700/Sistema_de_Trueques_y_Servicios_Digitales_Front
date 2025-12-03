@@ -72,8 +72,13 @@ const AuthRegistrationFlow: React.FC = () => {
       // Si login de usuario exitoso
       if (userLoginResponse.ok && userLoginData.success && userLoginData.user) {
         const user = userLoginData.user;
+
+        console.log('[FRONTEND LOGIN] 🔍 DEBUG - Datos del usuario from API:', user);
+        console.log('[FRONTEND LOGIN] 🔍 cod_rol recibido:', user.cod_rol);
+
         const role = mapCodRolToRole(user.cod_rol || 1);
 
+        console.log('[FRONTEND LOGIN] 🔍 Rol mapeado:', role);
         console.log('[FRONTEND LOGIN] ✅ Login de USUARIO exitoso');
 
         // Guardar en localStorage

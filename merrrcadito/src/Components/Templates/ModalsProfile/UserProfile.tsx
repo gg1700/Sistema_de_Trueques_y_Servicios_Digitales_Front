@@ -182,8 +182,9 @@ interface UserProfileProps {
 }
 
 const mapCodRolToRole = (codRol?: number): Role => {
-  if (codRol === 2) return "entrepreneur";
+  // cod_rol: 1 = usuario_comun, 2 = emprendedor, 3 = administrador
   if (codRol === 3) return "admin";
+  if (codRol === 2) return "entrepreneur";
   return "user";
 };
 
@@ -286,7 +287,7 @@ function PublishSection({
 
   const isOrg = accountType === "organization";
   const isRegularUser = userRole === "user"; // Usuario común (cod_rol = 1)
-  const canCreateEvents = isOrg || userRole === "entrepreneur" || userRole === "admin";
+  const canCreateEvents = isOrg || userRole === "entrepreneur"; // ⚠️ Admin NO puede crear eventos (por ahora)
 
   return (
     <div className={styles.publishSection}>

@@ -9,8 +9,15 @@ export default function PerfilPage() {
 
   useEffect(() => {
     const storedRole = localStorage.getItem('currentUserRole');
-    if (storedRole === 'admin' || storedRole === 'user') {
-      setUserRole(storedRole);
+    console.log('[PERFIL PAGE] Rol guardado en localStorage:', storedRole);
+
+    // Mapear los valores del backend a admin/user
+    if (storedRole === 'admin' || storedRole === 'administrador') {
+      setUserRole('admin');
+    } else if (storedRole === 'entrepreneur' || storedRole === 'emprendedor') {
+      setUserRole('user'); // Por ahora emprendedor usa sidebar común
+    } else {
+      setUserRole('user');
     }
   }, []);
 

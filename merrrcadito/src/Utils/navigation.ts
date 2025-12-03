@@ -15,13 +15,12 @@ export const navItems: {
     { name: 'Ranking Emprendedores', route: '/RankingSells', icon: 'ranking' },
     { name: 'Intercambios', route: '/intercambios', icon: 'exchanges' },
     { name: 'Eventos', route: '/eventos', icon: 'events' },
-    { name: 'Tienda', route: '/tokens', icon: 'stores' },
     { name: 'Explorar Mas', route: '/Explorar', icon: 'explore' }
   ],
   admin: [
     { name: 'Gestión de Categorias', route: '/admin/GestionDeSecciones/GestionDeCategorias', icon: 'categories' },
     { name: 'Gestión de Subcategorias', route: '/admin/GestionDeSecciones/GestionDeSubcategorias', icon: 'subcategories' },
-    { name: 'Gestión de la Tienda', route: '/admin/usuarios', icon: 'stores' },
+    { name: 'Gestión de Tokens', route: '/tokens', icon: 'stores' },
     { name: 'Reportes', route: '/admin/Reportes', icon: 'reports' },
     { name: 'Promociones', route: '/promociones', icon: 'promotions' },
   ]
