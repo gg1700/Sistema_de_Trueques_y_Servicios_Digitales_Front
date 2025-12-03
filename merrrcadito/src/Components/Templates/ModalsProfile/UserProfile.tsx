@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import styles from "./UserProfile.module.css";
+import { FaTrophy } from "react-icons/fa";
 
 import FileInput from "@/Components/Templates/ModalsProfile/FileInput";
 import ProfileInput from "@/Components/Atoms/Input/ProfileInput/ProfileInput";
@@ -1017,6 +1018,7 @@ export default function UserProfile({
 
   const fetchOffersForUser = async (codUs: number) => {
     try {
+      console.log('[fetchOffersForUser] Starting fetch for user:', codUs);
       const allOffers: Offer[] = [];
       const allEvents: Offer[] = [];
       const allExchanges: Offer[] = [];
@@ -1025,33 +1027,24 @@ export default function UserProfile({
         `${POSTS_API_BASE}/all_active_product_posts`
       );
       const jsonPosts = await resPosts.json().catch(() => ({} as any));
+      console.log('[fetchOffersForUser] Posts API response:', jsonPosts);
 
       if (resPosts.ok && jsonPosts.data && Array.isArray(jsonPosts.data)) {
+        console.log('[fetchOffersForUser] Total posts from API:', jsonPosts.data.length);
+        console.log('[fetchOffersForUser] First post structure:', jsonPosts.data[0]);
+        console.log('[fetchOffersForUser] Looking for cod_us:', codUs);
+        const userPosts = jsonPosts.data.filter((p: any) => p.cod_us === codUs);
+        console.log('[fetchOffersForUser] User posts after filter:', userPosts.length, userPosts);
         const mappedOffers: Offer[] = jsonPosts.data
           .filter((p: any) => p.cod_us === codUs)
           .map((p: any) => {
-            let descriptionLines = [];
-
-            // Descripción del producto
-            const productDesc = p.desc_prod ?? "";
-            if (productDesc) {
-              descriptionLines.push(`📝 ${productDesc.length > 40 ? productDesc.slice(0, 40) + '...' : productDesc}`);
-            }
-
-            // Contenido de la publicación (si existe)
-            const pubContent = p.contenido ?? "";
-            if (pubContent) {
-              descriptionLines.push(`📝 ${pubContent.length > 40 ? pubContent.slice(0, 40) + '...' : pubContent}`)
-            }
-
-            // Siempre mostrar impacto (usar valor del backend o 5 por defecto)
+            // Solo mostrar impacto (usar valor del backend o 5 por defecto)
             const impacto = p.impacto_amb_pub ?? 5;
-            descriptionLines.push(`🌱 Impacto: ${impacto} pts`);
 
             return {
               id: p.cod_pub ?? p.id ?? 0,
               title: p.nom_prod ?? p.title ?? "Sin título",
-              description: descriptionLines.join('\n'),
+              description: `🌱 Impacto: ${impacto} pts`,
               image: `${PUBLICATIONS_API_BASE}/${p.cod_pub ?? p.id ?? 0}/image`,
               price: p.precio_prod ?? 0,
               type: 'product' as const,
@@ -1060,6 +1053,7 @@ export default function UserProfile({
             };
           });
 
+        console.log('[fetchOffersForUser] Mapped product offers:', mappedOffers);
         allOffers.push(...mappedOffers);
       }
 
@@ -1164,6 +1158,10 @@ export default function UserProfile({
       }
 
       // Establecer todas las ofertas por separado
+      console.log('[fetchOffersForUser] Setting offers state:', allOffers.length, allOffers);
+      console.log('[fetchOffersForUser] Setting events state:', allEvents.length);
+      console.log('[fetchOffersForUser] Setting exchanges state:', allExchanges.length);
+
       setOffers(allOffers);
       setEvents(allEvents);
       setExchanges(allExchanges);
@@ -1839,9 +1837,41 @@ export default function UserProfile({
         </div>
 
         <div className={styles.userInfo}>
-          <h1 className={styles.userName}>
-            {fullName || (loading ? "Cargando..." : "Sin usuario")}
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <h1 className={styles.userName}>
+              {fullName || (loading ? "Cargando..." : "Sin usuario")}
+            </h1>
+            {viewerId && user?.cod_us && viewerId === user.cod_us && (
+              <button
+                onClick={() => router.push('/logros')}
+                style={{
+                  background: 'linear-gradient(135deg, #ffd700 0%, #ffaa00 100%)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '48px',
+                  height: '48px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontSize: '24px',
+                  boxShadow: '0 4px 15px rgba(255, 215, 0, 0.4)',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.1)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 215, 0, 0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 215, 0, 0.4)';
+                }}
+                title="Ver mis logros"
+              >
+                <FaTrophy size={24} color="#fff" />
+              </button>
+            )}
+          </div>
 
           {/* Información de Contacto */}
           <div className={styles.infoSection}>
@@ -2229,6 +2259,18 @@ interface OffersSectionProps {
 }
 
 function OffersSection({ offers, services, events, exchanges }: OffersSectionProps) {
+  // Debug logging
+  console.log('[OffersSection] Received data:', {
+    offers: offers.length,
+    services: services.length,
+    events: events.length,
+    exchanges: exchanges.length
+  });
+  console.log('[OffersSection] Offers array:', offers);
+  console.log('[OffersSection] Services array:', services);
+  console.log('[OffersSection] Exchanges array:', exchanges);
+  console.log('[OffersSection] Events array:', events);
+
   const hasProducts = offers.length > 0;
   const hasServices = services.length > 0;
   const hasEvents = events.length > 0;
