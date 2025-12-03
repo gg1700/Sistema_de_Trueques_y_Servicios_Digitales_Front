@@ -1234,16 +1234,23 @@ export default function UserProfile({
       console.log("Services response:", jsonServices);
 
       if (resServices.ok && jsonServices.data && Array.isArray(jsonServices.data)) {
-        const mappedServices: Offer[] = jsonServices.data.map((s: any) => ({
-          id: s.cod_serv ?? s.id ?? 0,
-          title: s.nom_serv ?? "Sin título",
-          description: s.descr_serv ?? "",
-          image: s.foto_serv ? `data:image/jpeg;base64,${Buffer.from(s.foto_serv).toString('base64')}` : undefined,
-          price: s.precio_serv ?? s.precio_serv_token ?? 0,
-          type: 'service' as const,
-          impact: 5,
-          status: 'active',
-        }));
+        const mappedServices: Offer[] = jsonServices.data.map((s: any) => {
+          const impact = Number(s.impacto_amb_pub || 0);
+          const baseDescription = s.contenido || s.desc_serv || "";
+          // Agregar emoji de libreta al inicio de la descripción
+          const descriptionWithEmoji = baseDescription ? `📝 ${baseDescription}` : "";
+
+          return {
+            id: s.cod_serv ?? s.id ?? 0,
+            title: s.nom_serv ?? "Sin título",
+            description: descriptionWithEmoji,
+            image: s.foto_serv ? `data:image/jpeg;base64,${Buffer.from(s.foto_serv).toString('base64')}` : undefined,
+            price: s.precio_serv ?? s.precio_serv_token ?? 0,
+            type: 'service' as const,
+            impact: impact,
+            status: 'active',
+          };
+        });
         console.log("Mapped services:", mappedServices);
         setServices(mappedServices);
       } else {
@@ -2347,6 +2354,19 @@ function OffersSection({ offers, services, events, exchanges }: OffersSectionPro
                 <div className={styles.offerDescription} style={{ whiteSpace: 'pre-line' }}>
                   {offer.description}
                 </div>
+                {/* Mostrar impacto ambiental solo para servicios */}
+                {offer.type === 'service' && (
+                  <div style={{
+                    fontSize: '13px',
+                    color: '#6b7785',
+                    marginTop: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                    <span>🌱 Impacto: {Number(offer.impact || 0).toFixed(1)} pts</span>
+                  </div>
+                )}
               </div>
               <div className={styles.offerActions}>
                 <div style={{
