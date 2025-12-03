@@ -11,7 +11,6 @@ export const navItems: {
   common: [
     { name: 'Dashboard', route: '/Home', icon: 'dashboard' },
     { name: 'Ranking CO2', route: '/RankingCO2', icon: 'ranking' },
-    { name: 'Mi Perfil', route: '/perfil', icon: 'profile' },
     { name: 'Ranking Emprendedores', route: '/RankingSells', icon: 'ranking' },
     { name: 'Intercambios', route: '/intercambios', icon: 'exchanges' },
     { name: 'Eventos', route: '/eventos', icon: 'events' },
